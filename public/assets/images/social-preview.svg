@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">James M. Spencer social preview</title>
+  <desc id="desc">Social preview card for James M. Spencer personal website.</desc>
+  <rect width="1200" height="630" fill="#efe8db" />
+  <rect width="1200" height="258" fill="#111714" />
+  <g opacity="0.28">
+    <path d="M0 82h1200" stroke="#f3eee4" stroke-opacity="0.15" />
+    <path d="M0 166h1200" stroke="#f3eee4" stroke-opacity="0.15" />
+    <path d="M96 44v196" stroke="#f3eee4" stroke-opacity="0.12" />
+    <path d="M118 96h184l40-34h150l52 48h238" fill="none" stroke="#86a18e" stroke-width="2" />
+    <path d="M144 192h196l42-32h196l52 32h268" fill="none" stroke="#86a18e" stroke-width="2" stroke-opacity="0.7" />
+  </g>
+  <text x="96" y="126" fill="#f3eee4" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="4">
+    JAMES M. SPENCER
+  </text>
+  <text x="96" y="206" fill="#f3eee4" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+    Operational leadership for laboratories,
+  </text>
+  <text x="96" y="272" fill="#f3eee4" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+    teams, and scientific programs.
+  </text>
+  <rect x="96" y="324" width="152" height="6" rx="3" fill="#456352" />
+  <text x="96" y="398" fill="#131713" font-family="Inter, Arial, sans-serif" font-size="25">
+    Two research laboratories. Shared biosafety level 2 laboratory space.
+  </text>
+  <text x="96" y="438" fill="#131713" font-family="Inter, Arial, sans-serif" font-size="25">
+    Summer research program delivery. Lab manager network leadership.
+  </text>
+  <text x="96" y="528" fill="#59615a" font-family="Inter, Arial, sans-serif" font-size="22" letter-spacing="2.5">
+    BOSTON, MASSACHUSETTS
+  </text>
+</svg>

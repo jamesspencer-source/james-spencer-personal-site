@@ -1,57 +1,45 @@
 # James M. Spencer Personal Site
 
-One-page static site for GitHub Pages.
+Premium one-page professional site for GitHub Pages, built with Vite, React, and TypeScript.
 
-## Local preview
+## Local development
 
 From the repository root:
 
 ```bash
-python3 -m http.server 8000
+npm install
+npm run dev
 ```
 
-Then open:
+Then open the local Vite URL shown in the terminal.
 
-```text
-http://localhost:8000/
-```
-
-## Edit content
-
-Most copy lives in [`content.js`](./content.js). Update that file when you want to change:
-
-- hero copy and links
-- current scope facts
-- experience entries
-- selected work items
-- background and education
-- contact links
-- footer disclaimer
-
-The page structure is in [`index.html`](./index.html) and styling is in [`styles.css`](./styles.css).
-
-## Assets
-
-- Social preview: `assets/images/social-preview.svg`
-- Resume PDF: `assets/resume/james-m-spencer-resume.pdf`
-- Favicon: `assets/favicon.svg`
-
-If you export a newer resume PDF later, replace the file in `assets/resume/` and keep the same filename.
-
-## GitHub Pages
-
-This repository already has `origin` configured:
+## Build
 
 ```bash
-git remote -v
+npm run build
 ```
 
-To publish:
+The production build is emitted to `dist/`.
 
-1. Commit and push `main`.
-2. In GitHub, open the repository settings.
-3. Under **Pages**, set the source to **Deploy from a branch**.
-4. Select `main` and `/ (root)`.
-5. Save and wait for the Pages URL to appear.
+## Content and assets
 
-Because the site uses only relative asset paths, it will work correctly as a GitHub Pages project site.
+- Structured site content lives in `src/content.ts`
+- UI and section composition live in `src/App.tsx`
+- Global styling and motion-ready layout rules live in `src/styles.css`
+- Public assets live in `public/assets/`
+
+Current public assets:
+
+- Social preview: `public/assets/images/social-preview.svg`
+- Resume PDF: `public/assets/resume/james-m-spencer-resume.pdf`
+- Favicon: `public/assets/favicon.svg`
+- Portrait: `public/assets/images/james-m-spencer-hero-5904.jpg`
+
+## Deployment
+
+This repository deploys to GitHub Pages through GitHub Actions.
+
+- Production base path: `/james-spencer-personal-site/`
+- Workflow: `.github/workflows/deploy.yml`
+
+When `main` is pushed, the site is built and deployed through the Pages workflow.
