@@ -5,11 +5,11 @@ import { siteContent, type ActionLink, type ExperienceEntry } from "./content";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type SectionId = "mission" | "scope" | "experience" | "background" | "contact";
+type SectionId = "overview" | "scope" | "experience" | "background" | "contact";
 
 const navItems: Array<{ id: SectionId; label: string }> = [
-  { id: "mission", label: "Mission" },
-  { id: "scope", label: "Scope" },
+  { id: "overview", label: "Overview" },
+  { id: "scope", label: "Current Scope" },
   { id: "experience", label: "Experience" },
   { id: "background", label: "Background" },
   { id: "contact", label: "Contact" }
@@ -69,37 +69,24 @@ function ActionRow({ links }: { links: ActionLink[] }) {
   );
 }
 
-function HeroTelemetry() {
+function ContactLinks({ links }: { links: ActionLink[] }) {
   return (
-    <svg
-      className="hero-telemetry"
-      viewBox="0 0 620 520"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path
-        d="M32 126h172l48-46h120l46 52h170"
-        className="hero-telemetry__path"
-      />
-      <path
-        d="M72 284h142l38 34h138l48-62h126"
-        className="hero-telemetry__path hero-telemetry__path--soft"
-      />
-      <path
-        d="M58 414h112l58-46h168l44 28h132"
-        className="hero-telemetry__path"
-      />
-      <circle cx="252" cy="80" r="7" className="hero-telemetry__point" />
-      <circle cx="438" cy="318" r="7" className="hero-telemetry__point" />
-      <circle cx="228" cy="368" r="7" className="hero-telemetry__point" />
-      <g className="hero-telemetry__ticks">
-        <line x1="64" y1="32" x2="64" y2="488" />
-        <line x1="176" y1="32" x2="176" y2="488" />
-        <line x1="288" y1="32" x2="288" y2="488" />
-        <line x1="400" y1="32" x2="400" y2="488" />
-        <line x1="512" y1="32" x2="512" y2="488" />
-      </g>
-    </svg>
+    <ul className="contact-list">
+      {links.map((link) => (
+        <li key={link.label} className="contact-list__item">
+          <a
+            className="contact-list__link"
+            href={link.href}
+            {...(isExternalLink(link.href)
+              ? { target: "_blank", rel: "noreferrer" }
+              : {})}
+            {...(link.download ? { download: true } : {})}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -107,7 +94,7 @@ function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
   const detailRef = useRef<HTMLElement>(null);
-  const [activeSection, setActiveSection] = useState<SectionId>("mission");
+  const [activeSection, setActiveSection] = useState<SectionId>("overview");
   const [activeRole, setActiveRole] = useState(
     siteContent.experience.entries[0].id
   );
@@ -168,13 +155,13 @@ function App() {
 
       gsap.fromTo(
         ".js-hero-item",
-        { autoAlpha: 0, y: 30 },
+        { autoAlpha: 0, y: 14 },
         {
           autoAlpha: 1,
           y: 0,
-          duration: 0.9,
+          duration: 0.55,
           ease: "power2.out",
-          stagger: 0.08
+          stagger: 0.04
         }
       );
 
@@ -186,16 +173,16 @@ function App() {
 
         gsap.fromTo(
           revealTargets,
-          { autoAlpha: 0, y: 42 },
+          { autoAlpha: 0, y: 24 },
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.9,
+            duration: 0.65,
             ease: "power2.out",
-            stagger: 0.08,
+            stagger: 0.05,
             scrollTrigger: {
               trigger: stage,
-              start: "top 74%",
+              start: "top 78%",
               once: true
             }
           }
@@ -238,13 +225,13 @@ function App() {
     const items = detailRef.current.querySelectorAll<HTMLElement>(".js-detail-item");
     gsap.fromTo(
       items,
-      { autoAlpha: 0, y: 18 },
+      { autoAlpha: 0, y: 12 },
       {
         autoAlpha: 1,
         y: 0,
-        duration: 0.45,
+        duration: 0.3,
         ease: "power2.out",
-        stagger: 0.05,
+        stagger: 0.04,
         clearProps: "opacity,transform"
       }
     );
@@ -258,7 +245,7 @@ function App() {
 
       <header className="site-header">
         <div className="shell site-header__inner">
-          <a className="site-brand" href="#mission">
+          <a className="site-brand" href="#overview">
             James M. Spencer
           </a>
           <nav className="site-nav" aria-label="Primary">
@@ -278,18 +265,22 @@ function App() {
 
       <main id="content">
         <section
-          id="mission"
-          data-section="mission"
-          className="stage stage--hero"
+          id="overview"
+          data-section="overview"
+          className="stage stage--overview"
         >
           <div className="shell hero">
             <div className="hero__copy">
               <p className="hero__eyebrow js-hero-item">
-                {siteContent.hero.eyebrow}
+                {siteContent.hero.label}
               </p>
-              <h1 className="hero__headline js-hero-item">
-                {siteContent.hero.headline}
+              <h1 className="hero__name js-hero-item">
+                {siteContent.hero.name}
               </h1>
+              <p className="hero__title js-hero-item">{siteContent.hero.title}</p>
+              <p className="hero__location js-hero-item">
+                {siteContent.hero.location}
+              </p>
               <p className="hero__summary js-hero-item">
                 {siteContent.hero.summary}
               </p>
@@ -309,20 +300,6 @@ function App() {
               <div className="js-hero-item">
                 <ActionRow links={siteContent.hero.actions} />
               </div>
-            </div>
-
-            <div className="hero__visual js-hero-item">
-              <HeroTelemetry />
-              <div className="hero__signal-note">Current operating environment</div>
-              <figure className="hero__portrait-frame">
-                <img
-                  className="hero__portrait"
-                  src={siteContent.hero.portrait.src}
-                  alt={siteContent.hero.portrait.alt}
-                  width={960}
-                  height={1200}
-                />
-              </figure>
             </div>
           </div>
         </section>
@@ -447,6 +424,7 @@ function App() {
               <h2 className="section-heading__title">
                 {siteContent.background.heading}
               </h2>
+              <p className="section-heading__body">{siteContent.background.intro}</p>
             </div>
 
             <div className="background-layout">
@@ -465,11 +443,24 @@ function App() {
                 ))}
               </div>
 
-              <aside className="background-education js-stage-reveal">
-                <p className="background-education__label">Education</p>
-                <h3>{siteContent.background.education.degree}</h3>
-                <p>{siteContent.background.education.organization}</p>
-                <p>{siteContent.background.education.dates}</p>
+              <aside className="background-aside js-stage-reveal">
+                {siteContent.background.portrait ? (
+                  <figure className="background-portrait">
+                    <img
+                      src={siteContent.background.portrait.src}
+                      alt={siteContent.background.portrait.alt}
+                      width={1200}
+                      height={1600}
+                    />
+                  </figure>
+                ) : null}
+
+                <div className="background-education">
+                  <p className="background-education__label">Education</p>
+                  <h3>{siteContent.background.education.degree}</h3>
+                  <p>{siteContent.background.education.organization}</p>
+                  <p>{siteContent.background.education.dates}</p>
+                </div>
               </aside>
             </div>
           </div>
@@ -488,7 +479,7 @@ function App() {
             </div>
 
             <div className="contact__actions js-stage-reveal">
-              <ActionRow links={siteContent.contact.links} />
+              <ContactLinks links={siteContent.contact.links} />
             </div>
           </div>
         </section>

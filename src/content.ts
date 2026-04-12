@@ -43,6 +43,11 @@ export type BackgroundEntry = {
   summary: string;
 };
 
+export type PortraitAsset = {
+  src: string;
+  alt: string;
+};
+
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 export const siteContent = {
@@ -52,35 +57,31 @@ export const siteContent = {
       "James M. Spencer leads laboratory operations and scientific programs in complex research environments, with responsibility for staffing, budgets, facilities, equipment, and day-to-day execution."
   },
   hero: {
-    eyebrow: "James M. Spencer",
-    headline:
-      "He keeps research laboratories and scientific programs running.",
-    summary:
-      "James M. Spencer currently leads operating work for two research laboratories and a summer research program at Harvard Medical School. His scope includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor coordination, and the day-to-day execution required to keep those environments running.",
+    label: "Overview",
+    name: "James M. Spencer",
+    title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
-    portrait: {
-      src: asset("assets/images/james-m-spencer-hero-5904.jpg"),
-      alt: "Portrait of James M. Spencer"
-    },
+    summary:
+      "James M. Spencer leads operations for two research laboratories and a summer research program at Harvard Medical School. His work includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor coordination, and day-to-day coordination across those environments.",
     proof: [
       {
         value: "2",
-        label: "Research laboratories",
-        detail: "shared operating model"
+        label: "research laboratories",
+        detail: "Harvard Medical School"
       },
       {
         value: "2",
-        label: "Buildings",
-        detail: "one regulated footprint"
+        label: "buildings",
+        detail: "shared laboratory footprint"
       },
       {
         value: "8 weeks",
-        label: "Summer research program",
-        detail: "annual delivery cycle"
+        label: "summer research program",
+        detail: "annual delivery"
       },
       {
         value: "100+",
-        label: "Regional convenings",
+        label: "regional attendees",
         detail: "plus a national program"
       }
     ] as ProofItem[],
@@ -99,19 +100,19 @@ export const siteContent = {
   scope: {
     label: "Current Scope",
     heading:
-      "Current responsibilities across research operations and scientific programs.",
+      "Current responsibilities across laboratory operations and scientific programs.",
     overview:
-      "His work sits where laboratory operations, people, and program delivery meet. The current environment includes sponsor-aware budgets, recruiting and onboarding, shared equipment and facilities, vendor relationships, regulated biosafety level 2 laboratory space, and the annual execution of a summer research experience.",
+      "His current work sits between laboratory operations, staffing, and program delivery. It includes budgets, hiring and onboarding, shared equipment and facilities, vendor relationships, regulated biosafety level 2 laboratory space, and the annual delivery of a summer research program.",
     institutions: [
       {
         name: "Howard Hughes Medical Institute",
         detail:
-          "Two investigator laboratories in the Harvard Medical School Department of Microbiology."
+          "Sponsor context for the Thomas Bernhardt and Jonathan Abraham laboratories."
       },
       {
         name: "Harvard Medical School",
         detail:
-          "Current operating setting for laboratory infrastructure, shared facilities, and program delivery."
+          "Institutional setting for laboratory infrastructure, shared facilities, and program delivery."
       },
       {
         name: "Community Phages",
@@ -121,61 +122,60 @@ export const siteContent = {
       {
         name: "Lab Management Network of Professionals",
         detail:
-          "Professional community leadership for lab managers across the institute."
+          "Institute community leadership for laboratory managers."
       }
     ] as InstitutionItem[],
     domains: [
       {
         title: "Laboratory operations",
         description:
-          "Budgets, equipment, facilities, vendor relationships, and the daily continuity work behind shared research environments."
+          "Budgets, equipment, facilities, purchasing, vendor relationships, and day-to-day continuity across shared research environments."
       },
       {
-        title: "People and execution",
+        title: "Staffing and coordination",
         description:
           "Recruiting logistics, onboarding, postdoctoral candidate visits, schedules, and practical support for teams and trainees."
       },
       {
         title: "Programs and community",
         description:
-          "Annual summer-program delivery plus regional and national event leadership for lab manager communities."
+          "Summer-program delivery, regional meetings, national convenings, and ongoing peer-support infrastructure for laboratory managers."
       }
     ] as DomainItem[],
     results: [
-      "Leads operations for two Howard Hughes Medical Institute investigator laboratories across shared biosafety level 2 laboratory space in two buildings.",
-      "Expanded the operating model from one laboratory to two in August 2025 while keeping one shared system in place.",
+      "Leads operations for two Howard Hughes Medical Institute (HHMI) investigator laboratories across shared biosafety level 2 laboratory space in two buildings.",
+      "Expanded responsibility from one laboratory to two in August 2025 while maintaining one shared system.",
       "Runs an annual eight-week Community Phages summer research program for eight Roxbury Community College students.",
-      "Chairs the Lab Management Network of Professionals and helps lead regional meetings of about 100 attendees plus a 2025 national program for 60 selected lab managers and about 20 institute partners."
+      "Chairs the Lab Management Network of Professionals (LMNOP) and helps lead regional meetings of about 100 attendees plus a 2025 week-long national program for 60 selected lab managers and about 20 institute partners."
     ]
   },
   experience: {
     label: "Experience",
-    heading: "Selected leadership roles.",
+    heading: "Current roles and institute leadership.",
     intro:
-      "Role history across research laboratories, program operations, and professional community leadership.",
+      "The roles below cover laboratory management, summer-program operations, and institute community leadership.",
     entries: [
       {
         id: "labs",
-        navLabel: "Research laboratories",
+        navLabel: "Laboratory management",
         title: "Laboratory Manager",
         organization:
-          "Howard Hughes Medical Institute (HHMI), Harvard Medical School Department of Microbiology",
+          "Howard Hughes Medical Institute (HHMI), Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
           "Leads shared operations for the Thomas Bernhardt and Jonathan Abraham laboratories.",
         responsibilities: [
-          "Directs budget oversight, sponsor-aware spending, purchasing, vendor relationships, facilities work, and equipment planning across two active laboratories.",
-          "Manages recruiting logistics, onboarding, postdoctoral candidate visits, and the practical conditions required for stable day-to-day laboratory operations.",
-          "Oversees work tied to shared biosafety level 2 laboratory space, including access, continuity, and operational follow-through."
+          "Oversees budgets, purchasing, vendor relationships, facilities work, and equipment planning across two research laboratories.",
+          "Manages hiring logistics, onboarding, candidate visits, and day-to-day continuity across shared biosafety level 2 laboratory space."
         ],
         evidence: [
           {
-            label: "Operating environment",
+            label: "Scope",
             value:
-              "Two research laboratories, two buildings, and one shared regulated laboratory footprint."
+              "Two research laboratories in two buildings with one shared regulated laboratory footprint."
           },
           {
-            label: "Primary remit",
+            label: "Responsibility",
             value:
               "Budgets, staffing, equipment, facilities, vendor coordination, and execution."
           }
@@ -186,22 +186,21 @@ export const siteContent = {
         navLabel: "Summer program",
         title: "Operations Lead",
         organization:
-          "Community Phages, Harvard Medical School Department of Microbiology",
+          "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
           "Runs the annual operating cycle for an eight-week summer research program serving Roxbury Community College students.",
         responsibilities: [
-          "Builds the yearly lab environment from the ground up, from benches and supplies to access, safety setup, and end-of-program closeout.",
-          "Coordinates schedules, field visits, partner activity, and daily logistics so students and instructors can focus on the research experience.",
-          "Maintains the yearly delivery rhythm for the program across setup, operation, and closeout."
+          "Builds and runs the yearly program environment, including benches, supplies, access, safety setup, schedules, and closeout.",
+          "Coordinates daily logistics, field visits, partner activity, and student and instructor support throughout the eight-week program."
         ],
         evidence: [
           {
-            label: "Program cadence",
-            value: "Annual eight-week research experience."
+            label: "Program model",
+            value: "Annual eight-week research experience for Roxbury Community College students."
           },
           {
-            label: "Program scale",
+            label: "Scale",
             value:
               "Eight students plus instructors, visitors, field activities, and a dedicated lab environment."
           }
@@ -209,25 +208,24 @@ export const siteContent = {
       },
       {
         id: "network",
-        navLabel: "Professional network",
+        navLabel: "Institute network",
         title: "Chair, Advisory Board",
         organization:
           "Lab Management Network of Professionals (LMNOP), Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "Leads board work and recurring programming for a network of lab managers across the institute.",
+          "Leads advisory board work and recurring programming for laboratory managers across Howard Hughes Medical Institute.",
         responsibilities: [
           "Sets board priorities and helps shape the operating agenda for regional and national convenings.",
-          "Maintains recurring peer-support infrastructure through monthly programming and the institute-wide Slack workspace.",
-          "Connects institute partners with working lab managers when operational input is needed."
+          "Maintains recurring peer-support infrastructure through monthly programming and the institute-wide Slack workspace."
         ],
         evidence: [
           {
-            label: "Regional programs",
+            label: "Regional meetings",
             value: "Meetings of about 100 attendees."
           },
           {
-            label: "National program",
+            label: "2025 national program",
             value:
               "A 2025 week-long program for 60 selected lab managers and about 20 institute partners."
           }
@@ -237,7 +235,13 @@ export const siteContent = {
   },
   background: {
     label: "Background",
-    heading: "Earlier research and leadership experience.",
+    heading: "Earlier research and leadership work.",
+    intro:
+      "Earlier work included bench research at the University of Massachusetts Amherst and leadership roles in residential life.",
+    portrait: {
+      src: asset("assets/images/james-m-spencer-background-5900.jpg"),
+      alt: "Portrait of James M. Spencer"
+    } as PortraitAsset,
     entries: [
       {
         title: "Research Assistant",
@@ -270,12 +274,17 @@ export const siteContent = {
   },
   contact: {
     label: "Contact",
-    heading: "Professional contact.",
-    intro: "LinkedIn is the current public contact route for this site.",
+    heading: "Current public links.",
+    intro: "LinkedIn and the public resume are the current public contact routes for this site.",
     links: [
       {
         label: "LinkedIn",
         href: "https://www.linkedin.com/in/jamesmspencer/"
+      },
+      {
+        label: "Resume",
+        href: asset("assets/resume/james-m-spencer-resume.pdf"),
+        download: true
       }
     ] as ActionLink[]
   },
