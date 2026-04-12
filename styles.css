@@ -132,14 +132,13 @@ main {
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(15rem, 17.5rem);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: end;
-  min-height: min(42rem, calc(100vh - 11rem));
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.5rem;
+  min-height: min(38rem, calc(100vh - 11rem));
 }
 
 .hero-copy {
-  max-width: 44rem;
+  max-width: 49rem;
 }
 
 .hero-location {
@@ -197,23 +196,6 @@ main {
 .hero-link:hover,
 .hero-link:focus-visible {
   border-bottom-color: var(--accent);
-}
-
-.hero-figure {
-  justify-self: end;
-  width: min(100%, 17rem);
-  margin: 0;
-  overflow: hidden;
-  border: 1px solid rgba(24, 25, 23, 0.12);
-  border-radius: 6px;
-  background: #d8dbd4;
-  box-shadow: var(--shadow);
-}
-
-.hero-figure img {
-  width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
 }
 
 .section {
@@ -484,7 +466,6 @@ main {
     padding-top: 4rem;
   }
 
-  .hero-grid,
   .background-layout,
   .contact-layout {
     grid-template-columns: 1fr;
@@ -492,11 +473,6 @@ main {
 
   .hero-grid {
     min-height: auto;
-  }
-
-  .hero-figure {
-    justify-self: start;
-    width: min(100%, 15rem);
   }
 
   .contact-links {

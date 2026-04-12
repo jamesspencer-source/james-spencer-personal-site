@@ -32,7 +32,7 @@ The page structure is in [`index.html`](./index.html) and styling is in [`styles
 
 ## Assets
 
-- Portrait: `assets/images/james-m-spencer-portrait.jpg`
+- Social preview: `assets/images/social-preview.svg`
 - Resume PDF: `assets/resume/james-m-spencer-resume.pdf`
 - Favicon: `assets/favicon.svg`
 
