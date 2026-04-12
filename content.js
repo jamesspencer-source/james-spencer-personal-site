@@ -4,7 +4,13 @@ window.siteContent = {
     headline: "Research Operations and Program Leader",
     location: "Boston, Massachusetts",
     summary:
-      "James M. Spencer supports two HHMI Investigator laboratories at Harvard Medical School. His scope includes budgets, staffing, compliance, facilities, equipment, vendor coordination, and day-to-day operations, along with HMS Community Phages and LMNOP programming.",
+      "James M. Spencer manages research operations for two HHMI Investigator laboratories at Harvard Medical School. His work spans staffing, budgets, compliance, facilities, equipment, vendor coordination, HMS Community Phages, and the LMNOP Advisory Board at HHMI.",
+    portrait: {
+      src: "assets/images/james-m-spencer-hero-5904.jpg",
+      alt: "Portrait of James M. Spencer",
+      width: 960,
+      height: 1200
+    },
     links: [
       {
         label: "Resume",
@@ -24,29 +30,29 @@ window.siteContent = {
   scope: {
     facts: [
       {
-        label: "Research operations",
+        label: "Laboratories",
         text:
           "Two HHMI Investigator laboratories in shared BSL-2 space across two buildings."
       },
       {
         label: "Operations",
         text:
-          "Budgets, hiring, onboarding, safety and compliance, equipment, facilities, and vendor coordination."
+          "Budgets, sponsor-aware spending, hiring, onboarding, safety, compliance, equipment, facilities, and vendor coordination."
       },
       {
         label: "People",
         text:
-          "Recruiting, interviewing, onboarding, and staff support for researchers and trainees."
+          "Recruiting, interviewing, onboarding, and day-to-day support for staff, postdocs, and trainees."
       },
       {
         label: "Programs",
         text:
-          "Annual HMS Community Phages internship operations in the HMS Department of Microbiology."
+          "Annual eight-week HMS Community Phages operations for Roxbury Community College interns in the HMS Department of Microbiology."
       },
       {
         label: "Community",
         text:
-          "LMNOP conference and community programming for HHMI lab managers."
+          "LMNOP executive-board leadership, monthly programming, Slack community management, and conference planning for HHMI lab managers."
       }
     ]
   },
@@ -55,40 +61,40 @@ window.siteContent = {
       {
         title: "Laboratory Manager",
         organization:
-          "Howard Hughes Medical Institute (Lab of Dr. Thomas Bernhardt), Department of Microbiology, Blavatnik Institute / Harvard Medical School",
+          "Howard Hughes Medical Institute (HHMI) • Harvard Medical School, Department of Microbiology",
         dates: "Jan 2019 - Present",
         summary:
-          "Directs day-to-day operations for two HHMI Investigator laboratories at Harvard Medical School.",
+          "Manages operations for the Thomas Bernhardt and Jonathan Abraham laboratories in shared BSL-2 space across two buildings.",
         bullets: [
-          "Oversees budgets, staffing, compliance, facilities, equipment, and vendor coordination across shared research operations.",
-          "Supports recruiting, interviewing, onboarding, and development for staff and trainees.",
-          "Maintains a strong safety culture and day-to-day operating continuity within shared BSL-2 space."
+          "Owns budgets across sponsors, burn-rate tracking, strategic spend decisions, and planning around staffing and major purchases.",
+          "Leads hiring, onboarding, postdoctoral candidate logistics, vendor sourcing, contract negotiations, and day-to-day operating continuity.",
+          "Directs safety, compliance, equipment, and facilities work for shared BSL-2 operations across two HMS buildings."
         ]
       },
       {
-        title: "Program Manager",
+        title: "Operations Lead",
         organization:
-          "Department of Microbiology, Harvard Medical School (HMS Community Phages)",
+          "HMS Community Phages • Harvard Medical School, Department of Microbiology",
         dates: "2022 - Present",
         summary:
-          "Runs annual internship operations for HMS Community Phages.",
+          "Runs annual operations for an eight-week Roxbury Community College summer research internship.",
         bullets: [
-          "Manages lab setup and closeout, participant and instructor onboarding, scheduling, and stakeholder coordination.",
-          "Prepares the lab space and resources required to run the program safely and efficiently each year.",
-          "Handles program funding and day-to-day logistics for a stable trainee and instructional environment."
+          "Handles planning, onboarding and offboarding, access, safety, purchasing, budget, and lab readiness for the full program cycle.",
+          "Builds out and closes down the program lab each year, including benches, PPE, supplies, equipment access, and waste streams.",
+          "Coordinates partner visits and field-sampling trips while keeping day-to-day operations stable for interns and instructors."
         ]
       },
       {
-        title: "Advisory Board Member",
+        title: "Chair, Advisory Board",
         organization:
           "Lab Management Network of Professionals (LMNOP), Howard Hughes Medical Institute",
-        dates: "2023 - Present",
+        dates: "Dec 2022 - Present",
         summary:
-          "Supports LMNOP programming and conference planning for HHMI lab managers.",
+          "Leads the LMNOP executive board and institute-wide programming for HHMI lab managers.",
         bullets: [
-          "Leads planning for annual lab manager conferences serving regional and national cohorts.",
-          "Helps shape peer-learning and professional-development events for the network.",
-          "Supports event operations and follow-through based on participant feedback."
+          "Plans regional one-day meetings and a national week-long conference for HHMI lab managers and institute partners.",
+          "Runs monthly virtual meetings and maintains an institute-wide Slack workspace for peer support and resource sharing.",
+          "Connects HHMI partners with lab managers when institute initiatives need lab-facing input or operational support."
         ]
       }
     ]
@@ -98,29 +104,29 @@ window.siteContent = {
       {
         title: "Shared BSL-2 research operations",
         context:
-          "Two HHMI Investigator laboratories in shared BSL-2 space across two buildings.",
+          "Two HHMI Investigator laboratories in shared BSL-2 space across two HMS buildings.",
         scope:
-          "Day-to-day operations, compliance, staffing support, facilities coordination, and vendor decisions.",
+          "Budget stewardship, staffing, compliance, purchasing, facilities work, capital equipment, and vendor management.",
         result:
-          "A more reliable operating environment for research work that depends on safety, timing, and coordination."
+          "Supports daily research operations across two labs, two buildings, and a shared BSL-2 footprint."
       },
       {
         title: "HMS Community Phages program operations",
         context:
-          "An annual two-month research internship for undergraduate students from a local community college.",
+          "An annual eight-week summer research internship for Roxbury Community College students.",
         scope:
-          "Program setup, onboarding, scheduling, lab readiness, funding, and closeout.",
+          "Annual lab build-out and closeout, onboarding and offboarding, safety training, scheduling, trips, and budget management.",
         result:
-          "A repeatable operating model that supports trainees, instructors, and research staff each year."
+          "Provides a clear operating structure for interns, instructors, partner visits, and yearly lab setup."
       },
       {
         title: "LMNOP conference and community planning",
         context:
-          "Regional and national programming for lab managers serving HHMI labs.",
+          "Institute-wide professional network for HHMI lab managers.",
         scope:
-          "Conference planning, program design, peer-learning structure, and event operations.",
+          "Executive-board leadership, regional meetings, national conference planning, monthly Zoom programming, and Slack community management.",
         result:
-          "Meetings and community infrastructure that stay practical and useful to participants over time."
+          "Maintains recurring meetings, a shared Slack workspace, and conference planning for HHMI lab managers."
       }
     ]
   },
@@ -129,17 +135,24 @@ window.siteContent = {
       {
         title: "Research Assistant",
         organization:
-          "Lab of Dr. Peter Chien, Department of Biochemistry & Molecular Biology / Institute for Applied Life Sciences, University of Massachusetts Amherst",
+          "Laboratory of Peter Chien, PhD • University of Massachusetts Amherst",
         dates: "2015 - 2018",
         summary:
-          "Conducted microbiology research on the phenotypic consequences of beta-lactam antibiotic stress in lon protease-deficient Caulobacter crescentus."
+          "Studied the phenotypic consequences of beta-lactam antibiotic stress in lon protease-deficient C. crescentus."
       },
       {
-        title: "Residential Life leadership",
-        organization: "University of Massachusetts Amherst",
+        title: "Area Governor",
+        organization: "UMass Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
-          "Served as Area Governor and Resident Assistant, recruiting and developing peer leaders and supporting large residential communities in day-to-day and on-call settings."
+          "Led a residential community of roughly 6,000 students and recruited, trained, and supported a 14-person executive board."
+      },
+      {
+        title: "Resident Assistant",
+        organization: "UMass Amherst Residential Life",
+        dates: "2016 - 2018",
+        summary:
+          "Supported residents day to day, served as a training mentor for new staff, and handled on-call response in a large residential system."
       }
     ],
     education: [
@@ -151,21 +164,12 @@ window.siteContent = {
     ]
   },
   contact: {
-    intro: "For professional inquiries, email is the best route.",
+    intro: "Professional inquiries are best directed by email.",
     links: [
       {
         label: "Email",
         href: "mailto:James_Spencer@hms.harvard.edu",
         text: "James_Spencer@hms.harvard.edu"
-      },
-      {
-        label: "LinkedIn",
-        href: "https://www.linkedin.com/in/jamesmspencer/"
-      },
-      {
-        label: "Resume",
-        href: "assets/resume/james-m-spencer-resume.pdf",
-        download: true
       }
     ]
   },

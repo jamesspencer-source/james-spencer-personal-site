@@ -17,19 +17,40 @@ function createLink(entry, className) {
 }
 
 function renderHero(hero) {
+  const figure = document.getElementById("hero-figure");
   document.getElementById("hero-location").textContent = hero.location;
   document.getElementById("hero-name").textContent = hero.name;
   document.getElementById("hero-headline").textContent = hero.headline;
   document.getElementById("hero-summary").textContent = hero.summary;
 
   const links = document.getElementById("hero-links");
+  links.replaceChildren();
   hero.links.forEach((entry) => {
     links.append(createLink(entry, "hero-link"));
   });
+
+  figure.replaceChildren();
+  if (!hero.portrait?.src) {
+    figure.hidden = true;
+    return;
+  }
+
+  const image = document.createElement("img");
+  image.className = "hero-portrait";
+  image.src = hero.portrait.src;
+  image.alt = hero.portrait.alt;
+  image.width = hero.portrait.width;
+  image.height = hero.portrait.height;
+  image.decoding = "async";
+  image.fetchPriority = "high";
+
+  figure.append(image);
+  figure.hidden = false;
 }
 
 function renderScope(scope) {
   const list = document.getElementById("scope-list");
+  list.replaceChildren();
 
   scope.facts.forEach((entry) => {
     const item = document.createElement("li");
@@ -50,6 +71,7 @@ function renderScope(scope) {
 
 function renderExperience(experience) {
   const list = document.getElementById("experience-list");
+  list.replaceChildren();
 
   experience.entries.forEach((entry) => {
     const article = document.createElement("article");
@@ -92,6 +114,7 @@ function renderExperience(experience) {
 
 function renderSelectedWork(selectedWork) {
   const list = document.getElementById("work-list");
+  list.replaceChildren();
 
   selectedWork.entries.forEach((entry) => {
     const article = document.createElement("article");
@@ -132,6 +155,8 @@ function renderSelectedWork(selectedWork) {
 function renderBackground(background) {
   const list = document.getElementById("background-list");
   const educationList = document.getElementById("education-list");
+  list.replaceChildren();
+  educationList.replaceChildren();
 
   background.entries.forEach((entry) => {
     const article = document.createElement("article");
@@ -187,6 +212,10 @@ function renderContact(contact) {
   document.getElementById("contact-intro").textContent = contact.intro;
 
   const links = document.getElementById("contact-links");
+  links.replaceChildren();
+  const secondary = document.createElement("div");
+  secondary.className = "contact-links-secondary";
+
   contact.links.forEach((entry, index) => {
     const link = createLink(
       entry,
@@ -198,8 +227,17 @@ function renderContact(contact) {
       link.setAttribute("aria-label", `${entry.label}: ${entry.text}`);
     }
 
-    links.append(link);
+    if (index === 0) {
+      links.append(link);
+      return;
+    }
+
+    secondary.append(link);
   });
+
+  if (secondary.childNodes.length > 0) {
+    links.append(secondary);
+  }
 }
 
 function renderFooter(footer) {
