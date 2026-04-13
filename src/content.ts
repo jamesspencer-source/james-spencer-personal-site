@@ -57,12 +57,14 @@ export const siteContent = {
       "James M. Spencer leads operations for research laboratories, scientific programs, and professional communities at Harvard Medical School."
   },
   hero: {
-    label: "Overview",
+    label: "",
     name: "James M. Spencer",
     title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
-    summary:
-      "James M. Spencer manages operations for two Howard Hughes Medical Institute (HHMI) Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals, a peer professional-development organization for laboratory managers. His remit includes staffing, budgets, facilities, equipment, biosafety level 2 laboratory space, vendor coordination, and day-to-day execution.",
+    summary: [
+      "James M. Spencer manages operations for two Howard Hughes Medical Institute (HHMI) Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students, and chairs the Lab Management Network of Professionals, a peer professional-development organization for laboratory managers.",
+      "His remit includes staffing, budgets, facilities, equipment, biosafety level 2 laboratory space, vendor coordination, and day-to-day execution."
+    ],
     proof: [
       {
         headline:
@@ -100,8 +102,7 @@ export const siteContent = {
   },
   scope: {
     label: "Current Scope",
-    heading:
-      "Current operating responsibilities across research laboratories, scientific programs, and professional community work.",
+    heading: "Current responsibilities",
     overview:
       "His current work combines laboratory operations, staffing, financial stewardship, and program delivery. It sits at the intersection of Howard Hughes Medical Institute-supported research laboratories, Community Phages, and professional programming for lab managers.",
     context: [
@@ -157,13 +158,12 @@ export const siteContent = {
   },
   experience: {
     label: "Experience",
-    heading: "Current roles and operating responsibility.",
-    intro:
-      "Select a role to view current scope, responsibility, and public context.",
+    heading: "Current roles",
+    intro: "",
     entries: [
       {
         id: "labs",
-        navLabel: "Research laboratories",
+        navLabel: "Laboratory Operations",
         title: "Laboratory Manager",
         organization:
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
@@ -189,7 +189,7 @@ export const siteContent = {
       },
       {
         id: "program",
-        navLabel: "Community Phages program",
+        navLabel: "Program Operations",
         title: "Program Operations Lead",
         organization:
           "Community Phages, Department of Microbiology, Harvard Medical School",
@@ -219,7 +219,7 @@ export const siteContent = {
       },
       {
         id: "network",
-        navLabel: "Lab manager network",
+        navLabel: "Network Leadership",
         title: "Chair, Advisory Board",
         organization:
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
@@ -282,9 +282,9 @@ export const siteContent = {
     }
   },
   contact: {
-    label: "Contact",
-    heading: "Public links.",
-    intro: "LinkedIn and the public resume are the current public routes for this site.",
+    label: "",
+    heading: "Contact",
+    intro: "",
     links: [
       {
         label: "LinkedIn",

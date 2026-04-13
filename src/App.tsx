@@ -90,6 +90,22 @@ function ContactLinks({ links }: { links: ActionLink[] }) {
   );
 }
 
+function SectionIntro({ body }: { body?: string }) {
+  if (!body) {
+    return null;
+  }
+
+  return <p className="section-heading__body">{body}</p>;
+}
+
+function SectionLabel({ label, className }: { label?: string; className: string }) {
+  if (!label) {
+    return null;
+  }
+
+  return <p className={className}>{label}</p>;
+}
+
 function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -272,9 +288,10 @@ function App() {
           <div className="shell hero">
             <div className="hero__layout">
               <div className="hero__copy">
-                <p className="hero__eyebrow js-hero-item">
-                  {siteContent.hero.label}
-                </p>
+                <SectionLabel
+                  label={siteContent.hero.label}
+                  className="hero__eyebrow js-hero-item"
+                />
                 <h1 className="hero__name js-hero-item">
                   {siteContent.hero.name}
                 </h1>
@@ -282,9 +299,11 @@ function App() {
                 <p className="hero__location js-hero-item">
                   {siteContent.hero.location}
                 </p>
-                <p className="hero__summary js-hero-item">
-                  {siteContent.hero.summary}
-                </p>
+                <div className="hero__summary js-hero-item">
+                  {siteContent.hero.summary.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
 
                 <div className="js-hero-item">
                   <ActionRow links={siteContent.hero.actions} />
@@ -292,7 +311,7 @@ function App() {
               </div>
 
               <aside className="hero-proof-panel js-hero-item" aria-label="Key proof">
-                <p className="hero-proof-panel__label">Current work</p>
+                <p className="hero-proof-panel__label">At a glance</p>
                 <div className="hero-proof-panel__list">
                   {siteContent.hero.proof.map((item) => (
                     <article className="hero-proof-panel__item" key={item.headline}>
@@ -309,9 +328,12 @@ function App() {
         <section id="scope" data-section="scope" className="stage stage--scope js-stage">
           <div className="shell">
             <div className="section-heading js-stage-reveal">
-              <p className="section-heading__label">{siteContent.scope.label}</p>
+              <SectionLabel
+                label={siteContent.scope.label}
+                className="section-heading__label"
+              />
               <h2 className="section-heading__title">{siteContent.scope.heading}</h2>
-              <p className="section-heading__body">{siteContent.scope.overview}</p>
+              <SectionIntro body={siteContent.scope.overview} />
             </div>
 
             <div className="scope-context js-stage-reveal" aria-label="Current context">
@@ -354,16 +376,18 @@ function App() {
         >
           <div className="shell">
             <div className="section-heading js-stage-reveal">
-              <p className="section-heading__label">{siteContent.experience.label}</p>
+              <SectionLabel
+                label={siteContent.experience.label}
+                className="section-heading__label"
+              />
               <h2 className="section-heading__title">
                 {siteContent.experience.heading}
               </h2>
-              <p className="section-heading__body">{siteContent.experience.intro}</p>
+              <SectionIntro body={siteContent.experience.intro} />
             </div>
 
             <div className="experience-layout">
               <div className="experience-nav js-stage-reveal">
-                <p className="experience-nav__hint">Select a role</p>
                 {siteContent.experience.entries.map((entry, index) => (
                   <button
                     key={entry.id}
@@ -437,11 +461,14 @@ function App() {
         >
           <div className="shell">
             <div className="section-heading js-stage-reveal">
-              <p className="section-heading__label">{siteContent.background.label}</p>
+              <SectionLabel
+                label={siteContent.background.label}
+                className="section-heading__label"
+              />
               <h2 className="section-heading__title">
                 {siteContent.background.heading}
               </h2>
-              <p className="section-heading__body">{siteContent.background.intro}</p>
+              <SectionIntro body={siteContent.background.intro} />
             </div>
 
             <div className="background-layout">
@@ -490,9 +517,12 @@ function App() {
         >
           <div className="shell contact">
             <div className="section-heading js-stage-reveal">
-              <p className="section-heading__label">{siteContent.contact.label}</p>
+              <SectionLabel
+                label={siteContent.contact.label}
+                className="section-heading__label"
+              />
               <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
-              <p className="section-heading__body">{siteContent.contact.intro}</p>
+              <SectionIntro body={siteContent.contact.intro} />
             </div>
 
             <div className="contact__actions js-stage-reveal">
