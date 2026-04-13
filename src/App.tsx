@@ -270,36 +270,38 @@ function App() {
           className="stage stage--overview"
         >
           <div className="shell hero">
-            <div className="hero__copy">
-              <p className="hero__eyebrow js-hero-item">
-                {siteContent.hero.label}
-              </p>
-              <h1 className="hero__name js-hero-item">
-                {siteContent.hero.name}
-              </h1>
-              <p className="hero__title js-hero-item">{siteContent.hero.title}</p>
-              <p className="hero__location js-hero-item">
-                {siteContent.hero.location}
-              </p>
-              <p className="hero__summary js-hero-item">
-                {siteContent.hero.summary}
-              </p>
+            <div className="hero__layout">
+              <div className="hero__copy">
+                <p className="hero__eyebrow js-hero-item">
+                  {siteContent.hero.label}
+                </p>
+                <h1 className="hero__name js-hero-item">
+                  {siteContent.hero.name}
+                </h1>
+                <p className="hero__title js-hero-item">{siteContent.hero.title}</p>
+                <p className="hero__location js-hero-item">
+                  {siteContent.hero.location}
+                </p>
+                <p className="hero__summary js-hero-item">
+                  {siteContent.hero.summary}
+                </p>
 
-              <dl className="hero-proof js-hero-item">
-                {siteContent.hero.proof.map((item) => (
-                  <div className="hero-proof__item" key={item.label}>
-                    <dt className="hero-proof__value">{item.value}</dt>
-                    <dd className="hero-proof__copy">
-                      <span className="hero-proof__label">{item.label}</span>
-                      <span className="hero-proof__detail">{item.detail}</span>
-                    </dd>
-                  </div>
-                ))}
-              </dl>
-
-              <div className="js-hero-item">
-                <ActionRow links={siteContent.hero.actions} />
+                <div className="js-hero-item">
+                  <ActionRow links={siteContent.hero.actions} />
+                </div>
               </div>
+
+              <aside className="hero-proof-panel js-hero-item" aria-label="Key proof">
+                <p className="hero-proof-panel__label">Current work</p>
+                <div className="hero-proof-panel__list">
+                  {siteContent.hero.proof.map((item) => (
+                    <article className="hero-proof-panel__item" key={item.headline}>
+                      <h3 className="hero-proof-panel__headline">{item.headline}</h3>
+                      <p className="hero-proof-panel__detail">{item.detail}</p>
+                    </article>
+                  ))}
+                </div>
+              </aside>
             </div>
           </div>
         </section>
@@ -312,12 +314,11 @@ function App() {
               <p className="section-heading__body">{siteContent.scope.overview}</p>
             </div>
 
-            <div className="scope-institutions js-stage-reveal">
-              {siteContent.scope.institutions.map((item) => (
-                <article className="scope-institutions__item" key={item.name}>
-                  <h3>{item.name}</h3>
-                  <p>{item.detail}</p>
-                </article>
+            <div className="scope-context js-stage-reveal" aria-label="Current context">
+              {siteContent.scope.context.map((item) => (
+                <span className="scope-context__item" key={item}>
+                  {item}
+                </span>
               ))}
             </div>
 
@@ -333,11 +334,14 @@ function App() {
 
               <aside className="scope-results js-stage-reveal">
                 <p className="scope-results__label">Selected results</p>
-                <ol className="scope-results__list">
+                <div className="scope-results__list">
                   {siteContent.scope.results.map((result) => (
-                    <li key={result}>{result}</li>
+                    <article className="scope-results__item" key={result.title}>
+                      <h3>{result.title}</h3>
+                      <p>{result.detail}</p>
+                    </article>
                   ))}
-                </ol>
+                </div>
               </aside>
             </div>
           </div>
@@ -359,12 +363,14 @@ function App() {
 
             <div className="experience-layout">
               <div className="experience-nav js-stage-reveal">
+                <p className="experience-nav__hint">Select a role</p>
                 {siteContent.experience.entries.map((entry, index) => (
                   <button
                     key={entry.id}
                     type="button"
                     className="experience-nav__item"
                     data-active={activeRole === entry.id}
+                    aria-pressed={activeRole === entry.id}
                     onClick={() => setActiveRole(entry.id)}
                   >
                     <span className="experience-nav__index">
@@ -391,6 +397,17 @@ function App() {
                 <p className="experience-detail__summary js-detail-item">
                   {activeEntry.summary}
                 </p>
+                {activeEntry.link ? (
+                  <p className="experience-detail__link js-detail-item">
+                    <a
+                      href={activeEntry.link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {activeEntry.link.label}
+                    </a>
+                  </p>
+                ) : null}
 
                 <div className="experience-detail__grid">
                   <ul className="experience-detail__list js-detail-item">
