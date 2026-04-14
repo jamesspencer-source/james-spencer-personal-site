@@ -1,25 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
   <title id="title">James M. Spencer social preview</title>
-  <desc id="desc">Social preview card for James M. Spencer personal website.</desc>
-  <rect width="1200" height="630" fill="#f1ebdf" />
-  <rect x="88" y="88" width="1024" height="454" fill="none" stroke="rgba(21,24,20,0.16)" />
-  <path d="M88 168h1024" stroke="#456352" stroke-width="3" />
-  <text x="112" y="148" fill="#456352" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="4">
+  <desc id="desc">Dark social preview card for James M. Spencer personal website.</desc>
+  <defs>
+    <linearGradient id="wash" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#050809" />
+      <stop offset="100%" stop-color="#0a1011" />
+    </linearGradient>
+    <radialGradient id="haloA" cx="0.28" cy="0.24" r="0.55">
+      <stop offset="0%" stop-color="rgba(107,197,155,0.22)" />
+      <stop offset="100%" stop-color="rgba(107,197,155,0)" />
+    </radialGradient>
+    <radialGradient id="haloB" cx="0.74" cy="0.32" r="0.45">
+      <stop offset="0%" stop-color="rgba(144,184,255,0.18)" />
+      <stop offset="100%" stop-color="rgba(144,184,255,0)" />
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#wash)" />
+  <rect width="1200" height="630" fill="url(#haloA)" />
+  <rect width="1200" height="630" fill="url(#haloB)" />
+  <g stroke="rgba(242,240,232,0.08)" fill="none">
+    <path d="M0 126h1200" />
+    <path d="M0 252h1200" />
+    <path d="M0 378h1200" />
+    <path d="M0 504h1200" />
+    <path d="M150 0v630" />
+    <path d="M300 0v630" />
+    <path d="M450 0v630" />
+    <path d="M600 0v630" />
+    <path d="M750 0v630" />
+    <path d="M900 0v630" />
+    <path d="M1050 0v630" />
+  </g>
+  <g transform="translate(785 128)" fill="none">
+    <circle cx="132" cy="148" r="136" stroke="rgba(242,240,232,0.14)" />
+    <circle cx="132" cy="148" r="92" stroke="rgba(242,240,232,0.1)" />
+    <circle cx="132" cy="148" r="46" stroke="rgba(242,240,232,0.08)" />
+    <path d="M48 78l168 56" stroke="#6bc59b" stroke-opacity="0.72" />
+    <path d="M76 194l151-80" stroke="#90b8ff" stroke-opacity="0.68" />
+    <path d="M60 120l150 112" stroke="#d8ea8c" stroke-opacity="0.56" />
+    <circle cx="48" cy="78" r="7" fill="#6bc59b" />
+    <circle cx="216" cy="134" r="7" fill="#6bc59b" />
+    <circle cx="76" cy="194" r="7" fill="#90b8ff" />
+    <circle cx="227" cy="114" r="7" fill="#90b8ff" />
+    <circle cx="60" cy="120" r="6" fill="#d8ea8c" />
+    <circle cx="210" cy="232" r="6" fill="#d8ea8c" />
+  </g>
+  <text x="96" y="112" fill="#a8b4ad" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="5">
     JAMES M. SPENCER
   </text>
-  <text x="112" y="262" fill="#151814" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+  <text x="96" y="236" fill="#f2f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="600">
     Laboratory operations and
   </text>
-  <text x="112" y="326" fill="#151814" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+  <text x="96" y="304" fill="#f2f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="600">
     scientific program leadership
   </text>
-  <text x="112" y="392" fill="#151814" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+  <text x="96" y="372" fill="#f2f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="66" font-weight="600">
     in complex research settings.
   </text>
-  <text x="112" y="454" fill="#5d6259" font-family="Inter, Arial, sans-serif" font-size="25">
-    Two research laboratories. Two buildings. Eight-week summer research program.
+  <text x="96" y="452" fill="#d7ddd6" font-family="Inter, Arial, sans-serif" font-size="26">
+    Two HHMI Investigator laboratories. Community Phages. Network leadership.
   </text>
-  <text x="112" y="500" fill="#5d6259" font-family="Inter, Arial, sans-serif" font-size="25">
-    Boston, Massachusetts.
+  <text x="96" y="500" fill="#a3aea7" font-family="Inter, Arial, sans-serif" font-size="25">
+    Boston, Massachusetts
   </text>
 </svg>

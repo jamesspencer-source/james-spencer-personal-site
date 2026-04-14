@@ -1,18 +1,36 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { siteContent, type ActionLink, type ExperienceEntry } from "./content";
+import { siteContent, type ActionLink, type ProofItem } from "./content";
+import type { AtlasStateId } from "./atlasScenePresets";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type SectionId = "overview" | "scope" | "experience" | "background" | "contact";
+const AtlasScene = lazy(async () => {
+  const module = await import("./components/AtlasScene");
+  return { default: module.AtlasScene };
+});
 
-const navItems: Array<{ id: SectionId; label: string }> = [
-  { id: "overview", label: "Overview" },
-  { id: "scope", label: "Current Scope" },
-  { id: "experience", label: "Experience" },
-  { id: "background", label: "Background" },
-  { id: "contact", label: "Contact" }
+type SectionId = "overview" | "labs" | "program" | "network" | "contact";
+
+const navItems: Array<{
+  id: SectionId;
+  label: string;
+  scene: AtlasStateId;
+}> = [
+  { id: "overview", label: "Overview", scene: "opening" },
+  { id: "labs", label: "Laboratory Operations", scene: "labs" },
+  { id: "program", label: "Community Phages", scene: "program" },
+  { id: "network", label: "Network Leadership", scene: "network" },
+  { id: "contact", label: "Contact", scene: "closing" }
 ];
 
 function usePrefersReducedMotion() {
@@ -49,13 +67,19 @@ function isExternalLink(href: string) {
   return href.startsWith("http");
 }
 
-function ActionRow({ links }: { links: ActionLink[] }) {
+function InlineLinkRow({
+  links,
+  className
+}: {
+  links: ActionLink[];
+  className?: string;
+}) {
   return (
-    <div className="action-row">
+    <div className={["inline-links", className].filter(Boolean).join(" ")}>
       {links.map((link) => (
         <a
           key={link.label}
-          className="action-row__link"
+          className="inline-links__link"
           href={link.href}
           {...(isExternalLink(link.href)
             ? { target: "_blank", rel: "noreferrer" }
@@ -69,57 +93,38 @@ function ActionRow({ links }: { links: ActionLink[] }) {
   );
 }
 
-function ContactLinks({ links }: { links: ActionLink[] }) {
+function ProofCluster({
+  items,
+  className
+}: {
+  items: ProofItem[];
+  className?: string;
+}) {
   return (
-    <ul className="contact-list">
-      {links.map((link) => (
-        <li key={link.label} className="contact-list__item">
-          <a
-            className="contact-list__link"
-            href={link.href}
-            {...(isExternalLink(link.href)
-              ? { target: "_blank", rel: "noreferrer" }
-              : {})}
-            {...(link.download ? { download: true } : {})}
-          >
-            {link.label}
-          </a>
-        </li>
+    <div className={["proof-cluster", className].filter(Boolean).join(" ")}>
+      {items.map((item) => (
+        <article
+          key={item.headline}
+          className={`proof-card proof-card--${item.tone ?? "neutral"}`}
+        >
+          <h3 className="proof-card__headline">{item.headline}</h3>
+          <p className="proof-card__detail">{item.detail}</p>
+        </article>
       ))}
-    </ul>
+    </div>
   );
-}
-
-function SectionIntro({ body }: { body?: string }) {
-  if (!body) {
-    return null;
-  }
-
-  return <p className="section-heading__body">{body}</p>;
-}
-
-function SectionLabel({ label, className }: { label?: string; className: string }) {
-  if (!label) {
-    return null;
-  }
-
-  return <p className={className}>{label}</p>;
 }
 
 function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const detailRef = useRef<HTMLElement>(null);
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
-  const [activeRole, setActiveRole] = useState(
-    siteContent.experience.entries[0].id
-  );
+  const [sceneProgress, setSceneProgress] = useState(0);
+  const [shouldLoadAtlas, setShouldLoadAtlas] = useState(false);
 
-  const activeEntry = useMemo<ExperienceEntry>(
-    () =>
-      siteContent.experience.entries.find((entry) => entry.id === activeRole) ??
-      siteContent.experience.entries[0],
-    [activeRole]
+  const activeNavItem = useMemo(
+    () => navItems.find((item) => item.id === activeSection) ?? navItems[0],
+    [activeSection]
   );
 
   useEffect(() => {
@@ -130,6 +135,33 @@ function App() {
     updateMetaTag("twitter:title", siteContent.meta.title);
     updateMetaTag("twitter:description", siteContent.meta.description);
   }, []);
+
+  useEffect(() => {
+    let timeoutId: number | undefined;
+    let idleId: number | undefined;
+
+    if (prefersReducedMotion) {
+      setShouldLoadAtlas(true);
+      return undefined;
+    }
+
+    const loadAtlas = () => setShouldLoadAtlas(true);
+
+    if ("requestIdleCallback" in window) {
+      idleId = window.requestIdleCallback(loadAtlas, { timeout: 1200 });
+    } else {
+      timeoutId = globalThis.setTimeout(loadAtlas, 280);
+    }
+
+    return () => {
+      if (idleId !== undefined && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== undefined) {
+        globalThis.clearTimeout(timeoutId);
+      }
+    };
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     if (!prefersReducedMotion) {
@@ -144,12 +176,13 @@ function App() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveSection(entry.target.id as SectionId);
+            setSceneProgress(0.5);
           }
         });
       },
       {
-        threshold: 0.4,
-        rootMargin: "-15% 0px -45% 0px"
+        threshold: 0.42,
+        rootMargin: "-15% 0px -35% 0px"
       }
     );
 
@@ -164,46 +197,12 @@ function App() {
     }
 
     const ctx = gsap.context(() => {
+      document.documentElement.style.setProperty("--scroll-progress", "0");
+
       if (prefersReducedMotion) {
-        document.documentElement.style.setProperty("--scroll-progress", "0");
+        gsap.set(".js-panel", { autoAlpha: 1, y: 0 });
         return;
       }
-
-      gsap.fromTo(
-        ".js-hero-item",
-        { autoAlpha: 0, y: 14 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.55,
-          ease: "power2.out",
-          stagger: 0.04
-        }
-      );
-
-      gsap.utils.toArray<HTMLElement>(".js-stage").forEach((stage) => {
-        const revealTargets = stage.querySelectorAll<HTMLElement>(".js-stage-reveal");
-        if (!revealTargets.length) {
-          return;
-        }
-
-        gsap.fromTo(
-          revealTargets,
-          { autoAlpha: 0, y: 24 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.65,
-            ease: "power2.out",
-            stagger: 0.05,
-            scrollTrigger: {
-              trigger: stage,
-              start: "top 78%",
-              once: true
-            }
-          }
-        );
-      });
 
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
@@ -214,8 +213,42 @@ function App() {
             if (self.isActive) {
               setActiveSection(section.id as SectionId);
             }
+          },
+          onUpdate: (self) => {
+            if (self.isActive) {
+              setActiveSection(section.id as SectionId);
+              setSceneProgress(self.progress);
+            }
           }
         });
+      });
+
+      gsap.utils.toArray<HTMLElement>(".js-panel").forEach((panel) => {
+        gsap.fromTo(
+          panel,
+          { autoAlpha: 0, y: 28 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.85,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: panel,
+              start: "top 82%",
+              once: true
+            }
+          }
+        );
+      });
+
+      gsap.to(".atlas-viewport__veil", {
+        opacity: 0.52,
+        ease: "none",
+        scrollTrigger: {
+          start: 0,
+          end: "max",
+          scrub: 1
+        }
       });
 
       ScrollTrigger.create({
@@ -233,28 +266,8 @@ function App() {
     return () => ctx.revert();
   }, [prefersReducedMotion]);
 
-  useEffect(() => {
-    if (prefersReducedMotion || !detailRef.current) {
-      return;
-    }
-
-    const items = detailRef.current.querySelectorAll<HTMLElement>(".js-detail-item");
-    gsap.fromTo(
-      items,
-      { autoAlpha: 0, y: 12 },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.3,
-        ease: "power2.out",
-        stagger: 0.04,
-        clearProps: "opacity,transform"
-      }
-    );
-  }, [activeRole, prefersReducedMotion]);
-
   return (
-    <div className="site-app" ref={rootRef}>
+    <div className="site-app site-app--atlas" ref={rootRef}>
       <a className="skip-link" href="#content">
         Skip to content
       </a>
@@ -264,270 +277,130 @@ function App() {
           <a className="site-brand" href="#overview">
             James M. Spencer
           </a>
-          <nav className="site-nav" aria-label="Primary">
-            {navItems.map((item) => (
+
+          <nav className="site-nav" aria-label="Section navigation">
+            {navItems.map((item, index) => (
               <a
                 key={item.id}
                 className="site-nav__link"
                 href={`#${item.id}`}
-                aria-current={activeSection === item.id ? "location" : undefined}
+                aria-current={
+                  activeSection === item.id ? "location" : undefined
+                }
               >
-                {item.label}
+                <span className="site-nav__index">0{index + 1}</span>
+                <span>{item.label}</span>
               </a>
             ))}
           </nav>
         </div>
       </header>
 
-      <main id="content">
+      <div className="atlas-viewport" aria-hidden="true">
+        <div className="atlas-viewport__wash atlas-viewport__wash--top" />
+        <div className="atlas-viewport__wash atlas-viewport__wash--bottom" />
+        {shouldLoadAtlas ? (
+          <Suspense fallback={<div className="atlas-viewport__placeholder" />}>
+            <AtlasScene
+              activeStage={activeNavItem.scene}
+              activeLabel={activeNavItem.label}
+              reducedMotion={prefersReducedMotion}
+              stageProgress={sceneProgress}
+            />
+          </Suspense>
+        ) : (
+          <div className="atlas-viewport__placeholder" />
+        )}
+        <div className="atlas-viewport__veil" />
+      </div>
+
+      <nav className="stage-progress" aria-label="Story progress">
+        <div className="stage-progress__rail" />
+        <div className="stage-progress__meter" />
+        <ol className="stage-progress__list">
+          {navItems.map((item, index) => (
+            <li
+              key={item.id}
+              className="stage-progress__item"
+              data-active={activeSection === item.id ? "true" : undefined}
+            >
+              <a
+                className="stage-progress__link"
+                href={`#${item.id}`}
+                aria-current={
+                  activeSection === item.id ? "location" : undefined
+                }
+              >
+                <span className="stage-progress__number">0{index + 1}</span>
+                <span className="stage-progress__label">{item.label}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+
+      <main id="content" className="story-main">
         <section
           id="overview"
+          className="story-section story-section--opening"
           data-section="overview"
-          className="stage stage--overview"
         >
-          <div className="shell hero">
-            <div className="hero__layout">
-              <div className="hero__copy">
-                <SectionLabel
-                  label={siteContent.hero.label}
-                  className="hero__eyebrow js-hero-item"
-                />
-                <h1 className="hero__name js-hero-item">
-                  {siteContent.hero.name}
-                </h1>
-                <p className="hero__title js-hero-item">{siteContent.hero.title}</p>
-                <p className="hero__location js-hero-item">
-                  {siteContent.hero.location}
-                </p>
-                <div className="hero__summary js-hero-item">
-                  {siteContent.hero.summary.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
+          <div className="shell story-section__inner story-section__inner--opening">
+            <article className="opening-panel js-panel">
+              <p className="opening-panel__kicker">Overview</p>
+              <h1 className="opening-panel__name">{siteContent.opening.name}</h1>
+              <p className="opening-panel__title">{siteContent.opening.title}</p>
+              <p className="opening-panel__location">
+                {siteContent.opening.location}
+              </p>
 
-                <div className="js-hero-item">
-                  <ActionRow links={siteContent.hero.actions} />
-                </div>
-              </div>
-
-              <aside className="hero-proof-panel js-hero-item" aria-label="Key proof">
-                <p className="hero-proof-panel__label">At a glance</p>
-                <div className="hero-proof-panel__list">
-                  {siteContent.hero.proof.map((item) => (
-                    <article className="hero-proof-panel__item" key={item.headline}>
-                      <h3 className="hero-proof-panel__headline">{item.headline}</h3>
-                      <p className="hero-proof-panel__detail">{item.detail}</p>
-                    </article>
-                  ))}
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        <section id="scope" data-section="scope" className="stage stage--scope js-stage">
-          <div className="shell">
-            <div className="section-heading js-stage-reveal">
-              <SectionLabel
-                label={siteContent.scope.label}
-                className="section-heading__label"
-              />
-              <h2 className="section-heading__title">{siteContent.scope.heading}</h2>
-              <SectionIntro body={siteContent.scope.overview} />
-            </div>
-
-            <div className="scope-context js-stage-reveal" aria-label="Current context">
-              {siteContent.scope.context.map((item) => (
-                <span className="scope-context__item" key={item}>
-                  {item}
-                </span>
-              ))}
-            </div>
-
-            <div className="scope-layout">
-              <div className="scope-domains js-stage-reveal">
-                {siteContent.scope.domains.map((domain) => (
-                  <article className="scope-domains__item" key={domain.title}>
-                    <h3>{domain.title}</h3>
-                    <p>{domain.description}</p>
-                  </article>
+              <div className="opening-panel__summary">
+                {siteContent.opening.summary.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
 
-              <aside className="scope-results js-stage-reveal">
-                <p className="scope-results__label">Selected results</p>
-                <div className="scope-results__list">
-                  {siteContent.scope.results.map((result) => (
-                    <article className="scope-results__item" key={result.title}>
-                      <h3>{result.title}</h3>
-                      <p>{result.detail}</p>
-                    </article>
-                  ))}
-                </div>
-              </aside>
-            </div>
+              <InlineLinkRow links={siteContent.opening.links} />
+            </article>
+
+            <aside className="opening-proof js-panel">
+              <p className="opening-proof__kicker">At a glance</p>
+              <ProofCluster items={siteContent.opening.proof} />
+            </aside>
           </div>
         </section>
 
-        <section
-          id="experience"
-          data-section="experience"
-          className="stage stage--experience js-stage"
-        >
-          <div className="shell">
-            <div className="section-heading js-stage-reveal">
-              <SectionLabel
-                label={siteContent.experience.label}
-                className="section-heading__label"
-              />
-              <h2 className="section-heading__title">
-                {siteContent.experience.heading}
-              </h2>
-              <SectionIntro body={siteContent.experience.intro} />
-            </div>
-
-            <div className="experience-layout">
-              <div className="experience-nav js-stage-reveal">
-                {siteContent.experience.entries.map((entry, index) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    className="experience-nav__item"
-                    data-active={activeRole === entry.id}
-                    aria-pressed={activeRole === entry.id}
-                    onClick={() => setActiveRole(entry.id)}
-                  >
-                    <span className="experience-nav__index">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="experience-nav__text">
-                      <span className="experience-nav__label">{entry.navLabel}</span>
-                      <span className="experience-nav__dates">{entry.dates}</span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-
-              <article className="experience-detail js-stage-reveal" ref={detailRef}>
-                <p className="experience-detail__dates js-detail-item">
-                  {activeEntry.dates}
-                </p>
-                <h3 className="experience-detail__title js-detail-item">
-                  {activeEntry.title}
-                </h3>
-                <p className="experience-detail__organization js-detail-item">
-                  {activeEntry.organization}
-                </p>
-                <p className="experience-detail__summary js-detail-item">
-                  {activeEntry.summary}
-                </p>
-                {activeEntry.link ? (
-                  <p className="experience-detail__link js-detail-item">
-                    <a
-                      href={activeEntry.link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {activeEntry.link.label}
-                    </a>
-                  </p>
-                ) : null}
-
-                <div className="experience-detail__grid">
-                  <ul className="experience-detail__list js-detail-item">
-                    {activeEntry.responsibilities.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-
-                  <dl className="experience-detail__evidence js-detail-item">
-                    {activeEntry.evidence.map((item) => (
-                      <div key={item.label} className="experience-detail__evidence-item">
-                        <dt>{item.label}</dt>
-                        <dd>{item.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
+        {siteContent.atlasStages.map((stage) => (
+          <section
+            key={stage.id}
+            id={stage.id}
+            className={`story-section story-section--stage story-section--${stage.alignment}`}
+            data-section={stage.id}
+          >
+            <div className="shell story-section__inner story-section__inner--stage">
+              <article className={`stage-card stage-card--${stage.id} js-panel`}>
+                <p className="stage-card__kicker">{stage.kicker}</p>
+                <h2 className="stage-card__title">{stage.title}</h2>
+                <p className="stage-card__summary">{stage.summary}</p>
+                <ProofCluster items={stage.proof} className="proof-cluster--stage" />
               </article>
             </div>
-          </div>
-        </section>
-
-        <section
-          id="background"
-          data-section="background"
-          className="stage stage--background js-stage"
-        >
-          <div className="shell">
-            <div className="section-heading js-stage-reveal">
-              <SectionLabel
-                label={siteContent.background.label}
-                className="section-heading__label"
-              />
-              <h2 className="section-heading__title">
-                {siteContent.background.heading}
-              </h2>
-              <SectionIntro body={siteContent.background.intro} />
-            </div>
-
-            <div className="background-layout">
-              <div className="background-roles js-stage-reveal">
-                {siteContent.background.entries.map((entry) => (
-                  <article className="background-role" key={entry.title}>
-                    <div className="background-role__top">
-                      <h3>{entry.title}</h3>
-                      <p>{entry.dates}</p>
-                    </div>
-                    <p className="background-role__organization">
-                      {entry.organization}
-                    </p>
-                    <p className="background-role__summary">{entry.summary}</p>
-                  </article>
-                ))}
-              </div>
-
-              <aside className="background-aside js-stage-reveal">
-                {siteContent.background.portrait ? (
-                  <figure className="background-portrait">
-                    <img
-                      src={siteContent.background.portrait.src}
-                      alt={siteContent.background.portrait.alt}
-                      width={1200}
-                      height={1600}
-                    />
-                  </figure>
-                ) : null}
-
-                <div className="background-education">
-                  <p className="background-education__label">Education</p>
-                  <h3>{siteContent.background.education.degree}</h3>
-                  <p>{siteContent.background.education.organization}</p>
-                  <p>{siteContent.background.education.dates}</p>
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
+          </section>
+        ))}
 
         <section
           id="contact"
+          className="story-section story-section--closing"
           data-section="contact"
-          className="stage stage--contact js-stage"
         >
-          <div className="shell contact">
-            <div className="section-heading js-stage-reveal">
-              <SectionLabel
-                label={siteContent.contact.label}
-                className="section-heading__label"
+          <div className="shell story-section__inner story-section__inner--closing">
+            <article className="closing-panel js-panel">
+              <h2 className="closing-panel__title">{siteContent.closing.title}</h2>
+              <InlineLinkRow
+                links={siteContent.closing.links}
+                className="inline-links--closing"
               />
-              <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
-              <SectionIntro body={siteContent.contact.intro} />
-            </div>
-
-            <div className="contact__actions js-stage-reveal">
-              <ContactLinks links={siteContent.contact.links} />
-            </div>
+            </article>
           </div>
         </section>
       </main>
