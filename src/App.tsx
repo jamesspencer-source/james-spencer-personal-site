@@ -30,6 +30,8 @@ type SectionId =
   | "background"
   | "contact";
 
+type SceneMotionProfile = "teaser" | "steady" | "immersive";
+
 const navItems: Array<{ id: SectionId; label: string }> = [
   { id: "overview", label: "Overview" },
   { id: "scope", label: "Current Scope" },
@@ -111,7 +113,7 @@ function App() {
   const [activeSystemStage, setActiveSystemStage] = useState<OperatingStageId>(
     siteContent.systemsView.stages[0]?.id ?? "labs"
   );
-  const [systemProgress, setSystemProgress] = useState(0.28);
+  const [systemProgress, setSystemProgress] = useState(0.4);
   const [shouldLoadNarrativeScene, setShouldLoadNarrativeScene] =
     useState(true);
 
@@ -131,9 +133,8 @@ function App() {
   const activeCampusStage = useMemo(() => {
     switch (activeSection) {
       case "scope":
-        return "labs" as const;
       case "roles":
-        return activeRole?.sceneFocus ?? "labs";
+        return "labs" as const;
       case "system":
         return activeSystemStage;
       case "background":
@@ -143,24 +144,31 @@ function App() {
       default:
         return "opening" as const;
     }
-  }, [activeRole, activeSection, activeSystemStage]);
+  }, [activeSection, activeSystemStage]);
 
   const activeSceneProgress = useMemo(() => {
     switch (activeSection) {
       case "scope":
         return 0.46;
       case "roles":
-        return 0.6;
+        return 0.54;
       case "system":
-        return Math.max(0.22, systemProgress);
+        return Math.min(0.74, 0.42 + systemProgress * 0.28);
       case "background":
       case "contact":
         return 0.88;
       case "overview":
       default:
-        return 0.28;
+        return 0.22;
     }
   }, [activeSection, systemProgress]);
+
+  const sceneMotionProfile: SceneMotionProfile =
+    activeSection === "system"
+      ? "immersive"
+      : activeSection === "overview"
+        ? "teaser"
+        : "steady";
 
   useEffect(() => {
     document.title = siteContent.meta.title;
@@ -214,8 +222,8 @@ function App() {
         });
       },
       {
-        threshold: 0.42,
-        rootMargin: "-18% 0px -35% 0px"
+        threshold: 0,
+        rootMargin: "-49% 0px -49% 0px"
       }
     );
 
@@ -232,8 +240,8 @@ function App() {
         });
       },
       {
-        threshold: 0.45,
-        rootMargin: "-12% 0px -30% 0px"
+        threshold: 0,
+        rootMargin: "-44% 0px -44% 0px"
       }
     );
 
@@ -260,10 +268,13 @@ function App() {
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
-          start: "top 38%",
-          end: "bottom 42%",
-          onEnter: () => setActiveSection(section.id as SectionId),
-          onEnterBack: () => setActiveSection(section.id as SectionId)
+          start: "top center",
+          end: "bottom center",
+          onToggle: (self) => {
+            if (self.isActive) {
+              setActiveSection(section.id as SectionId);
+            }
+          }
         });
       });
 
@@ -292,14 +303,17 @@ function App() {
 
           ScrollTrigger.create({
             trigger: step,
-            start: "top 62%",
-            end: "bottom 38%",
-            onEnter: () => setActiveSystemStage(stageId),
-            onEnterBack: () => setActiveSystemStage(stageId),
+            start: "top 58%",
+            end: "bottom 42%",
+            onToggle: (self) => {
+              if (self.isActive) {
+                setActiveSystemStage(stageId);
+              }
+            },
             onUpdate: (self) => {
               if (self.isActive) {
                 setActiveSystemStage(stageId);
-                setSystemProgress(Math.max(0.18, self.progress));
+                setSystemProgress(self.progress);
               }
             }
           });
@@ -546,6 +560,7 @@ function App() {
                         activeStage={activeCampusStage}
                         reducedMotion={prefersReducedMotion}
                         stageProgress={activeSceneProgress}
+                        motionProfile={sceneMotionProfile}
                         variant={
                           activeSection === "overview" ? "overview" : "narrative"
                         }

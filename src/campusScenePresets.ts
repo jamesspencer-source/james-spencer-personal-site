@@ -111,9 +111,9 @@ export const campusScenePresets: Record<
       glow: 0.28
     },
     motion: {
-      drift: 0.06,
-      float: 0.08,
-      rotation: 0.04
+      drift: 0.04,
+      float: 0.05,
+      rotation: 0.03
     }
   },
   labs: {
@@ -125,18 +125,18 @@ export const campusScenePresets: Record<
       targetTravel: [0.04, -0.08, 0.02]
     },
     shell: {
-      split: 0.48,
-      aperture: 0.54,
-      cutDepth: 0.42,
-      lift: 0.14,
+      split: 0.56,
+      aperture: 0.62,
+      cutDepth: 0.48,
+      lift: 0.18,
       tilt: 0.12
     },
     layers: {
       core: 0.86,
       labs: 1,
-      program: 0.24,
-      network: 0.16,
-      conduits: 0.84,
+      program: 0.12,
+      network: 0.08,
+      conduits: 0.9,
       glass: 0.7
     },
     signal: {
@@ -163,33 +163,33 @@ export const campusScenePresets: Record<
       glow: 0.34
     },
     motion: {
-      drift: 0.05,
-      float: 0.08,
-      rotation: 0.12
+      drift: 0.04,
+      float: 0.05,
+      rotation: 0.08
     }
   },
   program: {
     camera: {
-      position: [0.34, 0.3, 8.78],
-      target: [0.18, -0.72, 0.26],
+      position: [0.18, 0.18, 8.52],
+      target: [0.16, -0.88, 0.3],
       fov: 24,
-      travel: [-0.14, -0.38, -0.72],
-      targetTravel: [0.02, -0.22, 0.06]
+      travel: [-0.08, -0.26, -0.54],
+      targetTravel: [0.02, -0.16, 0.06]
     },
     shell: {
-      split: 0.68,
-      aperture: 0.84,
-      cutDepth: 0.78,
+      split: 0.8,
+      aperture: 0.92,
+      cutDepth: 0.9,
       lift: 0.08,
       tilt: -0.08
     },
     layers: {
-      core: 0.72,
-      labs: 0.22,
+      core: 0.68,
+      labs: 0.08,
       program: 1,
-      network: 0.18,
-      conduits: 0.66,
-      glass: 0.86
+      network: 0.1,
+      conduits: 0.58,
+      glass: 0.92
     },
     signal: {
       density: 0.82,
@@ -215,33 +215,33 @@ export const campusScenePresets: Record<
       glow: 0.42
     },
     motion: {
-      drift: 0.06,
-      float: 0.08,
-      rotation: -0.08
+      drift: 0.05,
+      float: 0.06,
+      rotation: -0.06
     }
   },
   network: {
     camera: {
-      position: [-0.44, 2.68, 10.62],
-      target: [0.18, 2.18, 0.16],
+      position: [-0.18, 2.86, 10.88],
+      target: [0.16, 2.36, 0.14],
       fov: 24,
-      travel: [-0.32, 0.28, 0.64],
-      targetTravel: [0.1, 0.28, 0]
+      travel: [-0.2, 0.16, 0.48],
+      targetTravel: [0.08, 0.22, 0]
     },
     shell: {
-      split: 0.42,
-      aperture: 0.38,
-      cutDepth: 0.28,
-      lift: 0.92,
+      split: 0.3,
+      aperture: 0.28,
+      cutDepth: 0.18,
+      lift: 1.12,
       tilt: 0.2
     },
     layers: {
-      core: 0.62,
-      labs: 0.16,
-      program: 0.2,
+      core: 0.58,
+      labs: 0.08,
+      program: 0.12,
       network: 1,
-      conduits: 0.74,
-      glass: 0.48
+      conduits: 0.62,
+      glass: 0.4
     },
     signal: {
       density: 0.62,
@@ -267,9 +267,9 @@ export const campusScenePresets: Record<
       glow: 0.46
     },
     motion: {
-      drift: 0.07,
-      float: 0.1,
-      rotation: 0.08
+      drift: 0.05,
+      float: 0.07,
+      rotation: 0.06
     }
   },
   closing: {
@@ -320,7 +320,7 @@ export const campusScenePresets: Record<
     },
     motion: {
       drift: 0.04,
-      float: 0.06,
+      float: 0.05,
       rotation: 0.02
     }
   }

@@ -17,6 +17,7 @@ import {
 
 type ViewportTier = "mobile" | "tablet" | "desktop";
 type SceneVariant = "overview" | "narrative";
+type MotionProfile = "teaser" | "steady" | "immersive";
 
 export type AtlasSceneProps = {
   activeStage: CampusSceneStateId;
@@ -24,6 +25,7 @@ export type AtlasSceneProps = {
   stageProgress?: number;
   variant?: SceneVariant;
   paused?: boolean;
+  motionProfile?: MotionProfile;
 };
 
 type MaterialSurface = THREE.Material & {
@@ -183,7 +185,7 @@ function pulseNodes(
     const cycle = reducedMotion
       ? 0.72
       : 0.58 + Math.sin(time * 2.4 + index * 0.5) * 0.42;
-    const scale = 1 + focus * 0.18 * cycle;
+    const scale = 1 + focus * 0.12 * cycle;
 
     node.scale.setScalar(scale);
 
@@ -192,7 +194,7 @@ function pulseNodes(
     }
 
     if (typeof material.emissiveIntensity === "number") {
-      material.emissiveIntensity = 0.26 + focus * 0.82 * cycle;
+      material.emissiveIntensity = 0.24 + focus * 0.68 * cycle;
     }
   });
 }
@@ -331,7 +333,8 @@ function SceneDirector({
   tier,
   variant,
   reducedMotion,
-  paused
+  paused,
+  motionProfile
 }: {
   activeStage: CampusSceneStateId;
   stageProgress: number;
@@ -339,6 +342,7 @@ function SceneDirector({
   variant: SceneVariant;
   reducedMotion: boolean;
   paused: boolean;
+  motionProfile: MotionProfile;
 }) {
   const { camera } = useThree();
   const lookTarget = useRef(new THREE.Vector3());
@@ -352,6 +356,14 @@ function SceneDirector({
       variant === "overview"
         ? 0.26
         : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.94);
+    const motionScale =
+      reducedMotion || paused
+        ? 0
+        : motionProfile === "immersive"
+          ? 1
+          : motionProfile === "steady"
+            ? 0.42
+            : 0.24;
 
     const basePosition = addScaledVector(
       preset.camera.position,
@@ -380,13 +392,13 @@ function SceneDirector({
         : new THREE.Vector3(0.08, 0.02, 0)
     );
 
-    if (!reducedMotion && !paused) {
+    if (motionScale > 0) {
       const drift = preset.motion.drift;
       const time = state.clock.getElapsedTime();
 
-      desiredPosition.current.x += Math.sin(time * 0.22) * drift * 0.42;
-      desiredPosition.current.y += Math.cos(time * 0.18) * drift * 0.28;
-      lookTarget.current.y += Math.sin(time * 0.12) * drift * 0.12;
+      desiredPosition.current.x += Math.sin(time * 0.22) * drift * 0.42 * motionScale;
+      desiredPosition.current.y += Math.cos(time * 0.18) * drift * 0.28 * motionScale;
+      lookTarget.current.y += Math.sin(time * 0.12) * drift * 0.12 * motionScale;
     }
 
     dampVector(perspectiveCamera.position, desiredPosition.current, 4.8, delta);
@@ -406,11 +418,13 @@ function SceneDirector({
 function Atmospherics({
   reducedMotion,
   paused,
-  tier
+  tier,
+  motionProfile
 }: {
   reducedMotion: boolean;
   paused: boolean;
   tier: ViewportTier;
+  motionProfile: MotionProfile;
 }) {
   const groupRef = useRef<THREE.Group>(null);
   const count = tier === "mobile" ? 12 : tier === "tablet" ? 18 : 26;
@@ -432,14 +446,16 @@ function Atmospherics({
       return;
     }
 
+    const motionScale =
+      motionProfile === "immersive" ? 1 : motionProfile === "steady" ? 0.38 : 0.22;
     const time = state.clock.getElapsedTime();
     groupRef.current.rotation.y = dampScalar(
       groupRef.current.rotation.y,
-      Math.sin(time * 0.08) * 0.12,
+      Math.sin(time * 0.08) * 0.12 * motionScale,
       3,
       delta
     );
-    groupRef.current.position.y = Math.sin(time * 0.18) * 0.08;
+    groupRef.current.position.y = Math.sin(time * 0.18) * 0.08 * motionScale;
   });
 
   return (
@@ -472,7 +488,8 @@ function CampusAsset({
   tier,
   variant,
   reducedMotion,
-  paused
+  paused,
+  motionProfile
 }: {
   activeStage: CampusSceneStateId;
   stageProgress: number;
@@ -480,6 +497,7 @@ function CampusAsset({
   variant: SceneVariant;
   reducedMotion: boolean;
   paused: boolean;
+  motionProfile: MotionProfile;
 }) {
   const gltf = useGLTF(CAMPUS_GLB_URL) as { scene: THREE.Group };
   const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
@@ -623,7 +641,15 @@ function CampusAsset({
         ? 0.26
         : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.96);
     const time = state.clock.getElapsedTime();
-    const dynamicTime = reducedMotion || paused ? 0 : time;
+    const motionScale =
+      reducedMotion || paused
+        ? 0
+        : motionProfile === "immersive"
+          ? 1
+          : motionProfile === "steady"
+            ? 0.48
+            : 0.3;
+    const dynamicTime = motionScale === 0 ? 0 : time * motionScale;
 
     const root = rootRef.current;
     if (!root) {
@@ -634,22 +660,53 @@ function CampusAsset({
       variant === "overview"
         ? viewport.overviewScale
         : viewport.narrativeScale;
+    const stageScaleFactor =
+      variant === "overview"
+        ? 1
+        : activeStage === "program"
+          ? 1.08
+          : activeStage === "network"
+            ? 1.05
+            : activeStage === "labs"
+              ? 1.02
+              : 0.98;
     const targetScale = new THREE.Vector3(
       baseScale,
       baseScale,
       baseScale
-    ).multiplyScalar(activeStage === "network" ? 1.06 : 1);
+    ).multiplyScalar(stageScaleFactor);
 
     const targetPosition =
       variant === "overview"
         ? new THREE.Vector3(1.86, -0.82, 0)
-        : new THREE.Vector3(0.42, -0.74, 0);
+        : activeStage === "program"
+          ? new THREE.Vector3(0.16, -0.98, 0.12)
+          : activeStage === "network"
+            ? new THREE.Vector3(0.58, -0.56, -0.04)
+            : activeStage === "closing"
+              ? new THREE.Vector3(0.3, -0.78, 0)
+              : new THREE.Vector3(0.42, -0.68, 0.04);
 
     const targetRotation = new THREE.Euler(
-      -0.16 + Math.sin(dynamicTime * 0.16) * preset.motion.float * 0.04,
+      (variant === "overview"
+        ? -0.16
+        : activeStage === "program"
+          ? -0.08
+          : activeStage === "network"
+            ? -0.18
+            : activeStage === "closing"
+              ? -0.12
+              : -0.14) +
+        Math.sin(dynamicTime * 0.16) * preset.motion.float * 0.04,
       variant === "overview"
         ? -0.98 + preset.motion.rotation * 0.05
-        : -0.42 + preset.motion.rotation * 0.08,
+        : activeStage === "program"
+          ? -0.24 + preset.motion.rotation * 0.08
+          : activeStage === "network"
+            ? -0.58 + preset.motion.rotation * 0.08
+            : activeStage === "closing"
+              ? -0.42 + preset.motion.rotation * 0.06
+              : -0.36 + preset.motion.rotation * 0.08,
       0.02
     );
 
@@ -704,25 +761,25 @@ function CampusAsset({
       dampVector(
         labsRef.current.position,
         new THREE.Vector3(
-          -0.14 + emphasis * 0.48,
-          0.24 + emphasis * 0.34,
-          0.12 + emphasis * 0.54
+          -0.22 + emphasis * 0.68,
+          0.18 + emphasis * 0.46,
+          -0.04 + emphasis * 0.98
         ),
         5,
         delta
       );
       dampEuler(
         labsRef.current.rotation,
-        new THREE.Euler(0.04, -0.08 + emphasis * 0.16, 0.02),
+        new THREE.Euler(0.04, -0.12 + emphasis * 0.22, 0.02),
         5,
         delta
       );
       dampVector(
         labsRef.current.scale,
         new THREE.Vector3(
-          0.92 + emphasis * 0.18,
-          0.92 + emphasis * 0.18,
-          0.92 + emphasis * 0.18
+          0.74 + emphasis * 0.34,
+          0.74 + emphasis * 0.34,
+          0.74 + emphasis * 0.34
         ),
         5,
         delta
@@ -734,25 +791,25 @@ function CampusAsset({
       dampVector(
         programRef.current.position,
         new THREE.Vector3(
-          0.14 + emphasis * 0.22,
-          -0.22 - emphasis * 0.74,
-          0.18 + emphasis * 0.62
+          0.08 + emphasis * 0.3,
+          -0.08 - emphasis * 1.02,
+          0.04 + emphasis * 0.98
         ),
         5,
         delta
       );
       dampEuler(
         programRef.current.rotation,
-        new THREE.Euler(0.08, -0.14 + emphasis * 0.18, 0.06),
+        new THREE.Euler(0.1, -0.16 + emphasis * 0.24, 0.08),
         5,
         delta
       );
       dampVector(
         programRef.current.scale,
         new THREE.Vector3(
-          0.9 + emphasis * 0.22,
-          0.9 + emphasis * 0.22,
-          0.9 + emphasis * 0.22
+          0.68 + emphasis * 0.42,
+          0.68 + emphasis * 0.42,
+          0.68 + emphasis * 0.42
         ),
         5,
         delta
@@ -764,9 +821,9 @@ function CampusAsset({
       dampVector(
         networkRef.current.position,
         new THREE.Vector3(
-          0.12 + emphasis * 0.22,
-          0.42 + preset.shell.lift * 1.02,
-          0.08 + emphasis * 0.18
+          0.08 + emphasis * 0.34,
+          0.18 + preset.shell.lift * 1.14 + emphasis * 0.12,
+          -0.02 + emphasis * 0.24
         ),
         5,
         delta
@@ -775,8 +832,8 @@ function CampusAsset({
         networkRef.current.rotation,
         new THREE.Euler(
           0.04,
-          0.08 + emphasis * 0.14,
-          0.06 + emphasis * 0.1
+          0.04 + emphasis * 0.18,
+          0.04 + emphasis * 0.14
         ),
         5,
         delta
@@ -784,9 +841,9 @@ function CampusAsset({
       dampVector(
         networkRef.current.scale,
         new THREE.Vector3(
-          0.9 + emphasis * 0.28,
-          0.9 + emphasis * 0.28,
-          0.9 + emphasis * 0.28
+          0.72 + emphasis * 0.44,
+          0.72 + emphasis * 0.44,
+          0.72 + emphasis * 0.44
         ),
         5,
         delta
@@ -1074,7 +1131,8 @@ function SceneContent({
   stageProgress,
   variant,
   paused,
-  tier
+  tier,
+  motionProfile
 }: {
   activeStage: CampusSceneStateId;
   reducedMotion: boolean;
@@ -1082,6 +1140,7 @@ function SceneContent({
   variant: SceneVariant;
   paused: boolean;
   tier: ViewportTier;
+  motionProfile: MotionProfile;
 }) {
   const preset = campusScenePresets[activeStage];
   const fogNear =
@@ -1104,8 +1163,14 @@ function SceneContent({
         variant={variant}
         reducedMotion={reducedMotion}
         paused={paused}
+        motionProfile={motionProfile}
       />
-      <Atmospherics reducedMotion={reducedMotion} paused={paused} tier={tier} />
+      <Atmospherics
+        reducedMotion={reducedMotion}
+        paused={paused}
+        tier={tier}
+        motionProfile={motionProfile}
+      />
       <CampusAsset
         activeStage={activeStage}
         stageProgress={stageProgress}
@@ -1113,6 +1178,7 @@ function SceneContent({
         variant={variant}
         reducedMotion={reducedMotion}
         paused={paused}
+        motionProfile={motionProfile}
       />
     </>
   );
@@ -1123,7 +1189,8 @@ export const AtlasScene = memo(function AtlasScene({
   reducedMotion = false,
   stageProgress = 0.5,
   variant = "narrative",
-  paused = false
+  paused = false,
+  motionProfile = "steady"
 }: AtlasSceneProps) {
   const tier = useViewportTier();
   const hasWebGL = useWebGLSupport();
@@ -1148,6 +1215,7 @@ export const AtlasScene = memo(function AtlasScene({
             variant={variant}
             paused={paused}
             tier={tier}
+            motionProfile={motionProfile}
           />
         </Suspense>
       </Canvas>
