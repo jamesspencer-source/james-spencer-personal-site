@@ -286,24 +286,24 @@ function SceneLighting({
 
   return (
     <>
-      <ambientLight ref={ambientRef} color="#ebe7db" intensity={0.54} />
+      <ambientLight ref={ambientRef} color="#f1eee4" intensity={0.66} />
       <directionalLight
         ref={keyRef}
         position={[7.2, 8.6, 9.2]}
         color="#f8f3e8"
-        intensity={1.9}
+        intensity={2.08}
       />
       <directionalLight
         ref={fillRef}
         position={[-5.4, 3.4, 5.8]}
-        color="#a9c8ba"
-        intensity={0.78}
+        color="#bfd4ca"
+        intensity={0.92}
       />
       <pointLight
         ref={rimRef}
         position={[-5.4, 7.8, -6.8]}
         color="#b4c8ff"
-        intensity={0.92}
+        intensity={1.02}
         distance={34}
         decay={2}
       />
@@ -319,7 +319,7 @@ function SceneLighting({
         ref={hazeRef}
         position={[0, 2.4, 1.6]}
         color="#e1ebb2"
-        intensity={0.56}
+        intensity={0.62}
         distance={20}
         decay={2}
       />
@@ -378,8 +378,8 @@ function SceneDirector({
 
     const variantOffset =
       variant === "overview"
-        ? new THREE.Vector3(1.72, 0.14, -1.96)
-        : new THREE.Vector3(0.02, 0.1, 0.24);
+        ? new THREE.Vector3(1.1, 0.22, -1.26)
+        : new THREE.Vector3(0.06, 0.08, 0.18);
 
     desiredPosition.current.copy(basePosition);
     desiredPosition.current.add(vec3(tierOffset));
@@ -388,8 +388,8 @@ function SceneDirector({
     lookTarget.current.copy(baseTarget);
     lookTarget.current.add(
       variant === "overview"
-        ? new THREE.Vector3(1.02, 0.16, -0.06)
-        : new THREE.Vector3(0.08, 0.02, 0)
+        ? new THREE.Vector3(0.7, 0.18, 0.02)
+        : new THREE.Vector3(0.06, 0.04, 0.02)
     );
 
     if (motionScale > 0) {
@@ -404,7 +404,7 @@ function SceneDirector({
     dampVector(perspectiveCamera.position, desiredPosition.current, 4.8, delta);
     perspectiveCamera.fov = dampScalar(
       perspectiveCamera.fov,
-      preset.camera.fov + (variant === "overview" ? -1.2 : 0.4),
+      preset.camera.fov + (variant === "overview" ? -0.4 : 0.2),
       5.2,
       delta
     );
@@ -427,16 +427,16 @@ function Atmospherics({
   motionProfile: MotionProfile;
 }) {
   const groupRef = useRef<THREE.Group>(null);
-  const count = tier === "mobile" ? 12 : tier === "tablet" ? 18 : 26;
+  const count = tier === "mobile" ? 6 : tier === "tablet" ? 8 : 12;
 
   const positions = useMemo(() => {
     const values = new Float32Array(count * 3);
     for (let i = 0; i < count; i += 1) {
       const angle = (i / count) * Math.PI * 2;
-      const radius = 2.8 + (i % 5) * 0.34;
-      values[i * 3 + 0] = Math.cos(angle) * radius * 0.82;
-      values[i * 3 + 1] = -1.4 + (i % 7) * 0.68;
-      values[i * 3 + 2] = -0.8 + ((i * 13) % 9) * 0.32;
+      const radius = 3.6 + (i % 4) * 0.48;
+      values[i * 3 + 0] = Math.cos(angle) * radius * 0.92;
+      values[i * 3 + 1] = -1.9 + (i % 6) * 0.82;
+      values[i * 3 + 2] = -1.4 + ((i * 11) % 7) * 0.42;
     }
     return values;
   }, [count]);
@@ -471,10 +471,10 @@ function Atmospherics({
         </bufferGeometry>
         <pointsMaterial
           color="#dde6dd"
-          size={tier === "mobile" ? 0.03 : 0.04}
+          size={tier === "mobile" ? 0.024 : 0.032}
           sizeAttenuation
           transparent
-          opacity={0.16}
+          opacity={0.08}
           depthWrite={false}
         />
       </points>
@@ -678,35 +678,35 @@ function CampusAsset({
 
     const targetPosition =
       variant === "overview"
-        ? new THREE.Vector3(1.86, -0.82, 0)
+        ? new THREE.Vector3(1.22, -0.48, 0.02)
         : activeStage === "program"
-          ? new THREE.Vector3(0.16, -0.98, 0.12)
+          ? new THREE.Vector3(0.34, -0.9, 0.12)
           : activeStage === "network"
-            ? new THREE.Vector3(0.58, -0.56, -0.04)
+            ? new THREE.Vector3(0.5, -0.34, -0.02)
             : activeStage === "closing"
-              ? new THREE.Vector3(0.3, -0.78, 0)
-              : new THREE.Vector3(0.42, -0.68, 0.04);
+              ? new THREE.Vector3(0.22, -0.56, 0)
+              : new THREE.Vector3(0.26, -0.46, 0.06);
 
     const targetRotation = new THREE.Euler(
       (variant === "overview"
-        ? -0.16
+        ? -0.12
         : activeStage === "program"
-          ? -0.08
+          ? -0.04
           : activeStage === "network"
-            ? -0.18
+            ? -0.14
             : activeStage === "closing"
-              ? -0.12
-              : -0.14) +
+              ? -0.1
+              : -0.16) +
         Math.sin(dynamicTime * 0.16) * preset.motion.float * 0.04,
       variant === "overview"
-        ? -0.98 + preset.motion.rotation * 0.05
+        ? -0.74 + preset.motion.rotation * 0.05
         : activeStage === "program"
-          ? -0.24 + preset.motion.rotation * 0.08
+          ? -0.18 + preset.motion.rotation * 0.08
           : activeStage === "network"
-            ? -0.58 + preset.motion.rotation * 0.08
+            ? -0.52 + preset.motion.rotation * 0.08
             : activeStage === "closing"
-              ? -0.42 + preset.motion.rotation * 0.06
-              : -0.36 + preset.motion.rotation * 0.08,
+              ? -0.34 + preset.motion.rotation * 0.06
+              : -0.42 + preset.motion.rotation * 0.08,
       0.02
     );
 
@@ -905,17 +905,17 @@ function CampusAsset({
       if (material.color) {
         material.color.lerp(
           activeStage === "closing"
-            ? new THREE.Color("#1c2327")
+            ? new THREE.Color("#2f3a3f")
             : activeStage === "opening"
-              ? new THREE.Color("#232b2f")
-              : new THREE.Color("#2a3337"),
+              ? new THREE.Color("#3d4a50")
+              : new THREE.Color("#49575e"),
           0.04
         );
       }
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
           material.roughness,
-          0.56 - preset.shell.aperture * 0.08,
+          0.62 - preset.shell.aperture * 0.06,
           5,
           delta
         );
@@ -923,7 +923,7 @@ function CampusAsset({
       if (typeof material.metalness === "number") {
         material.metalness = dampScalar(
           material.metalness,
-          0.48 + preset.layers.core * 0.08,
+          0.22 + preset.layers.core * 0.04,
           5,
           delta
         );
@@ -931,7 +931,7 @@ function CampusAsset({
       if (typeof material.emissiveIntensity === "number") {
         material.emissiveIntensity = dampScalar(
           material.emissiveIntensity,
-          0.12 + preset.lighting.accent * 0.16 + reveal * 0.08,
+          0.06 + preset.lighting.accent * 0.08 + reveal * 0.04,
           5,
           delta
         );
@@ -942,15 +942,15 @@ function CampusAsset({
       if (material.color) {
         material.color.lerp(
           activeStage === "network"
-            ? new THREE.Color("#404b4f")
-            : new THREE.Color("#384247"),
+            ? new THREE.Color("#5b6a71")
+            : new THREE.Color("#55626a"),
           0.04
         );
       }
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
           material.roughness,
-          0.38,
+          0.44,
           5,
           delta
         );
@@ -958,7 +958,7 @@ function CampusAsset({
       if (typeof material.metalness === "number") {
         material.metalness = dampScalar(
           material.metalness,
-          0.78,
+          0.68,
           5,
           delta
         );
@@ -969,7 +969,7 @@ function CampusAsset({
       if (typeof material.opacity === "number") {
         material.opacity = dampScalar(
           material.opacity,
-          0.42 + preset.layers.glass * 0.22 + reveal * 0.05,
+          0.44 + preset.layers.glass * 0.16 + reveal * 0.03,
           5,
           delta
         );
@@ -977,7 +977,7 @@ function CampusAsset({
       if (typeof material.transmission === "number") {
         material.transmission = dampScalar(
           material.transmission,
-          0.3 + preset.layers.glass * 0.2,
+          0.22 + preset.layers.glass * 0.1,
           5,
           delta
         );
@@ -985,7 +985,7 @@ function CampusAsset({
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
           material.roughness,
-          0.14 + (1 - preset.layers.glass) * 0.08,
+          0.18 + (1 - preset.layers.glass) * 0.08,
           5,
           delta
         );
@@ -993,7 +993,7 @@ function CampusAsset({
       if (typeof material.emissiveIntensity === "number") {
         material.emissiveIntensity = dampScalar(
           material.emissiveIntensity,
-          0.04 + preset.signal.program * 0.06,
+          0.02 + preset.signal.program * 0.04,
           5,
           delta
         );

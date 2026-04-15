@@ -240,19 +240,19 @@ button {
   pointer-events: none;
   border-radius: 1.2rem;
   background:
-    radial-gradient(circle at 72% 18%, rgba(144, 184, 255, 0.18), transparent 28rem),
-    radial-gradient(circle at 68% 46%, rgba(255, 255, 255, 0.07), transparent 24rem),
-    radial-gradient(circle at 20% 16%, rgba(107, 197, 155, 0.1), transparent 26rem),
+    radial-gradient(circle at 72% 18%, rgba(144, 184, 255, 0.22), transparent 28rem),
+    radial-gradient(circle at 66% 44%, rgba(255, 255, 255, 0.12), transparent 24rem),
+    radial-gradient(circle at 20% 16%, rgba(107, 197, 155, 0.14), transparent 26rem),
     linear-gradient(
       180deg,
-      rgba(21, 29, 33, 0.96) 0%,
-      rgba(17, 24, 28, 0.92) 42%,
-      rgba(12, 18, 21, 0.78) 76%,
+      rgba(28, 36, 40, 0.96) 0%,
+      rgba(22, 30, 34, 0.92) 42%,
+      rgba(15, 21, 24, 0.78) 76%,
       rgba(7, 10, 12, 0.2) 100%
     );
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 32px 90px rgba(0, 0, 0, 0.18);
+    0 24px 72px rgba(0, 0, 0, 0.14);
 }
 
 .core-narrative::after {
@@ -297,7 +297,7 @@ button {
   min-height: calc(100vh - var(--header-offset) - 1.1rem);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   padding: 1rem 0 1.4rem;
 }
 
@@ -452,10 +452,10 @@ button {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 68% 22%, rgba(107, 197, 155, 0.14), transparent 22rem),
-    radial-gradient(circle at 28% 62%, rgba(144, 184, 255, 0.12), transparent 24rem),
-    radial-gradient(circle at 54% 54%, rgba(255, 255, 255, 0.06), transparent 20rem),
-    linear-gradient(180deg, rgba(24, 31, 35, 0.96), rgba(12, 17, 20, 0.96));
+    radial-gradient(circle at 62% 28%, rgba(107, 197, 155, 0.12), transparent 20rem),
+    radial-gradient(circle at 38% 58%, rgba(144, 184, 255, 0.12), transparent 22rem),
+    radial-gradient(circle at 54% 48%, rgba(255, 255, 255, 0.08), transparent 24rem),
+    linear-gradient(180deg, rgba(28, 35, 39, 0.88), rgba(16, 21, 24, 0.5));
   isolation: isolate;
 }
 
@@ -533,16 +533,16 @@ button {
 }
 
 .scene-frame--campus {
-  width: min(100%, 50rem);
-  min-height: clamp(34rem, 76vh, 59rem);
-  margin: -1.5rem -8vw -1rem -1rem;
+  width: min(100%, 58rem);
+  min-height: clamp(38rem, 78vh, 62rem);
+  margin: -0.7rem -7vw -0.2rem 0;
   overflow: visible;
   background:
-    radial-gradient(circle at 62% 30%, rgba(107, 197, 155, 0.24), transparent 18rem),
-    radial-gradient(circle at 68% 16%, rgba(144, 184, 255, 0.24), transparent 20rem),
-    radial-gradient(circle at 42% 66%, rgba(216, 234, 140, 0.12), transparent 14rem),
-    radial-gradient(circle at 52% 48%, rgba(255, 255, 255, 0.1), transparent 24rem),
-    linear-gradient(180deg, rgba(23, 31, 35, 0.68), rgba(12, 18, 21, 0.12));
+    radial-gradient(circle at 64% 28%, rgba(107, 197, 155, 0.22), transparent 20rem),
+    radial-gradient(circle at 70% 18%, rgba(144, 184, 255, 0.22), transparent 22rem),
+    radial-gradient(circle at 44% 64%, rgba(216, 234, 140, 0.1), transparent 16rem),
+    radial-gradient(circle at 52% 48%, rgba(255, 255, 255, 0.16), transparent 24rem),
+    linear-gradient(180deg, rgba(44, 53, 58, 0.32), rgba(14, 19, 22, 0.02));
 }
 
 .scene-frame--campus::before,
@@ -552,16 +552,16 @@ button {
 
 .scene-frame--campus .atlas-scene,
 .scene-frame--campus .scene-frame__placeholder {
-  filter: drop-shadow(0 30px 92px rgba(0, 0, 0, 0.34));
+  filter: drop-shadow(0 22px 62px rgba(0, 0, 0, 0.22));
 }
 
 .scene-frame--campus-hero {
-  min-height: clamp(38rem, 82vh, 62rem);
+  min-height: clamp(40rem, 80vh, 64rem);
 }
 
 .scene-frame--campus-immersive {
-  min-height: clamp(42rem, 86vh, 66rem);
-  margin-right: -10vw;
+  min-height: clamp(42rem, 84vh, 64rem);
+  margin-right: -7vw;
 }
 
 .scope-section {
@@ -1352,44 +1352,50 @@ button {
 
   .core-narrative__shell {
     gap: 0;
+    position: relative;
+  }
+
+  .core-content,
+  .core-scene {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .core-content {
+    padding-top: clamp(25rem, 42vh, 33rem);
   }
 
   .core-scene {
-    order: -1;
-    position: sticky;
-    align-self: auto;
-    min-height: auto;
-    top: calc(var(--header-offset) + 0.25rem);
-    z-index: 4;
-    margin: 0 -0.4rem 0.75rem;
-    padding: 0.35rem 0 0.95rem;
-    background: linear-gradient(
-      180deg,
-      rgba(19, 27, 31, 0.96) 0%,
-      rgba(19, 27, 31, 0.76) 70%,
-      rgba(19, 27, 31, 0) 100%
-    );
-    backdrop-filter: blur(10px);
+    order: initial;
+    position: relative;
+    align-self: stretch;
+    min-height: 100%;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    background: none;
+    backdrop-filter: none;
   }
 
   .core-scene__sticky {
-    position: relative;
-    top: auto;
-    min-height: auto;
+    position: sticky;
+    top: calc(var(--header-offset) + 0.25rem);
+    min-height: clamp(25rem, 42vh, 33rem);
     justify-content: center;
-    padding: 0;
+    padding: 0 0 0.95rem;
   }
 
   .scene-frame--campus,
   .scene-frame--campus-hero,
   .scene-frame--campus-immersive {
     width: 100%;
-    min-height: clamp(24rem, 40vh, 31rem);
+    min-height: clamp(25rem, 42vh, 33rem);
     margin: 0;
   }
 
   .hero-section {
     min-height: auto;
+    padding-top: 1.4rem;
   }
 
   .system-shell {
@@ -1429,7 +1435,7 @@ button {
   }
 
   .hero-section {
-    padding-top: 4.8rem;
+    padding-top: 1rem;
   }
 
   .hero-copy {
@@ -1466,7 +1472,7 @@ button {
   .scene-frame--campus,
   .scene-frame--campus-hero,
   .scene-frame--campus-immersive {
-    min-height: clamp(18rem, 32vh, 22rem);
+    min-height: clamp(19rem, 34vh, 23rem);
     margin: 0;
   }
 

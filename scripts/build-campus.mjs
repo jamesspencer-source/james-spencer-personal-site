@@ -666,50 +666,50 @@ function addMesh(group, mesh, position = [0, 0, 0], rotation = [0, 0, 0]) {
 function createMaterials(textures) {
   const shellMaterial = new THREE.MeshPhysicalMaterial({
     name: 'campus-shell-material',
-    color: new THREE.Color('#181c20'),
-    roughness: 0.76,
-    metalness: 0.52,
-    clearcoat: 0.08,
-    clearcoatRoughness: 0.88,
+    color: new THREE.Color('#273036'),
+    roughness: 0.72,
+    metalness: 0.3,
+    clearcoat: 0.03,
+    clearcoatRoughness: 0.92,
     aoMap: textures.ao.dataTexture,
     roughnessMap: textures.roughness.dataTexture,
     normalMap: textures.normal.dataTexture,
-    normalScale: new THREE.Vector2(0.52, 0.52),
-    emissive: new THREE.Color('#334c44'),
+    normalScale: new THREE.Vector2(0.38, 0.38),
+    emissive: new THREE.Color('#2b4a42'),
     emissiveMap: textures.emissive.dataTexture,
-    emissiveIntensity: 0.18,
+    emissiveIntensity: 0.12,
   });
 
   const structureMaterial = new THREE.MeshStandardMaterial({
     name: 'campus-structure-material',
-    color: new THREE.Color('#242b30'),
-    roughness: 0.46,
-    metalness: 0.84,
+    color: new THREE.Color('#394249'),
+    roughness: 0.4,
+    metalness: 0.76,
     aoMap: textures.ao.dataTexture,
     roughnessMap: textures.roughness.dataTexture,
     normalMap: textures.normal.dataTexture,
-    normalScale: new THREE.Vector2(0.48, 0.48),
-    emissive: new THREE.Color('#16211e'),
-    emissiveIntensity: 0.04,
+    normalScale: new THREE.Vector2(0.42, 0.42),
+    emissive: new THREE.Color('#182520'),
+    emissiveIntensity: 0.03,
   });
 
   const glassMaterial = new THREE.MeshPhysicalMaterial({
     name: 'campus-glass-material',
-    color: new THREE.Color('#4b6158'),
-    roughness: 0.18,
+    color: new THREE.Color('#688076'),
+    roughness: 0.16,
     metalness: 0.06,
-    transmission: 0.58,
-    thickness: 0.26,
+    transmission: 0.48,
+    thickness: 0.24,
     ior: 1.34,
     transparent: true,
-    opacity: 0.8,
+    opacity: 0.78,
     aoMap: textures.ao.dataTexture,
     roughnessMap: textures.glassMask.dataTexture,
     normalMap: textures.normal.dataTexture,
-    normalScale: new THREE.Vector2(0.12, 0.12),
-    emissive: new THREE.Color('#243d36'),
+    normalScale: new THREE.Vector2(0.08, 0.08),
+    emissive: new THREE.Color('#284239'),
     emissiveMap: textures.emissive.dataTexture,
-    emissiveIntensity: 0.09,
+    emissiveIntensity: 0.06,
   });
 
   const signalMaterial = new THREE.MeshStandardMaterial({
@@ -724,7 +724,7 @@ function createMaterials(textures) {
 
   const accentMaterial = new THREE.MeshStandardMaterial({
     name: 'campus-accent-material',
-    color: new THREE.Color('#5f7a73'),
+    color: new THREE.Color('#74857b'),
     roughness: 0.38,
     metalness: 0.34,
     aoMap: textures.ao.dataTexture,
@@ -737,7 +737,7 @@ function createMaterials(textures) {
 
   const plinthMaterial = new THREE.MeshStandardMaterial({
     name: 'campus-plinth-material',
-    color: new THREE.Color('#0f1214'),
+    color: new THREE.Color('#111518'),
     roughness: 0.86,
     metalness: 0.24,
     aoMap: textures.ao.dataTexture,
@@ -760,12 +760,13 @@ function createPlinth(materials) {
   const group = new THREE.Group();
   group.name = 'plinth';
 
-  addMesh(group, boxMesh([8.8, 0.38, 5.2], materials.plinth, 'plinth-slab'), [0, -4.8, 0]);
-  addMesh(group, boxMesh([7.2, 0.12, 4.1], materials.structure, 'plinth-inset'), [0.14, -4.56, -0.1]);
-  addMesh(group, boxMesh([4.4, 0.1, 0.46], materials.structure, 'plinth-channel-a'), [-1.36, -4.4, 1.12], [0, 0.02, 0.02]);
-  addMesh(group, boxMesh([3.1, 0.1, 0.46], materials.structure, 'plinth-channel-b'), [1.72, -4.38, -1.16], [0, -0.06, -0.03]);
-  addMesh(group, boxMesh([1.2, 0.08, 0.18], materials.accent, 'plinth-marker-a'), [3.06, -4.28, 0.74], [0, 0.12, 0]);
-  addMesh(group, boxMesh([1.0, 0.08, 0.18], materials.accent, 'plinth-marker-b'), [-2.96, -4.26, -0.92], [0, -0.08, 0]);
+  addMesh(group, boxMesh([10.4, 0.42, 6.2], materials.plinth, 'plinth-slab'), [0, -4.92, 0]);
+  addMesh(group, boxMesh([8.8, 0.16, 4.96], materials.structure, 'plinth-inset'), [0.06, -4.62, -0.1]);
+  addMesh(group, boxMesh([3.8, 0.12, 0.52], materials.structure, 'plinth-channel-west'), [-2.08, -4.44, 1.42], [0, 0.06, 0.02]);
+  addMesh(group, boxMesh([3.2, 0.12, 0.48], materials.structure, 'plinth-channel-east'), [2.18, -4.42, -1.34], [0, -0.08, -0.02]);
+  addMesh(group, boxMesh([1.48, 0.1, 0.2], materials.accent, 'plinth-marker-west'), [-3.36, -4.3, 0.92], [0, -0.08, 0]);
+  addMesh(group, boxMesh([1.32, 0.1, 0.2], materials.accent, 'plinth-marker-east'), [3.28, -4.28, -0.62], [0, 0.12, 0]);
+  addMesh(group, boxMesh([2.6, 0.1, 0.26], materials.accent, 'plinth-marker-spine'), [-0.24, -4.32, 2.02], [0, 0.04, 0]);
 
   return group;
 }
@@ -774,70 +775,103 @@ function createCampusShell(materials) {
   const group = new THREE.Group();
   group.name = 'campus-shell';
 
-  const outerShape = createShape([
-    [-1.5, -3.56],
-    [-1.22, 4.62],
-    [-0.84, 5.76],
-    [-0.1, 6.4],
-    [0.52, 6.12],
-    [0.94, 5.26],
-    [1.18, 3.04],
-    [1.0, 0.12],
-    [1.16, -2.46],
-    [0.76, -3.54],
-    [0.02, -3.8],
-    [-0.82, -3.72],
+  const rearWallShape = createShape([
+    [-2.14, -3.66],
+    [-2.04, 4.64],
+    [-1.48, 5.72],
+    [-0.44, 6.18],
+    [0.52, 5.98],
+    [1.48, 5.18],
+    [2.32, 3.84],
+    [2.64, 1.88],
+    [2.48, -0.32],
+    [2.18, -2.12],
+    [1.48, -3.24],
+    [0.2, -3.74],
+    [-1.04, -3.88],
   ]);
-
-  const cavity = createShape([
-    [0.12, -0.96],
-    [0.78, -0.7],
-    [0.76, 3.88],
-    [0.48, 5.1],
-    [0.06, 5.4],
-    [-0.26, 4.44],
-    [-0.2, 0.26],
-  ]);
-  outerShape.holes.push(cavity);
-
-  const shell = extrudedMesh({
-    shape: outerShape,
-    depth: 2.5,
+  const rearWall = extrudedMesh({
+    shape: rearWallShape,
+    depth: 0.44,
     material: materials.shell,
-    name: 'campus-shell-main',
-    bevelSize: 0.09,
-    bevelThickness: 0.09,
+    name: 'campus-shell-rear-wall',
+    bevelSize: 0.05,
+    bevelThickness: 0.05,
     bevelSegments: 3,
   });
-  shell.geometry.center();
-  shell.position.set(0.18, 0.28, 0);
-  group.add(shell);
+  rearWall.geometry.center();
+  addMesh(group, rearWall, [0.34, 0.54, -1.14], [0.02, 0.05, 0]);
 
-  const cutFaceShape = createShape([
-    [-0.58, -2.86],
-    [-0.3, 4.88],
-    [0.08, 5.72],
-    [0.46, 5.5],
-    [0.64, 0.28],
-    [0.36, -2.98],
+  const cutPlaneShape = createShape([
+    [-1.14, -3.14],
+    [-0.92, 3.86],
+    [-0.6, 4.92],
+    [-0.12, 5.34],
+    [0.34, 5.08],
+    [0.68, 4.12],
+    [0.84, 2.18],
+    [0.88, -0.72],
+    [0.54, -2.86],
+    [0.04, -3.22],
+    [-0.68, -3.22],
   ]);
-  const cutFace = extrudedMesh({
-    shape: cutFaceShape,
-    depth: 0.18,
+  const cutPlane = extrudedMesh({
+    shape: cutPlaneShape,
+    depth: 0.16,
     material: materials.structure,
     name: 'campus-shell-cut-face',
+    bevelSize: 0.025,
+    bevelThickness: 0.025,
+  });
+  cutPlane.geometry.center();
+  addMesh(group, cutPlane, [0.82, 0.56, 1.06], [0.02, 0.12, 0.04]);
+
+  const sideBladeShape = createShape([
+    [-0.26, -2.9],
+    [0.58, -2.78],
+    [0.86, -1.32],
+    [0.9, 1.8],
+    [0.52, 3.86],
+    [-0.08, 4.96],
+    [-0.36, 4.62],
+    [-0.48, 2.72],
+    [-0.46, -0.74],
+  ]);
+  const sideBlade = extrudedMesh({
+    shape: sideBladeShape,
+    depth: 0.28,
+    material: materials.shell,
+    name: 'campus-shell-side-blade',
     bevelSize: 0.03,
     bevelThickness: 0.03,
+    bevelSegments: 2,
   });
-  cutFace.geometry.center();
-  cutFace.position.set(-0.18, 0.46, 1.16);
-  group.add(cutFace);
+  sideBlade.geometry.center();
+  addMesh(group, sideBlade, [2.08, 0.84, 0.32], [0.06, 0.18, -0.08]);
 
-  addMesh(group, boxMesh([1.48, 0.2, 0.22], materials.structure, 'campus-shell-access-a'), [-0.36, -2.98, 1.0], [0, 0.03, -0.06]);
-  addMesh(group, boxMesh([1.18, 0.16, 0.22], materials.structure, 'campus-shell-access-b'), [-0.24, -0.82, 1.02], [0, -0.04, 0.06]);
-  addMesh(group, boxMesh([1.04, 0.14, 0.2], materials.structure, 'campus-shell-access-c'), [-0.06, 1.38, 1.04], [0, 0.06, -0.04]);
-  addMesh(group, boxMesh([0.92, 0.12, 0.18], materials.accent, 'campus-shell-seam-plate'), [0.08, 4.52, 1.04], [0.04, -0.08, 0.04]);
-  addMesh(group, boxMesh([0.88, 0.12, 0.18], materials.accent, 'campus-shell-roof-marker'), [0.2, 5.72, 0.98], [0.04, 0.08, 0.04]);
+  const canopyShape = createShape([
+    [-0.96, -0.24],
+    [1.26, -0.32],
+    [1.58, -0.04],
+    [1.18, 0.26],
+    [-0.7, 0.34],
+    [-1.08, 0.06],
+  ]);
+  const canopy = extrudedMesh({
+    shape: canopyShape,
+    depth: 0.18,
+    material: materials.shell,
+    name: 'campus-shell-canopy',
+    bevelSize: 0.02,
+    bevelThickness: 0.02,
+  });
+  canopy.geometry.center();
+  addMesh(group, canopy, [1.72, 4.64, 0.18], [0.1, 0.14, -0.08]);
+
+  addMesh(group, boxMesh([2.12, 0.14, 0.18], materials.structure, 'campus-shell-access-west'), [-1.24, -2.76, 0.76], [0.02, 0.08, -0.04]);
+  addMesh(group, boxMesh([1.54, 0.12, 0.18], materials.structure, 'campus-shell-access-mid'), [0.18, 0.56, 0.82], [0.02, -0.06, 0.04]);
+  addMesh(group, boxMesh([1.12, 0.12, 0.18], materials.accent, 'campus-shell-access-east'), [1.86, 3.46, 0.88], [0.04, 0.12, 0.04]);
+  addMesh(group, boxMesh([0.94, 0.08, 0.2], materials.accent, 'campus-shell-roof-marker'), [0.34, 5.94, 0.72], [0.02, 0.06, 0.02]);
 
   return group;
 }
@@ -847,20 +881,21 @@ function createServiceSpine(materials) {
   group.name = 'service-spine';
 
   const spineShape = createShape([
-    [-0.48, -3.74],
-    [-0.32, 4.88],
-    [-0.08, 6.12],
-    [0.2, 6.48],
-    [0.48, 5.98],
-    [0.58, 4.2],
-    [0.62, -2.78],
-    [0.36, -3.6],
-    [-0.08, -3.8],
-    [-0.42, -3.74],
+    [-0.64, -3.82],
+    [-0.58, 4.62],
+    [-0.32, 5.84],
+    [0.16, 6.46],
+    [0.74, 6.02],
+    [0.98, 4.7],
+    [1.02, 1.76],
+    [0.86, -0.72],
+    [0.54, -2.76],
+    [0.06, -3.82],
+    [-0.38, -3.92],
   ]);
   const spine = extrudedMesh({
     shape: spineShape,
-    depth: 0.88,
+    depth: 1.12,
     material: materials.structure,
     name: 'service-spine-core',
     bevelSize: 0.04,
@@ -868,40 +903,40 @@ function createServiceSpine(materials) {
     bevelSegments: 3,
   });
   spine.geometry.center();
-  spine.position.set(0.06, 0.38, -0.12);
+  spine.position.set(0.02, 0.46, -0.24);
   group.add(spine);
 
-  const spineCap = boxMesh([0.92, 0.16, 0.34], materials.accent, 'service-spine-cap');
-  addMesh(group, spineCap, [0.12, 5.98, 0.1], [0.02, 0.02, 0.02]);
+  addMesh(group, boxMesh([1.18, 0.16, 0.34], materials.accent, 'service-spine-cap'), [0.18, 6.04, 0.22], [0.02, 0.02, 0.02]);
 
   const ribs = [
-    [-0.18, -2.8, -0.32, 0.72, 4.72, -0.32],
-    [-0.28, -1.02, -0.26, 0.66, 2.6, -0.16],
-    [-0.3, 0.92, -0.2, 0.68, 4.14, -0.08],
-    [-0.24, 3.12, -0.14, 0.72, 5.32, 0.02],
+    [-0.28, -2.76, -0.46, 0.98, 4.62, -0.4],
+    [-0.4, -1.12, -0.34, 0.9, 2.44, -0.18],
+    [-0.42, 0.84, -0.18, 0.92, 3.98, -0.04],
+    [-0.3, 2.86, -0.02, 0.98, 5.36, 0.12],
   ];
   ribs.forEach((coords, index) => {
     group.add(beamBetween(
       new THREE.Vector3(coords[0], coords[1], coords[2]),
       new THREE.Vector3(coords[3], coords[4], coords[5]),
-      0.08 - index * 0.01,
+      0.09 - index * 0.01,
       materials.structure,
       `service-spine-rib-${index}`,
     ));
   });
 
-  addMesh(group, boxMesh([0.72, 0.18, 0.2], materials.structure, 'service-spine-panel-a'), [-0.16, -2.72, 0.72], [0, 0.04, -0.05]);
-  addMesh(group, boxMesh([0.62, 0.16, 0.18], materials.structure, 'service-spine-panel-b'), [-0.1, -0.38, 0.76], [0, -0.02, 0.06]);
-  addMesh(group, boxMesh([0.56, 0.16, 0.18], materials.structure, 'service-spine-panel-c'), [0.0, 1.42, 0.78], [0, 0.06, -0.04]);
-  addMesh(group, boxMesh([0.54, 0.16, 0.18], materials.accent, 'service-spine-panel-d'), [0.08, 4.48, 0.8], [0.02, 0.02, 0.04]);
+  addMesh(group, boxMesh([0.92, 0.2, 0.24], materials.structure, 'service-spine-panel-a'), [-0.12, -2.72, 0.88], [0, 0.04, -0.05]);
+  addMesh(group, boxMesh([0.82, 0.18, 0.22], materials.structure, 'service-spine-panel-b'), [0.0, -0.28, 0.92], [0, -0.04, 0.06]);
+  addMesh(group, boxMesh([0.72, 0.18, 0.22], materials.structure, 'service-spine-panel-c'), [0.12, 1.94, 0.98], [0, 0.06, -0.04]);
+  addMesh(group, boxMesh([0.68, 0.18, 0.22], materials.accent, 'service-spine-panel-d'), [0.22, 4.52, 0.96], [0.02, 0.04, 0.04]);
 
   const serviceTrunks = [
-    [new THREE.Vector3(-0.02, 4.56, 0.58), new THREE.Vector3(-0.62, 3.72, 0.36)],
-    [new THREE.Vector3(0.0, 2.02, 0.58), new THREE.Vector3(-0.56, 1.26, 0.34)],
-    [new THREE.Vector3(0.08, -0.24, 0.56), new THREE.Vector3(-0.52, -0.98, 0.3)],
+    [new THREE.Vector3(0.22, 4.72, 0.86), new THREE.Vector3(-1.18, 3.74, 0.84)],
+    [new THREE.Vector3(0.18, 1.78, 0.82), new THREE.Vector3(-1.0, 1.08, 0.74)],
+    [new THREE.Vector3(0.24, -0.84, 0.74), new THREE.Vector3(0.96, -1.24, 0.6)],
+    [new THREE.Vector3(0.34, 4.88, 0.64), new THREE.Vector3(1.52, 5.08, 0.26)],
   ];
   serviceTrunks.forEach((pair, index) => {
-    group.add(beamBetween(pair[0], pair[1], 0.06, materials.structure, `service-spine-trunk-${index}`));
+    group.add(beamBetween(pair[0], pair[1], 0.07, materials.structure, `service-spine-trunk-${index}`));
   });
 
   return group;
@@ -913,34 +948,39 @@ function createLabDecks(materials) {
 
   const decks = [
     {
-      name: 'upper',
-      pos: new THREE.Vector3(-1.54, 2.88, 0.82),
-      angle: 0.12,
-      width: 2.22,
+      name: 'west',
+      pos: new THREE.Vector3(-2.02, 2.84, 0.98),
+      angle: 0.1,
+      width: 3.12,
+      depth: 1.28,
+      bridgeTarget: new THREE.Vector3(-0.34, 3.92, 0.94),
     },
     {
-      name: 'lower',
-      pos: new THREE.Vector3(-1.22, 0.56, 0.7),
+      name: 'east',
+      pos: new THREE.Vector3(-1.74, 0.78, 0.82),
       angle: 0.04,
-      width: 2.0,
+      width: 2.82,
+      depth: 1.16,
+      bridgeTarget: new THREE.Vector3(-0.18, 1.54, 0.82),
     },
   ];
 
-  decks.forEach((deck, index) => {
+  decks.forEach((deck) => {
     const deckGroup = new THREE.Group();
     deckGroup.name = `lab-deck-${deck.name}`;
 
     const plateShape = createShape([
-      [-deck.width / 2, -0.22],
-      [deck.width / 2 - 0.26, -0.28],
-      [deck.width / 2, 0.0],
-      [deck.width / 2 - 0.18, 0.24],
-      [-deck.width / 2 + 0.14, 0.28],
-      [-deck.width / 2, 0.06],
+      [-deck.width / 2, -deck.depth * 0.26],
+      [deck.width / 2 - 0.42, -deck.depth * 0.32],
+      [deck.width / 2, -deck.depth * 0.06],
+      [deck.width / 2 - 0.28, deck.depth * 0.26],
+      [deck.width / 2 - 0.82, deck.depth * 0.42],
+      [-deck.width / 2 + 0.38, deck.depth * 0.48],
+      [-deck.width / 2, deck.depth * 0.18],
     ]);
     const plate = extrudedMesh({
       shape: plateShape,
-      depth: 0.26,
+      depth: 0.3,
       material: materials.structure,
       name: `lab-deck-plate-${deck.name}`,
       bevelSize: 0.03,
@@ -950,55 +990,58 @@ function createLabDecks(materials) {
     addMesh(deckGroup, plate, [0, 0, 0], [0, deck.angle, 0]);
 
     const housingShape = createShape([
-      [-0.56, -0.26],
-      [0.36, -0.3],
-      [0.62, 0.02],
-      [0.48, 0.38],
-      [-0.42, 0.42],
-      [-0.64, 0.12],
+      [-0.94, -0.42],
+      [0.72, -0.48],
+      [1.06, -0.1],
+      [0.94, 0.46],
+      [-0.62, 0.56],
+      [-1.04, 0.16],
     ]);
     const housing = extrudedMesh({
       shape: housingShape,
-      depth: 0.82,
+      depth: 0.74,
       material: materials.shell,
       name: `lab-housing-${deck.name}`,
       bevelSize: 0.04,
       bevelThickness: 0.04,
     });
     housing.geometry.center();
-    addMesh(deckGroup, housing, [0.22, 0.42, 0.02], [0.06, deck.angle * 0.7, -0.08]);
+    addMesh(deckGroup, housing, [0.18, 0.36, 0.08], [0.05, deck.angle * 0.78, -0.06]);
 
-    addMesh(deckGroup, boxMesh([0.84, 0.18, 0.18], materials.structure, `lab-service-rail-${deck.name}`), [0.56, 0.08, 0.38], [0, deck.angle, 0.05]);
-    addMesh(deckGroup, boxMesh([0.56, 0.16, 0.14], materials.structure, `lab-equipment-bay-${deck.name}`), [-0.22, 0.22, 0.3], [0, deck.angle * 0.6, -0.12]);
-    addMesh(deckGroup, boxMesh([0.34, 0.48, 0.18], materials.structure, `lab-access-tower-${deck.name}`), [0.8, 0.42, 0.18], [0, 0, 0.04]);
-    addMesh(deckGroup, boxMesh([0.3, 0.18, 0.16], materials.accent, `lab-checkpoint-${deck.name}`), [0.14, -0.02, -0.08], [0.02, 0.06, 0]);
-    addMesh(deckGroup, boxMesh([0.52, 0.12, 0.12], materials.accent, `lab-prep-bay-${deck.name}`), [-0.44, 0.14, 0.28], [0, deck.angle * 0.2, 0.02]);
+    const benchOffsets = [-0.84, -0.16, 0.54];
+    benchOffsets.forEach((offset, index) => {
+      addMesh(
+        deckGroup,
+        boxMesh([0.64, 0.12, 0.14], materials.structure, `lab-equipment-bay-${deck.name}-${index}`),
+        [offset, 0.12 + index * 0.02, 0.46],
+        [0, deck.angle * 0.44, 0.02]
+      );
+    });
 
-    const supportA = beamBetween(new THREE.Vector3(-0.6, -0.18, -0.24), new THREE.Vector3(0.82, -0.7, -0.62), 0.08, materials.structure, `lab-support-a-${deck.name}`);
-    const supportB = beamBetween(new THREE.Vector3(-0.24, 0.1, -0.3), new THREE.Vector3(0.72, -0.62, -0.82), 0.06, materials.structure, `lab-support-b-${deck.name}`);
+    addMesh(deckGroup, boxMesh([1.14, 0.12, 0.16], materials.structure, `lab-service-rail-${deck.name}-primary`), [0.72, 0.1, 0.42], [0, deck.angle, 0.04]);
+    addMesh(deckGroup, boxMesh([1.02, 0.1, 0.14], materials.structure, `lab-service-rail-${deck.name}-secondary`), [-0.32, -0.04, 0.4], [0, deck.angle * 0.62, -0.04]);
+    addMesh(deckGroup, boxMesh([0.42, 0.72, 0.24], materials.structure, `lab-access-tower-${deck.name}`), [1.16, 0.44, 0.16], [0.02, 0, 0.04]);
+    addMesh(deckGroup, boxMesh([0.4, 0.2, 0.16], materials.accent, `lab-checkpoint-${deck.name}`), [-0.18, -0.04, -0.04], [0.02, 0.06, 0]);
+    addMesh(deckGroup, boxMesh([0.7, 0.14, 0.14], materials.accent, `lab-prep-bay-${deck.name}`), [-0.84, 0.18, 0.36], [0, deck.angle * 0.2, 0.02]);
+    addMesh(deckGroup, boxMesh([0.9, 0.08, 0.28], materials.accent, `lab-bench-strip-${deck.name}`), [0.1, 0.52, 0.6], [0.02, deck.angle * 0.46, -0.02]);
+
+    const supportA = beamBetween(new THREE.Vector3(-1.14, -0.24, -0.24), new THREE.Vector3(1.24, -0.86, -0.74), 0.08, materials.structure, `lab-support-a-${deck.name}`);
+    const supportB = beamBetween(new THREE.Vector3(-0.54, 0.02, -0.32), new THREE.Vector3(0.94, -0.76, -0.96), 0.06, materials.structure, `lab-support-b-${deck.name}`);
+    const supportC = beamBetween(new THREE.Vector3(-0.92, 0.32, -0.18), new THREE.Vector3(0.56, -0.58, -0.68), 0.05, materials.structure, `lab-support-c-${deck.name}`);
     deckGroup.add(supportA);
     deckGroup.add(supportB);
+    deckGroup.add(supportC);
 
     deckGroup.position.copy(deck.pos);
     group.add(deckGroup);
 
-    if (index === 0) {
-      group.add(beamBetween(
-        new THREE.Vector3(deck.pos.x + 0.68, deck.pos.y + 0.1, deck.pos.z - 0.36),
-        new THREE.Vector3(-0.18, 1.46, 0.64),
-        0.08,
-        materials.structure,
-        'lab-spine-link-upper',
-      ));
-    } else {
-      group.add(beamBetween(
-        new THREE.Vector3(deck.pos.x + 0.6, deck.pos.y + 0.08, deck.pos.z - 0.34),
-        new THREE.Vector3(-0.14, -0.12, 0.58),
-        0.07,
-        materials.structure,
-        'lab-spine-link-lower',
-      ));
-    }
+    group.add(beamBetween(
+      new THREE.Vector3(deck.pos.x + 0.96, deck.pos.y + 0.16, deck.pos.z - 0.22),
+      deck.bridgeTarget,
+      0.08,
+      materials.structure,
+      `lab-spine-link-${deck.name}`,
+    ));
   });
 
   return group;
@@ -1008,71 +1051,89 @@ function createProgramLoop(materials) {
   const group = new THREE.Group();
   group.name = 'program-loop';
 
+  const courtShape = createShape([
+    [-1.26, -0.66],
+    [1.48, -0.76],
+    [1.92, -0.22],
+    [1.64, 0.66],
+    [-0.96, 0.74],
+    [-1.42, 0.18],
+  ]);
+  const courtyard = extrudedMesh({
+    shape: courtShape,
+    depth: 0.2,
+    material: materials.shell,
+    name: 'program-courtyard',
+    bevelSize: 0.03,
+    bevelThickness: 0.03,
+    bevelSegments: 2,
+  });
+  courtyard.geometry.center();
+  addMesh(group, courtyard, [1.74, -1.18, 0.16], [0.02, -0.12, 0.04]);
+
   const routePoints = [
-    new THREE.Vector3(0.28, -1.5, 0.82),
-    new THREE.Vector3(1.06, -1.82, 1.0),
-    new THREE.Vector3(2.02, -1.96, 0.92),
-    new THREE.Vector3(2.8, -1.68, 0.52),
-    new THREE.Vector3(2.94, -0.92, 0.12),
-    new THREE.Vector3(2.72, -0.22, -0.1),
-    new THREE.Vector3(2.0, 0.22, -0.08),
-    new THREE.Vector3(1.12, 0.18, 0.18),
-    new THREE.Vector3(0.56, -0.12, 0.44),
-    new THREE.Vector3(0.28, -0.78, 0.64),
+    new THREE.Vector3(0.36, -1.34, 0.74),
+    new THREE.Vector3(1.14, -1.76, 0.88),
+    new THREE.Vector3(2.08, -1.88, 0.74),
+    new THREE.Vector3(2.82, -1.52, 0.36),
+    new THREE.Vector3(3.0, -0.74, 0.04),
+    new THREE.Vector3(2.44, -0.06, -0.04),
+    new THREE.Vector3(1.52, 0.06, 0.12),
+    new THREE.Vector3(0.78, -0.18, 0.34),
   ];
-  group.add(tubeAlong(routePoints, 0.12, materials.structure, 'program-track', 152, 14, true));
-  group.add(tubeAlong(routePoints, 0.05, materials.signal, 'program-signal-track', 152, 10, true));
+  group.add(tubeAlong(routePoints, 0.11, materials.structure, 'program-track', 144, 12, false));
+  group.add(tubeAlong(routePoints, 0.04, materials.signal, 'program-signal-track', 144, 8, false));
 
   const checkpoints = [
-    [0.88, -1.92, 0.98],
-    [1.98, -1.94, 0.9],
-    [2.78, -1.42, 0.42],
-    [2.86, -0.6, -0.02],
+    [1.04, -1.78, 0.9],
+    [2.12, -1.92, 0.74],
+    [2.88, -1.22, 0.22],
+    [2.52, -0.12, -0.02],
   ];
   checkpoints.forEach((position, index) => {
     const gate = new THREE.Group();
     gate.name = `program-checkpoint-${index}`;
-    addMesh(gate, boxMesh([0.16, 0.86, 0.16], materials.structure, `program-checkpoint-${index}-left`), [-0.18, 0, 0]);
-    addMesh(gate, boxMesh([0.16, 0.86, 0.16], materials.structure, `program-checkpoint-${index}-right`), [0.18, 0, 0]);
-    addMesh(gate, boxMesh([0.56, 0.12, 0.16], materials.accent, `program-checkpoint-${index}-header`), [0, 0.36, 0]);
+    addMesh(gate, boxMesh([0.14, 0.92, 0.16], materials.structure, `program-checkpoint-${index}-left`), [-0.18, 0, 0]);
+    addMesh(gate, boxMesh([0.14, 0.92, 0.16], materials.structure, `program-checkpoint-${index}-right`), [0.18, 0, 0]);
+    addMesh(gate, boxMesh([0.62, 0.12, 0.16], materials.accent, `program-checkpoint-${index}-header`), [0, 0.38, 0]);
     gate.position.set(position[0], position[1], position[2]);
     gate.rotation.y = 0.18 - index * 0.12;
     group.add(gate);
   });
 
   const prepZones = [
-    { name: 'prep-bay-a', position: [0.62, -1.72, 0.44], rotation: [0, 0.18, 0] },
-    { name: 'prep-bay-b', position: [1.72, -2.0, 0.34], rotation: [0, -0.08, 0] },
-    { name: 'prep-bay-c', position: [2.52, -1.16, 0.02], rotation: [0, 0.12, 0] },
+    { name: 'prep-bay-a', position: [0.72, -1.62, 0.42], rotation: [0, 0.16, 0] },
+    { name: 'prep-bay-b', position: [1.82, -1.98, 0.28], rotation: [0, -0.08, 0] },
+    { name: 'prep-bay-c', position: [2.62, -0.98, 0.02], rotation: [0, 0.12, 0] },
   ];
   prepZones.forEach((zone) => {
     const bay = new THREE.Group();
     bay.name = zone.name;
-    addMesh(bay, boxMesh([0.76, 0.18, 0.26], materials.shell, `${zone.name}-bench`), [0, 0.08, 0]);
-    addMesh(bay, boxMesh([0.28, 0.52, 0.18], materials.structure, `${zone.name}-column`), [0.34, 0.26, 0]);
-    addMesh(bay, boxMesh([0.18, 0.24, 0.12], materials.accent, `${zone.name}-marker`), [-0.26, 0.14, 0.04]);
+    addMesh(bay, boxMesh([0.84, 0.18, 0.28], materials.shell, `${zone.name}-bench`), [0, 0.08, 0]);
+    addMesh(bay, boxMesh([0.32, 0.56, 0.18], materials.structure, `${zone.name}-column`), [0.38, 0.28, 0]);
+    addMesh(bay, boxMesh([0.2, 0.24, 0.12], materials.accent, `${zone.name}-marker`), [-0.28, 0.14, 0.04]);
     bay.position.set(zone.position[0], zone.position[1], zone.position[2]);
     bay.rotation.set(zone.rotation[0], zone.rotation[1], zone.rotation[2]);
     group.add(bay);
   });
 
   group.add(beamBetween(
-    new THREE.Vector3(0.44, -1.54, 0.48),
-    new THREE.Vector3(1.28, -1.88, 0.18),
+    new THREE.Vector3(0.52, -1.46, 0.42),
+    new THREE.Vector3(1.36, -1.86, 0.16),
     0.08,
     materials.structure,
     'program-support-a',
   ));
   group.add(beamBetween(
-    new THREE.Vector3(1.58, -1.76, 0.42),
-    new THREE.Vector3(2.54, -1.16, 0.08),
+    new THREE.Vector3(1.64, -1.74, 0.34),
+    new THREE.Vector3(2.54, -1.12, 0.06),
     0.06,
     materials.structure,
     'program-support-b',
   ));
   group.add(beamBetween(
-    new THREE.Vector3(2.4, -0.9, 0.08),
-    new THREE.Vector3(1.9, -0.18, -0.1),
+    new THREE.Vector3(2.54, -0.88, 0.08),
+    new THREE.Vector3(1.96, -0.12, -0.08),
     0.06,
     materials.structure,
     'program-support-c',
@@ -1085,70 +1146,72 @@ function createNetworkBridges(materials) {
   const group = new THREE.Group();
   group.name = 'network-bridges';
 
+  const canopyShape = createShape([
+    [-1.28, -0.38],
+    [1.42, -0.42],
+    [1.86, -0.06],
+    [1.4, 0.34],
+    [-0.94, 0.42],
+    [-1.42, 0.04],
+  ]);
+  const canopy = extrudedMesh({
+    shape: canopyShape,
+    depth: 0.2,
+    material: materials.shell,
+    name: 'network-crown-plate',
+    bevelSize: 0.025,
+    bevelThickness: 0.025,
+    bevelSegments: 2,
+  });
+  canopy.geometry.center();
+  addMesh(group, canopy, [1.24, 4.98, 0.12], [0.08, 0.16, -0.04]);
+
   const bridgeA = [
-    new THREE.Vector3(0.16, 4.34, 0.44),
-    new THREE.Vector3(0.86, 4.98, 0.66),
-    new THREE.Vector3(1.8, 5.48, 0.54),
-    new THREE.Vector3(2.84, 5.3, 0.16),
+    new THREE.Vector3(0.18, 4.4, 0.52),
+    new THREE.Vector3(1.02, 5.02, 0.64),
+    new THREE.Vector3(1.98, 5.42, 0.46),
+    new THREE.Vector3(2.96, 5.16, 0.12),
   ];
   const bridgeB = [
-    new THREE.Vector3(0.0, 4.84, -0.2),
-    new THREE.Vector3(0.78, 5.44, -0.08),
-    new THREE.Vector3(1.82, 5.8, -0.02),
-    new THREE.Vector3(2.7, 5.5, -0.16),
+    new THREE.Vector3(0.08, 4.96, -0.18),
+    new THREE.Vector3(0.92, 5.56, -0.08),
+    new THREE.Vector3(1.98, 5.82, 0.02),
+    new THREE.Vector3(2.82, 5.42, -0.12),
   ];
-  group.add(tubeAlong(bridgeA, 0.08, materials.structure, 'network-bridge-primary', 96, 12));
-  group.add(tubeAlong(bridgeB, 0.06, materials.structure, 'network-bridge-secondary', 96, 10));
-  group.add(tubeAlong(bridgeA, 0.028, materials.signal, 'network-signal-primary', 96, 8));
+  group.add(tubeAlong(bridgeA, 0.06, materials.structure, 'network-bridge-primary', 84, 10));
+  group.add(tubeAlong(bridgeB, 0.05, materials.structure, 'network-bridge-secondary', 84, 10));
+  group.add(tubeAlong(bridgeA, 0.022, materials.signal, 'network-signal-primary', 84, 8));
 
   const nodeSupports = [
-    [new THREE.Vector3(0.86, 4.98, 0.66), new THREE.Vector3(0.52, 4.14, 0.16)],
-    [new THREE.Vector3(1.8, 5.48, 0.54), new THREE.Vector3(1.26, 4.38, 0.04)],
-    [new THREE.Vector3(2.84, 5.3, 0.16), new THREE.Vector3(2.14, 4.28, -0.28)],
+    [new THREE.Vector3(0.94, 5.02, 0.62), new THREE.Vector3(0.52, 4.18, 0.12)],
+    [new THREE.Vector3(1.98, 5.42, 0.46), new THREE.Vector3(1.24, 4.34, 0.04)],
+    [new THREE.Vector3(2.96, 5.16, 0.12), new THREE.Vector3(2.14, 4.08, -0.16)],
   ];
   nodeSupports.forEach((pair, index) => {
     group.add(beamBetween(pair[0], pair[1], 0.05, materials.structure, `network-support-${index}`));
   });
 
   const nodePositions = [
-    [0.88, 5.0, 0.68],
-    [1.8, 5.5, 0.54],
-    [2.84, 5.3, 0.16],
-    [2.6, 5.56, -0.16],
+    [0.94, 5.0, 0.64],
+    [1.98, 5.42, 0.46],
+    [2.96, 5.16, 0.12],
+    [2.72, 5.62, -0.1],
   ];
   nodePositions.forEach((position, index) => {
     addMesh(group, cylinderMesh(0.14, 0.18, 0.22, 8, materials.accent, `network-node-${index}`), position, [Math.PI / 2, 0, index * 0.16]);
   });
 
-  const crownPlateShape = createShape([
-    [-0.9, -0.18],
-    [0.92, -0.22],
-    [1.12, 0.0],
-    [0.88, 0.2],
-    [-0.82, 0.24],
-    [-1.0, 0.02],
-  ]);
-  const crownPlate = extrudedMesh({
-    shape: crownPlateShape,
-    depth: 0.22,
-    material: materials.shell,
-    name: 'network-crown-plate',
-    bevelSize: 0.025,
-    bevelThickness: 0.025,
-  });
-  crownPlate.geometry.center();
-  addMesh(group, crownPlate, [0.96, 4.38, 0.02], [0.04, 0.16, -0.06]);
-
   const crossBraces = [
-    [new THREE.Vector3(0.4, 4.7, 0.42), new THREE.Vector3(1.24, 5.2, -0.02)],
-    [new THREE.Vector3(1.04, 4.98, 0.38), new THREE.Vector3(2.02, 5.34, -0.02)],
-    [new THREE.Vector3(1.84, 5.1, 0.26), new THREE.Vector3(2.72, 5.34, -0.12)],
+    [new THREE.Vector3(0.42, 4.68, 0.4), new THREE.Vector3(1.26, 5.18, -0.02)],
+    [new THREE.Vector3(1.06, 4.96, 0.36), new THREE.Vector3(2.12, 5.3, -0.02)],
+    [new THREE.Vector3(1.9, 5.06, 0.22), new THREE.Vector3(2.8, 5.22, -0.1)],
+    [new THREE.Vector3(0.68, 5.42, -0.08), new THREE.Vector3(1.76, 5.76, 0.06)],
   ];
   crossBraces.forEach((pair, index) => {
     group.add(beamBetween(pair[0], pair[1], 0.042, materials.structure, `network-cross-brace-${index}`));
   });
 
-  addMesh(group, boxMesh([0.56, 0.14, 0.16], materials.accent, 'network-crown-marker'), [2.34, 5.58, -0.04], [0.02, 0.1, 0.04]);
+  addMesh(group, boxMesh([0.66, 0.14, 0.18], materials.accent, 'network-crown-marker'), [2.28, 5.56, -0.02], [0.02, 0.1, 0.04]);
 
   return group;
 }
@@ -1157,57 +1220,51 @@ function createConduits(materials) {
   const group = new THREE.Group();
   group.name = 'conduits';
 
-  const conduits = [
+  const rigidLinks = [
+    [new THREE.Vector3(0.24, 4.48, -0.18), new THREE.Vector3(-0.98, 3.78, 0.42), 'conduit-lab-west-a'],
+    [new THREE.Vector3(0.2, 1.84, -0.16), new THREE.Vector3(-0.92, 1.18, 0.38), 'conduit-lab-east-a'],
+    [new THREE.Vector3(0.18, -0.48, 0.02), new THREE.Vector3(1.24, -0.98, 0.36), 'conduit-program-a'],
+    [new THREE.Vector3(0.36, 4.84, -0.14), new THREE.Vector3(1.48, 5.02, 0.08), 'conduit-network-a'],
+  ];
+
+  rigidLinks.forEach(([from, to, name], index) => {
+    group.add(beamBetween(from, to, 0.08 - index * 0.005, materials.structure, name));
+  });
+
+  const trays = [
+    { size: [1.26, 0.1, 0.18], pos: [-0.68, 4.04, 0.24], rot: [0.02, 0.18, 0.02], name: 'cable-tray-west' },
+    { size: [1.12, 0.1, 0.18], pos: [-0.62, 2.04, 0.2], rot: [0.02, -0.12, 0.02], name: 'cable-tray-east' },
+    { size: [1.0, 0.1, 0.18], pos: [1.18, -0.52, 0.42], rot: [0.04, 0.02, 0.03], name: 'cable-tray-program' },
+    { size: [0.96, 0.1, 0.18], pos: [1.96, 5.06, 0.1], rot: [0.04, 0.08, -0.02], name: 'cable-tray-network' },
+  ];
+  trays.forEach((tray) => {
+    addMesh(group, boxMesh(tray.size, materials.accent, tray.name), tray.pos, tray.rot);
+  });
+
+  const serviceTubes = [
     {
-      name: 'conduit-lab-upper',
+      name: 'conduit-lab-west-b',
       points: [
-        new THREE.Vector3(-0.12, 3.84, -0.26),
-        new THREE.Vector3(-0.68, 3.62, -0.08),
-        new THREE.Vector3(-1.34, 3.18, 0.34),
-        new THREE.Vector3(-1.82, 2.94, 0.74),
+        new THREE.Vector3(0.08, 3.94, -0.26),
+        new THREE.Vector3(-0.52, 3.66, -0.06),
+        new THREE.Vector3(-1.16, 3.2, 0.28),
+        new THREE.Vector3(-1.88, 2.9, 0.68),
       ],
-      radius: 0.08,
     },
     {
-      name: 'conduit-lab-lower',
+      name: 'conduit-program-b',
       points: [
-        new THREE.Vector3(0.0, 2.18, -0.22),
-        new THREE.Vector3(-0.5, 1.96, -0.04),
-        new THREE.Vector3(-1.1, 1.72, 0.26),
-        new THREE.Vector3(-1.6, 1.48, 0.66),
+        new THREE.Vector3(0.24, -0.18, -0.06),
+        new THREE.Vector3(0.86, -0.44, 0.14),
+        new THREE.Vector3(1.54, -0.74, 0.36),
+        new THREE.Vector3(2.2, -0.98, 0.48),
       ],
-      radius: 0.075,
-    },
-    {
-      name: 'conduit-program',
-      points: [
-        new THREE.Vector3(0.3, -0.28, -0.08),
-        new THREE.Vector3(0.84, -0.42, 0.14),
-        new THREE.Vector3(1.42, -0.66, 0.4),
-        new THREE.Vector3(2.14, -0.88, 0.54),
-      ],
-      radius: 0.07,
-    },
-    {
-      name: 'conduit-network',
-      points: [
-        new THREE.Vector3(0.12, 4.08, -0.32),
-        new THREE.Vector3(0.7, 4.52, -0.18),
-        new THREE.Vector3(1.42, 4.96, -0.06),
-        new THREE.Vector3(2.22, 5.22, -0.02),
-      ],
-      radius: 0.065,
     },
   ];
 
-  conduits.forEach((conduit) => {
-    group.add(tubeAlong(conduit.points, conduit.radius, materials.structure, conduit.name, 72, 10));
+  serviceTubes.forEach((conduit) => {
+    group.add(tubeAlong(conduit.points, 0.05, materials.structure, conduit.name, 64, 10));
   });
-
-  addMesh(group, boxMesh([0.84, 0.1, 0.18], materials.accent, 'cable-tray-a'), [-0.58, 3.96, 0.26], [0.02, 0.18, 0.02]);
-  addMesh(group, boxMesh([0.72, 0.1, 0.18], materials.accent, 'cable-tray-b'), [-0.52, 2.08, 0.2], [0.02, -0.12, 0.02]);
-  addMesh(group, boxMesh([0.66, 0.1, 0.18], materials.accent, 'maintenance-rib-a'), [1.04, -0.48, 0.46], [0.04, 0.02, 0.03]);
-  addMesh(group, boxMesh([0.66, 0.1, 0.18], materials.accent, 'maintenance-rib-b'), [1.94, 5.06, 0.12], [0.04, 0.08, -0.02]);
 
   return group;
 }
@@ -1216,11 +1273,11 @@ function createGlassVolumes(materials) {
   const group = new THREE.Group();
   group.name = 'glass-volumes';
 
-  addMesh(group, boxMesh([0.96, 0.56, 0.72], materials.glass, 'glass-lab-upper'), [-1.12, 3.34, 0.94], [0, 0.12, 0]);
-  addMesh(group, boxMesh([0.86, 0.54, 0.68], materials.glass, 'glass-lab-lower'), [-0.9, 1.98, 0.84], [0, 0.1, 0]);
-  addMesh(group, boxMesh([0.8, 0.5, 0.62], materials.glass, 'glass-lab-support'), [-0.76, 0.64, 0.74], [0, 0.08, 0]);
-  addMesh(group, boxMesh([1.38, 0.34, 0.52], materials.glass, 'glass-program-core'), [1.52, -1.46, 0.26], [0.04, -0.12, 0.06]);
-  addMesh(group, boxMesh([1.18, 0.22, 0.42], materials.glass, 'glass-network-bridge'), [1.3, 4.84, 0.18], [0.08, 0.18, -0.04]);
+  addMesh(group, boxMesh([1.14, 0.62, 0.84], materials.glass, 'glass-lab-west'), [-1.36, 3.42, 0.92], [0, 0.12, 0]);
+  addMesh(group, boxMesh([1.08, 0.58, 0.8], materials.glass, 'glass-lab-east'), [-1.18, 1.36, 0.82], [0, 0.08, 0]);
+  addMesh(group, boxMesh([0.88, 0.58, 0.72], materials.glass, 'glass-spine-atrium'), [-0.24, 2.26, 0.8], [0.02, 0.06, 0]);
+  addMesh(group, boxMesh([1.76, 0.34, 0.62], materials.glass, 'glass-program-core'), [1.84, -1.18, 0.22], [0.04, -0.12, 0.04]);
+  addMesh(group, boxMesh([1.46, 0.2, 0.46], materials.glass, 'glass-network-bridge'), [1.4, 5.02, 0.18], [0.08, 0.16, -0.04]);
 
   return group;
 }
@@ -1233,36 +1290,36 @@ function createSignalPaths(materials) {
     {
       name: 'signal-lab-primary',
       points: [
-        new THREE.Vector3(-0.02, 3.56, 0.58),
-        new THREE.Vector3(-0.82, 3.38, 0.74),
-        new THREE.Vector3(-1.54, 3.08, 0.92),
+        new THREE.Vector3(0.08, 3.78, 0.72),
+        new THREE.Vector3(-0.88, 3.52, 0.82),
+        new THREE.Vector3(-1.92, 3.12, 0.94),
       ],
     },
     {
       name: 'signal-lab-secondary',
       points: [
-        new THREE.Vector3(0.04, 2.06, 0.46),
-        new THREE.Vector3(-0.62, 1.84, 0.62),
-        new THREE.Vector3(-1.26, 1.56, 0.78),
+        new THREE.Vector3(0.12, 1.86, 0.58),
+        new THREE.Vector3(-0.74, 1.54, 0.68),
+        new THREE.Vector3(-1.62, 1.02, 0.8),
       ],
     },
     {
       name: 'signal-program',
       points: [
-        new THREE.Vector3(0.44, -1.5, 0.86),
-        new THREE.Vector3(1.34, -1.9, 0.84),
-        new THREE.Vector3(2.34, -1.64, 0.44),
-        new THREE.Vector3(2.78, -0.9, 0.08),
-        new THREE.Vector3(2.58, -0.16, -0.04),
+        new THREE.Vector3(0.44, -1.34, 0.82),
+        new THREE.Vector3(1.34, -1.84, 0.78),
+        new THREE.Vector3(2.22, -1.74, 0.52),
+        new THREE.Vector3(2.86, -1.04, 0.12),
+        new THREE.Vector3(2.46, -0.12, 0),
       ],
     },
     {
       name: 'signal-network',
       points: [
-        new THREE.Vector3(0.18, 4.34, 0.32),
-        new THREE.Vector3(1.08, 4.98, 0.46),
-        new THREE.Vector3(2.16, 5.34, 0.24),
-        new THREE.Vector3(2.86, 5.28, 0.08),
+        new THREE.Vector3(0.18, 4.42, 0.36),
+        new THREE.Vector3(1.04, 5.04, 0.5),
+        new THREE.Vector3(2.18, 5.36, 0.28),
+        new THREE.Vector3(2.92, 5.2, 0.1),
       ],
     },
   ];
@@ -1272,12 +1329,12 @@ function createSignalPaths(materials) {
   });
 
   const nodes = [
-    [-1.48, 3.08, 0.92],
-    [-1.22, 1.58, 0.76],
-    [1.32, -1.9, 0.84],
-    [2.58, -0.16, -0.04],
-    [2.16, 5.34, 0.24],
-    [2.86, 5.28, 0.08],
+    [-1.92, 3.12, 0.94],
+    [-1.62, 1.02, 0.8],
+    [1.34, -1.84, 0.78],
+    [2.46, -0.12, 0],
+    [2.18, 5.36, 0.28],
+    [2.92, 5.2, 0.1],
   ];
   nodes.forEach((position, index) => {
     addMesh(group, cylinderMesh(0.07, 0.09, 0.16, 8, materials.signal, `signal-node-${index}`), position, [Math.PI / 2, 0, 0]);

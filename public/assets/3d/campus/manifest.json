@@ -1,6 +1,6 @@
 {
   "asset": "campus",
-  "generatedAt": "2026-04-15T12:33:27.286Z",
+  "generatedAt": "2026-04-15T17:12:12.111Z",
   "generator": "scripts/build-campus.mjs",
   "outputs": {
     "glb": "campus.glb",

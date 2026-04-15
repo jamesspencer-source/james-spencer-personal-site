@@ -102,7 +102,7 @@ export const campusScenePresets: Record<
       haze: 0.18
     },
     atmosphere: {
-      fogColor: "#10181b",
+      fogColor: "#182328",
       fogNear: 13,
       fogFar: 40,
       ambientFloor: 0.72,
@@ -154,7 +154,7 @@ export const campusScenePresets: Record<
       haze: 0.24
     },
     atmosphere: {
-      fogColor: "#11181b",
+      fogColor: "#172328",
       fogNear: 12,
       fogFar: 43,
       ambientFloor: 0.8,
@@ -206,7 +206,7 @@ export const campusScenePresets: Record<
       haze: 0.24
     },
     atmosphere: {
-      fogColor: "#0f161a",
+      fogColor: "#172126",
       fogNear: 11,
       fogFar: 42,
       ambientFloor: 0.78,
@@ -258,7 +258,7 @@ export const campusScenePresets: Record<
       haze: 0.3
     },
     atmosphere: {
-      fogColor: "#10161a",
+      fogColor: "#162229",
       fogNear: 12,
       fogFar: 45,
       ambientFloor: 0.76,
@@ -310,7 +310,7 @@ export const campusScenePresets: Record<
       haze: 0.18
     },
     atmosphere: {
-      fogColor: "#0b1013",
+      fogColor: "#131b1f",
       fogNear: 13,
       fogFar: 38,
       ambientFloor: 0.6,
