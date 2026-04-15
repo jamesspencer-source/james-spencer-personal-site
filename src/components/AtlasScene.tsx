@@ -1,13 +1,12 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Line } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import {
+  Suspense,
   memo,
   useEffect,
-  useLayoutEffect,
   useMemo,
   useRef,
-  useState,
-  type MutableRefObject
+  useState
 } from "react";
 import * as THREE from "three";
 import {
@@ -16,108 +15,109 @@ import {
   type Vec3
 } from "../atlasScenePresets";
 
-type AtlasSceneProps = {
+type ViewportTier = "mobile" | "tablet" | "desktop";
+type SceneVariant = "hero" | "system";
+
+export type AtlasSceneProps = {
   activeStage: AtlasStateId;
-  reducedMotion: boolean;
-  stageProgress: number;
-  variant?: "hero" | "system";
+  reducedMotion?: boolean;
+  stageProgress?: number;
+  variant?: SceneVariant;
   paused?: boolean;
 };
 
-type ViewportTier = "mobile" | "tablet" | "desktop";
-
-type Point3 = Vec3;
-
-type InstanceSpec = {
-  position: Point3;
-  scale?: Point3;
-  rotation?: Point3;
+type MaterialSurface = THREE.Material & {
+  color?: THREE.Color;
+  emissive?: THREE.Color;
+  emissiveIntensity?: number;
+  metalness?: number;
+  roughness?: number;
+  opacity?: number;
+  transparent?: boolean;
 };
 
-type TierSettings = {
-  dpr: [number, number];
-  chamberRows: number;
-  chamberCols: number;
-  labNodeCount: number;
-  stationCount: number;
-  checkpointCount: number;
-  networkNodeCount: number;
-  particleCount: number;
-  pulseCount: number;
-  pointerInfluence: number;
-  glassOpacity: number;
-};
+const MONOLITH_GLB_URL = `${import.meta.env.BASE_URL}assets/3d/monolith/monolith.glb`;
 
-const COLORS = {
-  bg: "#050809",
-  shell: "#0b1012",
-  shellEdge: "#1d2828",
-  graphite: "#161d1f",
-  glass: "#4f5f61",
-  steel: "#75847f",
-  textMuted: "#8d9791",
-  labs: "#63c69d",
-  program: "#8ab2ff",
-  network: "#d3e98b",
-  lineSoft: "rgba(240,240,236,0.14)"
-} as const;
-
-const TIER_SETTINGS: Record<ViewportTier, TierSettings> = {
+const VIEWPORT_CONFIG: Record<
+  ViewportTier,
+  {
+    dpr: [number, number];
+    heroScale: number;
+    systemScale: number;
+    cameraOffset: Vec3;
+  }
+> = {
   mobile: {
-    dpr: [1, 1.05],
-    chamberRows: 3,
-    chamberCols: 4,
-    labNodeCount: 4,
-    stationCount: 4,
-    checkpointCount: 5,
-    networkNodeCount: 8,
-    particleCount: 26,
-    pulseCount: 2,
-    pointerInfluence: 0,
-    glassOpacity: 0.16
+    dpr: [1, 1.2],
+    heroScale: 0.92,
+    systemScale: 0.88,
+    cameraOffset: [0, 0.16, 1.15]
   },
   tablet: {
-    dpr: [1, 1.22],
-    chamberRows: 4,
-    chamberCols: 5,
-    labNodeCount: 6,
-    stationCount: 5,
-    checkpointCount: 6,
-    networkNodeCount: 10,
-    particleCount: 40,
-    pulseCount: 3,
-    pointerInfluence: 0.3,
-    glassOpacity: 0.2
+    dpr: [1, 1.5],
+    heroScale: 1.03,
+    systemScale: 0.98,
+    cameraOffset: [0.12, 0.08, 0.7]
   },
   desktop: {
-    dpr: [1, 1.34],
-    chamberRows: 5,
-    chamberCols: 6,
-    labNodeCount: 8,
-    stationCount: 7,
-    checkpointCount: 8,
-    networkNodeCount: 12,
-    particleCount: 58,
-    pulseCount: 4,
-    pointerInfluence: 1,
-    glassOpacity: 0.24
+    dpr: [1, 1.75],
+    heroScale: 1.12,
+    systemScale: 1.08,
+    cameraOffset: [0.2, 0, 0]
   }
 };
 
-function webglAvailable() {
-  if (typeof document === "undefined") {
-    return true;
-  }
+const ROLE_COLORS = {
+  labs: new THREE.Color("#79d0af"),
+  program: new THREE.Color("#8eb7ff"),
+  network: new THREE.Color("#d5e88f")
+} as const;
 
-  try {
-    const canvas = document.createElement("canvas");
-    return Boolean(
-      window.WebGLRenderingContext &&
-        (canvas.getContext("webgl") || canvas.getContext("experimental-webgl"))
-    );
-  } catch {
-    return false;
-  }
+function dampScalar(
+  current: number,
+  target: number,
+  lambda: number,
+  delta: number
+) {
+  return THREE.MathUtils.damp(current, target, lambda, delta);
+}
+
+function dampVector(
+  vector: THREE.Vector3,
+  target: THREE.Vector3,
+  lambda: number,
+  delta: number
+) {
+  vector.set(
+    dampScalar(vector.x, target.x, lambda, delta),
+    dampScalar(vector.y, target.y, lambda, delta),
+    dampScalar(vector.z, target.z, lambda, delta)
+  );
+}
+
+function dampEuler(
+  euler: THREE.Euler,
+  target: THREE.Euler,
+  lambda: number,
+  delta: number
+) {
+  euler.set(
+    dampScalar(euler.x, target.x, lambda, delta),
+    dampScalar(euler.y, target.y, lambda, delta),
+    dampScalar(euler.z, target.z, lambda, delta)
+  );
+}
+
+function vec3(values: Vec3) {
+  return new THREE.Vector3(values[0], values[1], values[2]);
+}
+
+function addScaledVector(base: Vec3, travel: Vec3, scale: number) {
+  return new THREE.Vector3(
+    base[0] + travel[0] * scale,
+    base[1] + travel[1] * scale,
+    base[2] + travel[2] * scale
+  );
 }
 
 function useViewportTier() {
@@ -125,15 +125,12 @@ function useViewportTier() {
     if (typeof window === "undefined") {
       return "desktop";
     }
-
     if (window.innerWidth < 720) {
       return "mobile";
     }
-
     if (window.innerWidth < 1180) {
       return "tablet";
     }
-
     return "desktop";
   });
 
@@ -141,535 +138,104 @@ function useViewportTier() {
     const updateTier = () => {
       if (window.innerWidth < 720) {
         setTier("mobile");
-        return;
-      }
-
-      if (window.innerWidth < 1180) {
+      } else if (window.innerWidth < 1180) {
         setTier("tablet");
-        return;
+      } else {
+        setTier("desktop");
       }
-
-      setTier("desktop");
     };
 
     updateTier();
     window.addEventListener("resize", updateTier);
-
     return () => window.removeEventListener("resize", updateTier);
   }, []);
 
   return tier;
 }
 
-function smoothPhase(value: number) {
-  return THREE.MathUtils.smoothstep(value, 0, 1);
-}
+function useWebGLSupport() {
+  const [hasWebGL, setHasWebGL] = useState(true);
 
-function pointOnEllipse(radiusX: number, radiusZ: number, angle: number, y: number): Point3 {
-  return [Math.cos(angle) * radiusX, y, Math.sin(angle) * radiusZ];
-}
-
-function sampleEllipse(
-  radiusX: number,
-  radiusZ: number,
-  y: number,
-  count: number,
-  startAngle = 0
-): Point3[] {
-  return Array.from({ length: count }, (_, index) => {
-    const angle = startAngle + (index / count) * Math.PI * 2;
-    return pointOnEllipse(radiusX, radiusZ, angle, y);
-  });
-}
-
-function curveFromPoints(points: Point3[], closed = false) {
-  return new THREE.CatmullRomCurve3(
-    points.map((point) => new THREE.Vector3(...point)),
-    closed,
-    "catmullrom",
-    0.15
-  );
-}
-
-function sampleCurve(points: Point3[], closed = false, segments = 64): Point3[] {
-  return curveFromPoints(points, closed)
-    .getPoints(segments)
-    .map((point) => [point.x, point.y, point.z] as Point3);
-}
-
-function seededRandom(index: number) {
-  return Math.sin(index * 127.1 + 91.7) * 43758.5453 % 1;
-}
-
-function buildChamberInstances(rows: number, cols: number) {
-  const instances: InstanceSpec[] = [];
-  for (let row = 0; row < rows; row += 1) {
-    for (let col = 0; col < cols; col += 1) {
-      instances.push({
-        position: [
-          -0.62 + col * 0.24 + (row % 2 === 0 ? 0.025 : -0.015),
-          1.58 - row * 0.3,
-          -0.24 + ((col + row) % 2 === 0 ? 0.03 : -0.03)
-        ],
-        scale: [0.84, 0.88, 0.88]
-      });
+  useEffect(() => {
+    try {
+      const canvas = document.createElement("canvas");
+      const context =
+        canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+      setHasWebGL(Boolean(context));
+    } catch {
+      setHasWebGL(false);
     }
-  }
+  }, []);
 
-  return instances;
+  return hasWebGL;
 }
 
-function buildLabNodeInstances(count: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const step = count === 1 ? 0 : index / (count - 1);
-    return {
-      position: [
-        -1 + step * 1.95,
-        1.08 + Math.sin(step * Math.PI * 1.4) * 0.28,
-        step < 0.5 ? 0.42 : 0.18
-      ] as Point3,
-      scale: [0.82, 1.12, 0.68] as Point3,
-      rotation: [0.18, step * 0.4 - 0.2, 0] as Point3
-    };
-  });
-}
-
-function buildProgramStations(count: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const angle = (index / count) * Math.PI * 2 + Math.PI / 8;
-    return {
-      position: pointOnEllipse(0.82, 0.58, angle, -0.76),
-      rotation: [0, -angle, 0] as Point3,
-      scale: [0.92, 1, 0.9] as Point3
-    };
-  });
-}
-
-function buildProgramCheckpoints(count: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const angle = (index / count) * Math.PI * 2;
-    return {
-      position: pointOnEllipse(1.12, 0.78, angle, -0.78),
-      rotation: [0, -angle, 0] as Point3,
-      scale: [0.9, 1.14, 0.84] as Point3
-    };
-  });
-}
-
-function buildNetworkNodes(count: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const angle = (index / count) * Math.PI * 2 + Math.PI / 14;
-    return {
-      position: pointOnEllipse(1.88, 1.26, angle, 2.14 + Math.sin(angle * 2) * 0.08),
-      rotation: [0, -angle + Math.PI / 2, 0] as Point3,
-      scale: [0.9, 1 + Math.sin(angle * 2) * 0.12, 0.82] as Point3
-    };
-  });
-}
-
-function buildShellRibs() {
-  return Array.from({ length: 8 }, (_, index) => ({
-    position: [-0.94 + index * 0.28, 0.02, 0.8 - Math.abs(3.5 - index) * 0.012] as Point3,
-    scale: [1, 1, 1] as Point3
-  }));
-}
-
-function buildShellSeamPlates() {
-  return Array.from({ length: 7 }, (_, index) => ({
-    position: [-0.78 + index * 0.28, 2.18 - index * 0.62, 0.88 - index * 0.02] as Point3,
-    rotation: [0, 0.02 * (index % 2 === 0 ? 1 : -1), 0] as Point3,
-    scale: [1, 1, 1] as Point3
-  }));
-}
-
-function buildLabAuxFrames(count: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const step = count === 1 ? 0 : index / (count - 1);
-    return {
-      position: [
-        -0.96 + step * 1.9,
-        1.52 - Math.sin(step * Math.PI) * 0.34,
-        0.28 - step * 0.2
-      ] as Point3,
-      rotation: [0.08, step * 0.18 - 0.08, 0] as Point3,
-      scale: [0.92, 1, 0.84] as Point3
-    };
-  });
-}
-
-function buildProgramMarkers(count: number) {
-  return Array.from({ length: count }, (_, index) => {
-    const angle = (index / count) * Math.PI * 2 + Math.PI / 10;
-    return {
-      position: pointOnEllipse(0.76, 0.5, angle, -0.8),
-      rotation: [0, -angle, 0] as Point3,
-      scale: [0.84, 0.92, 0.7] as Point3
-    };
-  });
-}
-
-function buildNetworkSpines() {
-  return [
-    {
-      position: [-1.36, 2.18, 0.12] as Point3,
-      rotation: [0, 0.46, 0.1] as Point3,
-      scale: [1, 1, 1] as Point3
-    },
-    {
-      position: [-0.48, 2.34, -0.14] as Point3,
-      rotation: [0, 0.12, 0.06] as Point3,
-      scale: [1, 1, 1] as Point3
-    },
-    {
-      position: [0.52, 2.36, -0.16] as Point3,
-      rotation: [0, -0.08, -0.04] as Point3,
-      scale: [1, 1, 1] as Point3
-    },
-    {
-      position: [1.44, 2.18, 0.1] as Point3,
-      rotation: [0, -0.42, -0.1] as Point3,
-      scale: [1, 1, 1] as Point3
-    }
-  ];
-}
-
-function buildParticlePositions(count: number) {
-  const positions = new Float32Array(count * 3);
-
-  for (let index = 0; index < count; index += 1) {
-    const a = seededRandom(index + 3);
-    const b = seededRandom(index + 23);
-    const c = seededRandom(index + 47);
-
-    positions[index * 3] = (a - 0.5) * 3.4;
-    positions[index * 3 + 1] = (b - 0.5) * 5.8;
-    positions[index * 3 + 2] = (c - 0.5) * 2.5;
-  }
-
-  return positions;
-}
-
-function buildNoiseTexture(size = 48, seed = 1) {
-  const data = new Uint8Array(size * size * 4);
-
-  for (let y = 0; y < size; y += 1) {
-    for (let x = 0; x < size; x += 1) {
-      const index = (y * size + x) * 4;
-      const grain = Math.floor(
-        64 +
-          ((Math.sin((x + seed) * 0.61) + Math.cos((y + seed) * 0.47)) * 0.5 +
-            seededRandom(index + seed * 17) * 0.9) *
-            72
-      );
-      const seam = x % 12 === 0 || y % 10 === 0 ? 22 : 0;
-      const value = THREE.MathUtils.clamp(grain + seam, 26, 188);
-
-      data[index] = value;
-      data[index + 1] = value;
-      data[index + 2] = value;
-      data[index + 3] = 255;
-    }
-  }
-
-  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(2.4, 6.8);
-  texture.needsUpdate = true;
-  return texture;
-}
-
-function registerMaterial(
-  bucket: MutableRefObject<THREE.Material[]>,
-  index: number
-) {
-  return (material: THREE.Material | null) => {
-    if (material) {
-      bucket.current[index] = material;
-    }
-  };
-}
-
-function InstancedBoxes({
-  instances,
-  args,
-  color,
-  emissive,
-  opacity,
-  roughness,
-  metalness,
-  materialRef
-}: {
-  instances: InstanceSpec[];
-  args: Point3;
-  color: string;
-  emissive: string;
-  opacity: number;
-  roughness: number;
-  metalness: number;
-  materialRef?: (material: THREE.MeshStandardMaterial | null) => void;
-}) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  useLayoutEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) {
-      return;
-    }
-
-    instances.forEach((instance, index) => {
-      dummy.position.set(...instance.position);
-      dummy.rotation.set(...(instance.rotation ?? [0, 0, 0]));
-      dummy.scale.set(...(instance.scale ?? [1, 1, 1]));
-      dummy.updateMatrix();
-      mesh.setMatrixAt(index, dummy.matrix);
-    });
-
-    mesh.instanceMatrix.needsUpdate = true;
-  }, [dummy, instances]);
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, instances.length]}>
-      <boxGeometry args={args} />
-      <meshStandardMaterial
-        ref={materialRef}
-        color={color}
-        emissive={emissive}
-        transparent
-        opacity={opacity}
-        roughness={roughness}
-        metalness={metalness}
-      />
-    </instancedMesh>
-  );
-}
-
-function MovingPulses({
-  curve,
-  count,
-  radius,
-  color,
-  speed,
-  intensity,
-  phase = 0
-}: {
-  curve: THREE.CatmullRomCurve3;
-  count: number;
-  radius: number;
-  color: string;
-  speed: number;
-  intensity: number;
-  phase?: number;
-}) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const materialRef = useRef<THREE.MeshStandardMaterial>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const lookTarget = useMemo(() => new THREE.Vector3(), []);
-
-  useFrame((state) => {
-    const mesh = meshRef.current;
-    if (!mesh || count === 0) {
-      return;
-    }
-
-    for (let index = 0; index < count; index += 1) {
-      const offset = count === 1 ? 0 : index / count;
-      const t = (state.clock.elapsedTime * speed + phase + offset) % 1;
-      const point = curve.getPointAt(t);
-      const tangent = curve.getTangentAt(t).normalize();
-      const scale = radius * (0.7 + intensity * 0.7);
-
-      dummy.position.copy(point);
-      lookTarget.copy(point).addScaledVector(tangent, 1);
-      dummy.lookAt(lookTarget);
-      dummy.rotateY(Math.PI / 2);
-      dummy.scale.set(scale * 2.8, scale * 0.62, scale * 0.62);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(index, dummy.matrix);
-    }
-
-    mesh.instanceMatrix.needsUpdate = true;
-
-    if (materialRef.current) {
-      materialRef.current.opacity = 0.16 + intensity * 0.68;
-      materialRef.current.emissiveIntensity = 0.24 + intensity * 1.2;
-    }
-  });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <boxGeometry args={[radius, radius, radius]} />
-      <meshStandardMaterial
-        ref={materialRef}
-        color={color}
-        emissive={color}
-        transparent
-        opacity={0.64}
-        roughness={0.18}
-        metalness={0.08}
-      />
-    </instancedMesh>
-  );
-}
-
-function CameraRig({
+function SceneLighting({
   activeStage,
   stageProgress,
-  tier,
-  variant
+  reducedMotion
 }: {
   activeStage: AtlasStateId;
   stageProgress: number;
-  tier: ViewportTier;
-  variant: "hero" | "system";
+  reducedMotion: boolean;
 }) {
-  const { camera, pointer } = useThree();
-  const perspectiveCamera = camera as THREE.PerspectiveCamera;
-  const targetRef = useRef(
-    new THREE.Vector3(...atlasScenePresets[activeStage].camera.target)
-  );
+  const ambientRef = useRef<THREE.AmbientLight>(null);
+  const keyRef = useRef<THREE.DirectionalLight>(null);
+  const fillRef = useRef<THREE.DirectionalLight>(null);
+  const rimRef = useRef<THREE.PointLight>(null);
+  const accentRef = useRef<THREE.PointLight>(null);
 
   useFrame((_, delta) => {
     const preset = atlasScenePresets[activeStage];
-    const phase = smoothPhase(stageProgress);
-    const pointerInfluence = TIER_SETTINGS[tier].pointerInfluence;
-    const pointerX = pointer.x * preset.motion.drift * 0.26 * pointerInfluence;
-    const pointerY = pointer.y * preset.motion.drift * 0.12 * pointerInfluence;
-    const targetPosition = preset.camera.position;
-    const positionTravel = preset.camera.travel;
-    const targetTravel = preset.camera.targetTravel;
-    const tierPositionOffset =
-      tier === "mobile"
-        ? (variant === "hero"
-            ? ([0.3, 0.16, 1.38] as const)
-            : ([0.46, 0.18, 1.02] as const))
-        : tier === "tablet"
-          ? (variant === "hero"
-              ? ([0.1, 0.04, 0.6] as const)
-              : ([0.18, 0.04, 0.28] as const))
-          : (variant === "hero"
-              ? ([0.12, 0.02, 0.64] as const)
-              : ([0, -0.04, 0.12] as const));
-    const tierTargetOffset =
-      tier === "mobile"
-        ? ([0.1, 0.16, 0] as const)
-        : tier === "tablet"
-          ? ([0.04, 0.08, 0] as const)
-          : ([0, 0, 0] as const);
-
-    perspectiveCamera.position.x = THREE.MathUtils.damp(
-      perspectiveCamera.position.x,
-      targetPosition[0] + positionTravel[0] * phase + pointerX + tierPositionOffset[0],
-      2.8,
-      delta
-    );
-    perspectiveCamera.position.y = THREE.MathUtils.damp(
-      perspectiveCamera.position.y,
-      targetPosition[1] + positionTravel[1] * phase + pointerY + tierPositionOffset[1],
-      2.8,
-      delta
-    );
-    perspectiveCamera.position.z = THREE.MathUtils.damp(
-      perspectiveCamera.position.z,
-      targetPosition[2] + positionTravel[2] * phase + tierPositionOffset[2],
-      2.8,
-      delta
-    );
-    perspectiveCamera.fov = THREE.MathUtils.damp(
-      perspectiveCamera.fov,
-      preset.camera.fov,
-      3,
-      delta
-    );
-    perspectiveCamera.updateProjectionMatrix();
-
-    targetRef.current.x = THREE.MathUtils.damp(
-      targetRef.current.x,
-      preset.camera.target[0] + targetTravel[0] * phase + tierTargetOffset[0],
-      3,
-      delta
-    );
-    targetRef.current.y = THREE.MathUtils.damp(
-      targetRef.current.y,
-      preset.camera.target[1] + targetTravel[1] * phase + tierTargetOffset[1],
-      3,
-      delta
-    );
-    targetRef.current.z = THREE.MathUtils.damp(
-      targetRef.current.z,
-      preset.camera.target[2] + targetTravel[2] * phase + tierTargetOffset[2],
-      3,
-      delta
-    );
-
-    perspectiveCamera.lookAt(targetRef.current);
-  });
-
-  return null;
-}
-
-function SceneLighting({ activeStage }: { activeStage: AtlasStateId }) {
-  const ambientRef = useRef<THREE.AmbientLight>(null);
-  const keyRef = useRef<THREE.DirectionalLight>(null);
-  const rimRef = useRef<THREE.DirectionalLight>(null);
-  const labsRef = useRef<THREE.PointLight>(null);
-  const programRef = useRef<THREE.PointLight>(null);
-  const networkRef = useRef<THREE.PointLight>(null);
-
-  useFrame((_, delta) => {
-    const lighting = atlasScenePresets[activeStage].lighting;
+    const reveal = reducedMotion ? 0.18 : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
+    const accentBoost =
+      activeStage === "program"
+        ? 0.12
+        : activeStage === "network"
+          ? 0.18
+          : 0.08;
 
     if (ambientRef.current) {
-      ambientRef.current.intensity = THREE.MathUtils.damp(
+      ambientRef.current.intensity = dampScalar(
         ambientRef.current.intensity,
-        lighting.fill,
-        3,
+        0.34 + preset.lighting.fill * 0.22,
+        6,
         delta
       );
     }
 
     if (keyRef.current) {
-      keyRef.current.intensity = THREE.MathUtils.damp(
+      keyRef.current.intensity = dampScalar(
         keyRef.current.intensity,
-        lighting.key,
-        3,
+        1.5 + preset.lighting.key * 0.52 + reveal * 0.12,
+        6,
+        delta
+      );
+    }
+
+    if (fillRef.current) {
+      fillRef.current.intensity = dampScalar(
+        fillRef.current.intensity,
+        0.46 + preset.lighting.fill * 0.34,
+        6,
         delta
       );
     }
 
     if (rimRef.current) {
-      rimRef.current.intensity = THREE.MathUtils.damp(
+      rimRef.current.intensity = dampScalar(
         rimRef.current.intensity,
-        lighting.rim,
-        3,
+        0.38 + preset.lighting.rim * 0.48 + reveal * 0.08,
+        6,
         delta
       );
     }
 
-    if (labsRef.current) {
-      labsRef.current.intensity = THREE.MathUtils.damp(
-        labsRef.current.intensity,
-        lighting.accent * 0.78,
-        3,
-        delta
-      );
-    }
-
-    if (programRef.current) {
-      programRef.current.intensity = THREE.MathUtils.damp(
-        programRef.current.intensity,
-        lighting.accent,
-        3,
-        delta
-      );
-    }
-
-    if (networkRef.current) {
-      networkRef.current.intensity = THREE.MathUtils.damp(
-        networkRef.current.intensity,
-        lighting.accent * 1.08,
-        3,
+    if (accentRef.current) {
+      accentRef.current.intensity = dampScalar(
+        accentRef.current.intensity,
+        0.26 + preset.lighting.accent * 0.56 + accentBoost,
+        6,
         delta
       );
     }
@@ -677,1399 +243,670 @@ function SceneLighting({ activeStage }: { activeStage: AtlasStateId }) {
 
   return (
     <>
-      <ambientLight ref={ambientRef} intensity={0.48} color="#adb7b2" />
+      <ambientLight ref={ambientRef} color="#dde5dc" intensity={0.48} />
       <directionalLight
         ref={keyRef}
-        position={[5.5, 6.4, 4.6]}
-        intensity={1}
-        color="#f5f3ec"
+        position={[5.4, 7.4, 8.8]}
+        color="#f6f4ef"
+        intensity={1.85}
       />
       <directionalLight
+        ref={fillRef}
+        position={[-5.2, 2.8, 5.8]}
+        color="#8ab89d"
+        intensity={0.68}
+      />
+      <pointLight
         ref={rimRef}
-        position={[-4.2, 4.4, -5.5]}
+        position={[-4.8, 6.4, -5.6]}
+        color="#a7bfff"
+        intensity={0.72}
+        distance={24}
+        decay={2}
+      />
+      <pointLight
+        ref={accentRef}
+        position={[3.4, -1.8, 4.2]}
+        color="#7fd3b1"
         intensity={0.74}
-        color="#b4d7c8"
-      />
-      <pointLight
-        ref={labsRef}
-        position={[-2.6, 0.4, 3.8]}
-        intensity={0.42}
-        color={COLORS.labs}
-      />
-      <pointLight
-        ref={programRef}
-        position={[0.2, -1.8, 2.6]}
-        intensity={0.52}
-        color={COLORS.program}
-      />
-      <pointLight
-        ref={networkRef}
-        position={[2.8, 2.8, 2.4]}
-        intensity={0.62}
-        color={COLORS.network}
+        distance={16}
+        decay={2}
       />
     </>
   );
 }
 
-function MonolithShell({
-  tier,
-  shellMaterials,
-  glassMaterials,
-  leftPanelRef,
-  rightPanelRef,
-  topCapRef,
-  glassPrimaryRef,
-  glassSecondaryRef
-}: {
-  tier: ViewportTier;
-  shellMaterials: MutableRefObject<THREE.Material[]>;
-  glassMaterials: MutableRefObject<THREE.Material[]>;
-  leftPanelRef: MutableRefObject<THREE.Mesh | null>;
-  rightPanelRef: MutableRefObject<THREE.Mesh | null>;
-  topCapRef: MutableRefObject<THREE.Mesh | null>;
-  glassPrimaryRef: MutableRefObject<THREE.Mesh | null>;
-  glassSecondaryRef: MutableRefObject<THREE.Mesh | null>;
-}) {
-  const glassOpacity = TIER_SETTINGS[tier].glassOpacity;
-  const shellTexture = useMemo(() => buildNoiseTexture(48, tier === "desktop" ? 5 : 3), [tier]);
-  const shellRibs = useMemo(() => buildShellRibs(), []);
-  const shellSeamPlates = useMemo(() => buildShellSeamPlates(), []);
-
-  return (
-    <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.9, 0]}>
-        <circleGeometry args={[4.4, 60]} />
-        <meshBasicMaterial color={COLORS.shell} transparent opacity={0.34} />
-      </mesh>
-
-      <mesh position={[0.08, 0, -0.88]}>
-        <boxGeometry args={[2.72, 5.34, 0.16]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 0)}
-          color={COLORS.shell}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.96}
-          roughness={0.86}
-          metalness={0.18}
-          clearcoat={0.06}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.02}
-        />
-      </mesh>
-
-      <mesh position={[-1.3, 0.05, -0.02]}>
-        <boxGeometry args={[0.2, 5.44, 1.84]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 1)}
-          color={COLORS.shell}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.92}
-          roughness={0.84}
-          metalness={0.18}
-          clearcoat={0.05}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.018}
-        />
-      </mesh>
-
-      <mesh position={[1.18, -0.04, 0.08]} rotation={[0, -0.04, 0]}>
-        <boxGeometry args={[0.22, 5.18, 1.72]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 2)}
-          color={COLORS.graphite}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.92}
-          roughness={0.8}
-          metalness={0.2}
-          clearcoat={0.06}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.018}
-        />
-      </mesh>
-
-      <mesh ref={topCapRef} position={[0.02, 2.76, -0.04]} rotation={[0.02, 0.03, -0.01]}>
-        <boxGeometry args={[2.18, 0.22, 1.4]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 3)}
-          color={COLORS.graphite}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.94}
-          roughness={0.82}
-          metalness={0.18}
-          clearcoat={0.08}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.018}
-        />
-      </mesh>
-
-      <mesh position={[0.02, -2.78, -0.04]}>
-        <boxGeometry args={[2.3, 0.2, 1.48]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 4)}
-          color={COLORS.shell}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.94}
-          roughness={0.84}
-          metalness={0.16}
-          clearcoat={0.05}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.018}
-        />
-      </mesh>
-
-      <mesh ref={leftPanelRef} position={[-0.6, 0.1, 0.78]} rotation={[0, 0.01, 0]}>
-        <boxGeometry args={[0.86, 4.98, 0.1]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 5)}
-          color={COLORS.graphite}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.9}
-          roughness={0.8}
-          metalness={0.18}
-          clearcoat={0.06}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.014}
-        />
-      </mesh>
-
-      <mesh ref={rightPanelRef} position={[0.58, 0.02, 0.72]} rotation={[0, -0.03, 0]}>
-        <boxGeometry args={[0.98, 5.08, 0.1]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 6)}
-          color={COLORS.shell}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.92}
-          roughness={0.82}
-          metalness={0.16}
-          clearcoat={0.06}
-          roughnessMap={shellTexture}
-          bumpMap={shellTexture}
-          bumpScale={0.014}
-        />
-      </mesh>
-
-      <mesh position={[-0.18, 0.04, 0.54]}>
-        <boxGeometry args={[0.08, 4.4, 0.44]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(shellMaterials, 7)}
-          color={COLORS.shell}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.82}
-          roughness={0.86}
-          metalness={0.14}
-        />
-      </mesh>
-
-      <mesh position={[-0.28, 0, -0.16]}>
-        <boxGeometry args={[0.06, 5.1, 1.3]} />
-        <meshStandardMaterial
-          ref={registerMaterial(shellMaterials, 8)}
-          color={COLORS.steel}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.24}
-          roughness={0.48}
-          metalness={0.42}
-        />
-      </mesh>
-
-      <mesh position={[0.52, 0.02, -0.1]}>
-        <boxGeometry args={[0.05, 4.88, 1.18]} />
-        <meshStandardMaterial
-          ref={registerMaterial(shellMaterials, 9)}
-          color={COLORS.steel}
-          emissive={COLORS.shellEdge}
-          transparent
-          opacity={0.2}
-          roughness={0.46}
-          metalness={0.42}
-        />
-      </mesh>
-
-      <mesh ref={glassPrimaryRef} position={[-0.18, 0.04, -0.05]}>
-        <boxGeometry args={[0.9, 4.84, 0.03]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(glassMaterials, 0)}
-          color={COLORS.glass}
-          transparent
-          opacity={glassOpacity}
-          transmission={0.08}
-          roughness={0.3}
-          metalness={0.04}
-          clearcoat={0.08}
-          roughnessMap={shellTexture}
-        />
-      </mesh>
-
-      <mesh ref={glassSecondaryRef} position={[0.48, -0.12, -0.12]} rotation={[0, 0.04, 0]}>
-        <boxGeometry args={[0.7, 4.2, 0.028]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(glassMaterials, 1)}
-          color={COLORS.glass}
-          transparent
-          opacity={glassOpacity * 0.84}
-          transmission={0.06}
-          roughness={0.34}
-          metalness={0.04}
-          clearcoat={0.06}
-          roughnessMap={shellTexture}
-        />
-      </mesh>
-
-      <InstancedBoxes
-        instances={shellRibs}
-        args={[0.03, 4.9, 0.08]}
-        color={COLORS.steel}
-        emissive={COLORS.shellEdge}
-        opacity={0.2}
-        roughness={0.42}
-        metalness={0.4}
-        materialRef={registerMaterial(shellMaterials, 10)}
-      />
-
-      <InstancedBoxes
-        instances={shellSeamPlates}
-        args={[0.28, 0.024, 0.16]}
-        color={COLORS.steel}
-        emissive={COLORS.shellEdge}
-        opacity={0.22}
-        roughness={0.34}
-        metalness={0.38}
-        materialRef={registerMaterial(shellMaterials, 11)}
-      />
-    </group>
-  );
-}
-
-function InfrastructureLayer({
-  tier,
-  groupRef,
-  materials
-}: {
-  tier: ViewportTier;
-  groupRef: MutableRefObject<THREE.Group | null>;
-  materials: MutableRefObject<THREE.Material[]>;
-}) {
-  const settings = TIER_SETTINGS[tier];
-  const chambers = useMemo(
-    () => buildChamberInstances(settings.chamberRows, settings.chamberCols),
-    [settings.chamberCols, settings.chamberRows]
-  );
-  const supportNodes = useMemo(
-    () => buildLabNodeInstances(settings.labNodeCount),
-    [settings.labNodeCount]
-  );
-  const auxFrames = useMemo(
-    () => buildLabAuxFrames(Math.max(4, settings.labNodeCount - 1)),
-    [settings.labNodeCount]
-  );
-
-  const conduitPath = useMemo(
-    () =>
-      sampleCurve(
-        [
-          [-1.02, 1.98, 0.24],
-          [-0.66, 1.74, 0.12],
-          [-0.18, 1.58, 0.18],
-          [0.34, 1.52, 0.12],
-          [1.02, 1.24, 0.02]
-        ],
-        false,
-        44
-      ),
-    []
-  );
-
-  const secondaryPath = useMemo(
-    () =>
-      sampleCurve(
-        [
-          [-0.94, 0.96, 0.44],
-          [-0.44, 1.12, 0.3],
-          [0.18, 1.06, 0.16],
-          [0.86, 0.82, 0.02]
-        ],
-        false,
-        36
-      ),
-    []
-  );
-
-  return (
-    <group ref={groupRef}>
-      <InstancedBoxes
-        instances={chambers}
-        args={[0.17, 0.18, 0.14]}
-        color={COLORS.steel}
-        emissive={COLORS.labs}
-        opacity={0.76}
-        roughness={0.28}
-        metalness={0.16}
-        materialRef={registerMaterial(materials, 0)}
-      />
-
-      <mesh position={[-0.88, 1.08, -0.18]}>
-        <boxGeometry args={[0.48, 1.04, 0.36]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 1)}
-          color={COLORS.graphite}
-          emissive={COLORS.labs}
-          transparent
-          opacity={0.7}
-          roughness={0.34}
-          metalness={0.18}
-        />
-      </mesh>
-
-      <mesh position={[0.82, 1.28, -0.12]}>
-        <boxGeometry args={[0.62, 1.34, 0.34]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 2)}
-          color={COLORS.graphite}
-          emissive={COLORS.labs}
-          transparent
-          opacity={0.72}
-          roughness={0.3}
-          metalness={0.16}
-        />
-      </mesh>
-
-      <mesh position={[-0.08, 1.34, 0.18]}>
-        <boxGeometry args={[1.96, 0.06, 0.06]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 3)}
-          color={COLORS.labs}
-          emissive={COLORS.labs}
-          transparent
-          opacity={0.58}
-          roughness={0.24}
-          metalness={0.08}
-        />
-      </mesh>
-
-      <mesh position={[0.1, 0.9, 0.14]}>
-        <boxGeometry args={[1.44, 0.04, 0.04]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 4)}
-          color={COLORS.steel}
-          emissive={COLORS.labs}
-          transparent
-          opacity={0.34}
-          roughness={0.32}
-          metalness={0.12}
-        />
-      </mesh>
-
-      <Line points={conduitPath} color={COLORS.labs} transparent opacity={0.48} />
-      <Line points={secondaryPath} color={COLORS.labs} transparent opacity={0.36} />
-
-      <InstancedBoxes
-        instances={supportNodes}
-        args={[0.09, 0.16, 0.09]}
-        color={COLORS.labs}
-        emissive={COLORS.labs}
-        opacity={0.76}
-        roughness={0.18}
-        metalness={0.08}
-        materialRef={registerMaterial(materials, 5)}
-      />
-
-      <InstancedBoxes
-        instances={auxFrames}
-        args={[0.16, 0.04, 0.24]}
-        color={COLORS.steel}
-        emissive={COLORS.labs}
-        opacity={0.46}
-        roughness={0.24}
-        metalness={0.18}
-        materialRef={registerMaterial(materials, 6)}
-      />
-
-      <mesh position={[0.12, 1.76, -0.04]}>
-        <boxGeometry args={[1.84, 0.08, 0.2]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 7)}
-          color={COLORS.graphite}
-          emissive={COLORS.labs}
-          transparent
-          opacity={0.4}
-          roughness={0.24}
-          metalness={0.22}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function ProgramLayer({
-  tier,
-  groupRef,
-  materials
-}: {
-  tier: ViewportTier;
-  groupRef: MutableRefObject<THREE.Group | null>;
-  materials: MutableRefObject<THREE.Material[]>;
-}) {
-  const settings = TIER_SETTINGS[tier];
-  const stations = useMemo(
-    () => buildProgramStations(settings.stationCount),
-    [settings.stationCount]
-  );
-  const checkpoints = useMemo(
-    () => buildProgramCheckpoints(settings.checkpointCount),
-    [settings.checkpointCount]
-  );
-  const markers = useMemo(
-    () => buildProgramMarkers(Math.max(4, settings.stationCount - 1)),
-    [settings.stationCount]
-  );
-
-  const outerLoop = useMemo(
-    () =>
-      sampleCurve(
-        [
-          [-1.02, -0.82, 0.32],
-          [-0.68, -0.42, 0.46],
-          [0.04, -0.28, 0.24],
-          [0.86, -0.5, -0.04],
-          [1.16, -0.96, 0.06],
-          [0.66, -1.34, 0.4],
-          [-0.1, -1.42, 0.36],
-          [-0.86, -1.22, 0.2]
-        ],
-        true,
-        72
-      ),
-    []
-  );
-
-  const innerLoop = useMemo(
-    () =>
-      sampleCurve(
-        [
-          [-0.62, -0.88, 0.06],
-          [-0.32, -0.58, 0.16],
-          [0.22, -0.52, 0.08],
-          [0.74, -0.8, -0.02],
-          [0.74, -1.12, 0.08],
-          [0.2, -1.28, 0.2],
-          [-0.4, -1.18, 0.14],
-          [-0.74, -0.98, 0.02]
-        ],
-        true,
-        64
-      ),
-    []
-  );
-
-  return (
-    <group ref={groupRef}>
-      <mesh position={[0, -0.86, -0.1]}>
-        <boxGeometry args={[1.82, 0.08, 0.8]} />
-        <meshPhysicalMaterial
-          ref={registerMaterial(materials, 0)}
-          color={COLORS.glass}
-          transparent
-          opacity={0.16}
-          transmission={0.06}
-          roughness={0.34}
-          metalness={0.04}
-        />
-      </mesh>
-
-      <Line points={outerLoop} color={COLORS.program} transparent opacity={0.62} />
-      <Line points={innerLoop} color={COLORS.program} transparent opacity={0.34} />
-
-      <InstancedBoxes
-        instances={stations}
-        args={[0.22, 0.08, 0.12]}
-        color={COLORS.steel}
-        emissive={COLORS.program}
-        opacity={0.6}
-        roughness={0.24}
-        metalness={0.12}
-        materialRef={registerMaterial(materials, 1)}
-      />
-
-      <InstancedBoxes
-        instances={checkpoints}
-        args={[0.08, 0.18, 0.06]}
-        color={COLORS.program}
-        emissive={COLORS.program}
-        opacity={0.74}
-        roughness={0.18}
-        metalness={0.08}
-        materialRef={registerMaterial(materials, 2)}
-      />
-
-      <InstancedBoxes
-        instances={markers}
-        args={[0.12, 0.05, 0.08]}
-        color={COLORS.steel}
-        emissive={COLORS.program}
-        opacity={0.5}
-        roughness={0.22}
-        metalness={0.18}
-        materialRef={registerMaterial(materials, 5)}
-      />
-
-      <mesh position={[-0.22, -0.64, 0.26]} rotation={[0, 0.22, 0]}>
-        <boxGeometry args={[0.06, 1.16, 0.06]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 3)}
-          color={COLORS.program}
-          emissive={COLORS.program}
-          transparent
-          opacity={0.48}
-          roughness={0.2}
-          metalness={0.12}
-        />
-      </mesh>
-
-      <mesh position={[0.58, -1.04, 0.08]}>
-        <boxGeometry args={[0.05, 0.92, 0.05]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 4)}
-          color={COLORS.program}
-          emissive={COLORS.program}
-          transparent
-          opacity={0.42}
-          roughness={0.22}
-          metalness={0.12}
-        />
-      </mesh>
-
-      <mesh position={[0.04, -1.24, 0.18]}>
-        <boxGeometry args={[1.12, 0.05, 0.24]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 6)}
-          color={COLORS.steel}
-          emissive={COLORS.program}
-          transparent
-          opacity={0.34}
-          roughness={0.26}
-          metalness={0.18}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function NetworkLayer({
-  tier,
-  groupRef,
-  materials
-}: {
-  tier: ViewportTier;
-  groupRef: MutableRefObject<THREE.Group | null>;
-  materials: MutableRefObject<THREE.Material[]>;
-}) {
-  const settings = TIER_SETTINGS[tier];
-  const networkNodes = useMemo(
-    () => buildNetworkNodes(settings.networkNodeCount),
-    [settings.networkNodeCount]
-  );
-  const spines = useMemo(() => buildNetworkSpines(), []);
-
-  const outerCrown = useMemo(
-    () =>
-      sampleCurve(
-        [
-          [-1.88, 2.08, 0.1],
-          [-1.46, 2.38, -0.24],
-          [-0.72, 2.58, -0.34],
-          [0.12, 2.62, -0.28],
-          [0.96, 2.44, -0.2],
-          [1.72, 2.14, 0.06],
-          [1.44, 1.96, 0.34],
-          [0.72, 1.9, 0.44],
-          [-0.16, 1.96, 0.4],
-          [-1.02, 2.02, 0.3]
-        ],
-        true,
-        96
-      ),
-    []
-  );
-
-  const innerCrown = useMemo(
-    () =>
-      sampleCurve(
-        [
-          [-1.28, 2, 0.1],
-          [-0.84, 2.2, -0.12],
-          [-0.24, 2.28, -0.16],
-          [0.42, 2.24, -0.1],
-          [1, 2.04, 0.04],
-          [0.86, 1.92, 0.24],
-          [0.3, 1.84, 0.3],
-          [-0.42, 1.86, 0.28],
-          [-1.02, 1.92, 0.22]
-        ],
-        true,
-        72
-      ),
-    []
-  );
-
-  const bridgePaths = useMemo(
-    () =>
-      [
-        sampleCurve(
-          [
-            [-1.1, 2.04, 0.32],
-            [-1.46, 2.24, 0.08],
-            [-1.82, 2.18, -0.08]
-          ],
-          false,
-          20
-        ),
-        sampleCurve(
-          [
-            [0.42, 2.1, 0.26],
-            [1.14, 2.34, 0.06],
-            [1.8, 2.18, -0.04]
-          ],
-          false,
-          22
-        ),
-        sampleCurve(
-          [
-            [0.16, 1.92, -0.1],
-            [0.42, 2.44, -0.34],
-            [0.06, 2.58, -0.42]
-          ],
-          false,
-          22
-        )
-      ],
-    []
-  );
-
-  return (
-    <group ref={groupRef}>
-      <Line points={outerCrown} color={COLORS.network} transparent opacity={0.54} />
-      <Line points={innerCrown} color={COLORS.network} transparent opacity={0.28} />
-      {bridgePaths.map((points, index) => (
-        <Line
-          key={`network-bridge-${index}`}
-          points={points}
-          color={COLORS.network}
-          transparent
-          opacity={0.32}
-        />
-      ))}
-
-      <InstancedBoxes
-        instances={networkNodes}
-        args={[0.11, 0.16, 0.08]}
-        color={COLORS.network}
-        emissive={COLORS.network}
-        opacity={0.76}
-        roughness={0.16}
-        metalness={0.08}
-        materialRef={registerMaterial(materials, 0)}
-      />
-
-      <InstancedBoxes
-        instances={spines}
-        args={[0.58, 0.04, 0.08]}
-        color={COLORS.steel}
-        emissive={COLORS.network}
-        opacity={0.34}
-        roughness={0.28}
-        metalness={0.26}
-        materialRef={registerMaterial(materials, 1)}
-      />
-
-      <mesh position={[0.06, 2.12, -0.18]} rotation={[0.08, -0.04, 0]}>
-        <boxGeometry args={[1.86, 0.05, 0.18]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 2)}
-          color={COLORS.steel}
-          emissive={COLORS.network}
-          transparent
-          opacity={0.26}
-          roughness={0.24}
-          metalness={0.22}
-        />
-      </mesh>
-
-      <mesh position={[0.12, 2.42, -0.24]} rotation={[0, 0.08, 0]}>
-        <boxGeometry args={[1.26, 0.04, 0.14]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 3)}
-          color={COLORS.network}
-          emissive={COLORS.network}
-          transparent
-          opacity={0.32}
-          roughness={0.18}
-          metalness={0.16}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function SignalTraffic({
-  tier,
-  activeStage,
-  speed,
-  density
-}: {
-  tier: ViewportTier;
-  activeStage: AtlasStateId;
-  speed: number;
-  density: number;
-}) {
-  const settings = TIER_SETTINGS[tier];
-  const pulseCount = Math.max(1, Math.round(settings.pulseCount * density));
-  const labCurve = useMemo(
-    () =>
-      curveFromPoints([
-        [-1.06, 2.02, 0.24],
-        [-0.58, 1.72, 0.16],
-        [-0.02, 1.5, 0.22],
-        [0.72, 1.28, 0.06],
-        [1.08, 1.04, -0.04]
-      ]),
-    []
-  );
-  const programCurve = useMemo(
-    () =>
-      curveFromPoints(
-        [
-          [-1.02, -0.82, 0.32],
-          [-0.68, -0.42, 0.46],
-          [0.04, -0.28, 0.24],
-          [0.86, -0.5, -0.04],
-          [1.16, -0.96, 0.06],
-          [0.66, -1.34, 0.4],
-          [-0.1, -1.42, 0.36],
-          [-0.86, -1.22, 0.2]
-        ],
-        true
-      ),
-    []
-  );
-  const networkCurve = useMemo(
-    () =>
-      curveFromPoints(
-        [
-          [-1.88, 2.08, 0.1],
-          [-1.46, 2.38, -0.24],
-          [-0.72, 2.58, -0.34],
-          [0.12, 2.62, -0.28],
-          [0.96, 2.44, -0.2],
-          [1.72, 2.14, 0.06],
-          [1.44, 1.96, 0.34],
-          [0.72, 1.9, 0.44],
-          [-0.16, 1.96, 0.4],
-          [-1.02, 2.02, 0.3]
-        ],
-        true
-      ),
-    []
-  );
-
-  return (
-    <group>
-      <MovingPulses
-        curve={labCurve}
-        count={activeStage === "opening" ? 1 : pulseCount}
-        radius={0.04}
-        color={COLORS.labs}
-        speed={speed * 0.38}
-        intensity={activeStage === "labs" ? 1 : 0.42}
-        phase={0.08}
-      />
-      <MovingPulses
-        curve={programCurve}
-        count={Math.max(1, pulseCount + (activeStage === "program" ? 1 : 0))}
-        radius={0.035}
-        color={COLORS.program}
-        speed={speed * 0.44}
-        intensity={activeStage === "program" ? 1 : 0.4}
-        phase={0.22}
-      />
-      <MovingPulses
-        curve={networkCurve}
-        count={Math.max(1, pulseCount)}
-        radius={0.032}
-        color={COLORS.network}
-        speed={speed * 0.28}
-        intensity={activeStage === "network" ? 1 : 0.36}
-        phase={0.42}
-      />
-    </group>
-  );
-}
-
-function Atmospherics({
-  tier,
-  activeStage
-}: {
-  tier: ViewportTier;
-  activeStage: AtlasStateId;
-}) {
-  const groupRef = useRef<THREE.Points>(null);
-  const materialRef = useRef<THREE.PointsMaterial>(null);
-  const positions = useMemo(
-    () => buildParticlePositions(TIER_SETTINGS[tier].particleCount),
-    [tier]
-  );
-
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.035;
-      groupRef.current.rotation.x = THREE.MathUtils.damp(
-        groupRef.current.rotation.x,
-        activeStage === "program" ? 0.08 : activeStage === "network" ? -0.06 : 0,
-        2,
-        delta
-      );
-    }
-
-    if (materialRef.current) {
-      materialRef.current.opacity = THREE.MathUtils.damp(
-        materialRef.current.opacity,
-        activeStage === "closing" ? 0.08 : 0.14,
-        2,
-        delta
-      );
-    }
-  });
-
-  return (
-    <points ref={groupRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        ref={materialRef}
-        color={COLORS.textMuted}
-        size={tier === "mobile" ? 0.028 : 0.036}
-        sizeAttenuation
-        transparent
-        opacity={0.14}
-      />
-    </points>
-  );
-}
-
-function MonolithScene({
+function SceneDirector({
   activeStage,
   stageProgress,
   tier,
   variant,
-  paused = false
+  reducedMotion,
+  paused
 }: {
   activeStage: AtlasStateId;
   stageProgress: number;
   tier: ViewportTier;
-  variant: "hero" | "system";
-  paused?: boolean;
+  variant: SceneVariant;
+  reducedMotion: boolean;
+  paused: boolean;
 }) {
-  const rootRef = useRef<THREE.Group>(null);
-  const shellMaterials = useRef<THREE.Material[]>([]);
-  const glassMaterials = useRef<THREE.Material[]>([]);
-  const labsMaterials = useRef<THREE.Material[]>([]);
-  const programMaterials = useRef<THREE.Material[]>([]);
-  const networkMaterials = useRef<THREE.Material[]>([]);
+  const { camera } = useThree();
+  const lookTarget = useRef(new THREE.Vector3());
+  const desiredPosition = useRef(new THREE.Vector3());
 
-  const leftPanelRef = useRef<THREE.Mesh>(null);
-  const rightPanelRef = useRef<THREE.Mesh>(null);
-  const topCapRef = useRef<THREE.Mesh>(null);
-  const glassPrimaryRef = useRef<THREE.Mesh>(null);
-  const glassSecondaryRef = useRef<THREE.Mesh>(null);
+  useFrame((state, delta) => {
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
+    const preset = atlasScenePresets[activeStage];
+    const tierOffset = VIEWPORT_CONFIG[tier].cameraOffset;
+    const reveal =
+      variant === "hero"
+        ? 0.16
+        : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.96);
 
-  const labsRef = useRef<THREE.Group>(null);
-  const programRef = useRef<THREE.Group>(null);
-  const networkRef = useRef<THREE.Group>(null);
+    const basePosition = addScaledVector(
+      preset.camera.position,
+      preset.camera.travel,
+      reducedMotion ? 0.12 : reveal
+    );
+    const baseTarget = addScaledVector(
+      preset.camera.target,
+      preset.camera.targetTravel,
+      reducedMotion ? 0.08 : reveal
+    );
 
-  const current = useRef({
-    exposure: 0.08,
-    split: 0.04,
-    cutDepth: 0.06,
-    crown: 0.14,
-    labs: 0.28,
-    program: 0.18,
-    network: 0.16,
-    signalDensity: 0.28,
-    signalSpeed: 0.34,
-    float: 0.2,
-    rotation: 0.08
+    const variantOffset =
+      variant === "hero"
+        ? new THREE.Vector3(1.18, 0.26, -1.1)
+        : new THREE.Vector3(-0.18, -0.06, 0.22);
+
+    desiredPosition.current.copy(basePosition);
+    desiredPosition.current.add(vec3(tierOffset));
+    desiredPosition.current.add(variantOffset);
+
+    lookTarget.current.copy(baseTarget);
+    lookTarget.current.add(
+      variant === "hero"
+        ? new THREE.Vector3(0.58, 0.2, 0.02)
+        : new THREE.Vector3(0.08, 0.02, 0)
+    );
+
+    if (!reducedMotion && !paused) {
+      const drift = preset.motion.drift;
+      const time = state.clock.getElapsedTime();
+      desiredPosition.current.x += Math.sin(time * 0.28) * drift * 0.36;
+      desiredPosition.current.y += Math.cos(time * 0.22) * drift * 0.26;
+      lookTarget.current.y += Math.sin(time * 0.16) * drift * 0.12;
+    }
+
+    dampVector(perspectiveCamera.position, desiredPosition.current, 5.2, delta);
+    perspectiveCamera.fov = dampScalar(
+      perspectiveCamera.fov,
+      preset.camera.fov + (variant === "hero" ? -1.4 : 0.6),
+      5.2,
+      delta
+    );
+    perspectiveCamera.updateProjectionMatrix();
+    perspectiveCamera.lookAt(lookTarget.current);
   });
+
+  return null;
+}
+
+function pulseNodes(
+  nodes: THREE.Mesh[],
+  focus: number,
+  color: THREE.Color,
+  time: number,
+  reducedMotion: boolean
+) {
+  nodes.forEach((node, index) => {
+    const material = node.material as MaterialSurface;
+    const cycle = reducedMotion
+      ? 0.7
+      : 0.62 + Math.sin(time * 2.1 + index * 0.55) * 0.38;
+    const scale = 1 + focus * 0.16 * cycle;
+
+    node.scale.setScalar(scale);
+    if (material.color) {
+      material.color.lerp(color, 0.08);
+    }
+    if (typeof material.emissiveIntensity === "number") {
+      material.emissiveIntensity = 0.34 + focus * 0.74 * cycle;
+    }
+  });
+}
+
+function AuthoredMonolith({
+  activeStage,
+  stageProgress,
+  tier,
+  variant,
+  reducedMotion,
+  paused
+}: {
+  activeStage: AtlasStateId;
+  stageProgress: number;
+  tier: ViewportTier;
+  variant: SceneVariant;
+  reducedMotion: boolean;
+  paused: boolean;
+}) {
+  const gltf = useGLTF(MONOLITH_GLB_URL) as { scene: THREE.Group };
+  const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
+  const rootRef = useRef<THREE.Group>(null);
+
+  const shellRef = useRef<THREE.Object3D | null>(null);
+  const labsRef = useRef<THREE.Object3D | null>(null);
+  const programRef = useRef<THREE.Object3D | null>(null);
+  const networkRef = useRef<THREE.Object3D | null>(null);
+  const signalRef = useRef<THREE.Object3D | null>(null);
+  const plinthRef = useRef<THREE.Object3D | null>(null);
+
+  const shellMaterials = useRef<MaterialSurface[]>([]);
+  const reinforceMaterials = useRef<MaterialSurface[]>([]);
+  const panelMaterials = useRef<MaterialSurface[]>([]);
+  const interiorMaterials = useRef<MaterialSurface[]>([]);
+  const signalMaterials = useRef<MaterialSurface[]>([]);
+
+  const labNodes = useRef<THREE.Mesh[]>([]);
+  const programNodes = useRef<THREE.Mesh[]>([]);
+  const networkNodes = useRef<THREE.Mesh[]>([]);
+  const trafficNodes = useRef<THREE.Mesh[]>([]);
+
+  useEffect(() => {
+    shellMaterials.current = [];
+    reinforceMaterials.current = [];
+    panelMaterials.current = [];
+    interiorMaterials.current = [];
+    signalMaterials.current = [];
+    labNodes.current = [];
+    programNodes.current = [];
+    networkNodes.current = [];
+    trafficNodes.current = [];
+
+    scene.traverse((object) => {
+      if (object.name === "shell") {
+        shellRef.current = object;
+      } else if (object.name === "lab-core") {
+        labsRef.current = object;
+      } else if (object.name === "program-core") {
+        programRef.current = object;
+      } else if (object.name === "network-crown") {
+        networkRef.current = object;
+      } else if (object.name === "signal-traffic") {
+        signalRef.current = object;
+      } else if (object.name === "plinth") {
+        plinthRef.current = object;
+      }
+
+      const mesh = object as THREE.Mesh;
+      if (!mesh.isMesh || !mesh.material) {
+        return;
+      }
+
+      const materials = Array.isArray(mesh.material)
+        ? mesh.material.map((material) => material.clone())
+        : mesh.material.clone();
+
+      mesh.material = materials;
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+
+      const materialList = Array.isArray(materials) ? materials : [materials];
+      materialList.forEach((material) => {
+        const surface = material as MaterialSurface;
+        surface.transparent = true;
+        switch (surface.name) {
+          case "shell-material":
+            shellMaterials.current.push(surface);
+            break;
+          case "reinforce-material":
+            reinforceMaterials.current.push(surface);
+            break;
+          case "panel-material":
+            panelMaterials.current.push(surface);
+            break;
+          case "interior-material":
+            interiorMaterials.current.push(surface);
+            break;
+          case "signal-material":
+            signalMaterials.current.push(surface);
+            break;
+          default:
+            break;
+        }
+      });
+
+      if (mesh.name.includes("chamber-node")) {
+        labNodes.current.push(mesh);
+      } else if (mesh.name.includes("program-gate")) {
+        programNodes.current.push(mesh);
+      } else if (mesh.name.includes("crown-node")) {
+        networkNodes.current.push(mesh);
+      } else if (mesh.name.includes("pulse")) {
+        trafficNodes.current.push(mesh);
+      }
+    });
+  }, [scene]);
 
   useFrame((state, delta) => {
     const preset = atlasScenePresets[activeStage];
-    const phase = smoothPhase(stageProgress);
-    const elapsed = state.clock.elapsedTime;
-    const motionScale = paused ? 0.18 : 1;
-    const revealBoost =
-      activeStage === "program" ? 0.12 : activeStage === "labs" ? 0.08 : 0.04;
-    const splitBoost =
-      activeStage === "program" ? 0.22 : activeStage === "network" ? 0.18 : 0.12;
-    const cutBoost =
-      activeStage === "program" ? 0.18 : activeStage === "labs" ? 0.1 : 0.08;
+    const viewport = VIEWPORT_CONFIG[tier];
+    const reveal =
+      variant === "hero"
+        ? 0.18
+        : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.96);
+    const time = state.clock.getElapsedTime();
+    const dynamicTime = reducedMotion || paused ? 0 : time;
 
-    current.current.exposure = THREE.MathUtils.damp(
-      current.current.exposure,
-      preset.shell.exposure + revealBoost * phase,
-      3.2,
-      delta
-    );
-    current.current.split = THREE.MathUtils.damp(
-      current.current.split,
-      preset.shell.split + splitBoost * phase,
-      3.2,
-      delta
-    );
-    current.current.cutDepth = THREE.MathUtils.damp(
-      current.current.cutDepth,
-      preset.shell.cutDepth + cutBoost * phase,
-      3.2,
-      delta
-    );
-    current.current.crown = THREE.MathUtils.damp(
-      current.current.crown,
-      preset.shell.crown + (activeStage === "network" ? 0.16 * phase : 0.05 * phase),
-      3.2,
-      delta
-    );
-    current.current.labs = THREE.MathUtils.damp(
-      current.current.labs,
-      preset.layers.labs,
-      3,
-      delta
-    );
-    current.current.program = THREE.MathUtils.damp(
-      current.current.program,
-      preset.layers.program,
-      3,
-      delta
-    );
-    current.current.network = THREE.MathUtils.damp(
-      current.current.network,
-      preset.layers.network,
-      3,
-      delta
-    );
-    current.current.signalDensity = THREE.MathUtils.damp(
-      current.current.signalDensity,
-      preset.signal.density,
-      3,
-      delta
-    );
-    current.current.signalSpeed = THREE.MathUtils.damp(
-      current.current.signalSpeed,
-      preset.signal.speed,
-      3,
-      delta
-    );
-    current.current.float = THREE.MathUtils.damp(
-      current.current.float,
-      preset.motion.float,
-      3,
-      delta
-    );
-    current.current.rotation = THREE.MathUtils.damp(
-      current.current.rotation,
-      preset.motion.rotation,
-      3,
-      delta
-    );
-
-    if (rootRef.current) {
-      const targetScale =
-        variant === "hero"
-          ? tier === "mobile"
-            ? 0.8
-            : tier === "tablet"
-              ? 0.86
-              : 0.91
-          : tier === "mobile"
-            ? 1.02
-            : tier === "tablet"
-              ? 1.06
-              : 1.12;
-      const targetX = variant === "hero" ? 0.08 : 0;
-      const targetY =
-        (variant === "hero" ? 0.02 : -0.08) +
-        Math.sin(elapsed * 0.42) * current.current.float * 0.16 * motionScale;
-
-      rootRef.current.position.x = THREE.MathUtils.damp(
-        rootRef.current.position.x,
-        targetX,
-        3,
-        delta
-      );
-      rootRef.current.position.y = THREE.MathUtils.damp(
-        rootRef.current.position.y,
-        targetY,
-        3,
-        delta
-      );
-      rootRef.current.position.z = THREE.MathUtils.damp(
-        rootRef.current.position.z,
-        variant === "hero" ? 0.06 : -0.04,
-        3,
-        delta
-      );
-      rootRef.current.scale.setScalar(
-        THREE.MathUtils.damp(rootRef.current.scale.x, targetScale, 3, delta)
-      );
-      rootRef.current.rotation.y = THREE.MathUtils.damp(
-        rootRef.current.rotation.y,
-        current.current.rotation * motionScale +
-          (phase - 0.5) * (variant === "hero" ? 0.05 : 0.08),
-        2.4,
-        delta
-      );
-      rootRef.current.rotation.x = THREE.MathUtils.damp(
-        rootRef.current.rotation.x,
-        activeStage === "program"
-          ? -0.02
-          : activeStage === "network"
-            ? -0.05
-            : -0.1 + current.current.network * 0.02,
-        2.4,
-        delta
-      );
+    const root = rootRef.current;
+    if (!root) {
+      return;
     }
 
-    if (leftPanelRef.current) {
-      leftPanelRef.current.position.x = THREE.MathUtils.damp(
-        leftPanelRef.current.position.x,
-        -0.58 - current.current.split * 0.92,
-        3,
-        delta
-      );
-      leftPanelRef.current.position.z = THREE.MathUtils.damp(
-        leftPanelRef.current.position.z,
-        0.8 + current.current.exposure * 0.42,
-        3,
-        delta
-      );
-      leftPanelRef.current.rotation.y = THREE.MathUtils.damp(
-        leftPanelRef.current.rotation.y,
-        0.12 + current.current.split * 0.46,
-        3,
-        delta
-      );
-    }
+    const baseScale =
+      variant === "hero" ? viewport.heroScale : viewport.systemScale;
+    const targetScale = new THREE.Vector3(
+      baseScale,
+      baseScale,
+      baseScale
+    ).multiplyScalar(activeStage === "network" ? 1.04 : 1);
 
-    if (rightPanelRef.current) {
-      rightPanelRef.current.position.x = THREE.MathUtils.damp(
-        rightPanelRef.current.position.x,
-        0.58 + current.current.split * 1,
-        3,
-        delta
-      );
-      rightPanelRef.current.position.z = THREE.MathUtils.damp(
-        rightPanelRef.current.position.z,
-        0.74 + current.current.exposure * 0.44,
-        3,
-        delta
-      );
-      rightPanelRef.current.rotation.y = THREE.MathUtils.damp(
-        rightPanelRef.current.rotation.y,
-        -0.14 - current.current.split * 0.52,
-        3,
-        delta
-      );
-    }
+    const targetPosition =
+      variant === "hero"
+        ? new THREE.Vector3(1.16, -0.36, 0)
+        : new THREE.Vector3(0.02, -0.44, 0);
 
-    if (topCapRef.current) {
-      topCapRef.current.position.y = THREE.MathUtils.damp(
-        topCapRef.current.position.y,
-        2.74 + current.current.exposure * 0.46 + current.current.crown * 0.34,
-        3,
-        delta
-      );
-      topCapRef.current.rotation.z = THREE.MathUtils.damp(
-        topCapRef.current.rotation.z,
-        -0.02 - current.current.exposure * 0.12,
-        3,
-        delta
-      );
-    }
+    const targetRotation = new THREE.Euler(
+      -0.1 + Math.sin(dynamicTime * 0.18) * preset.motion.float * 0.02,
+      variant === "hero"
+        ? -0.92 + preset.motion.rotation * 0.05
+        : -0.56 + preset.motion.rotation * 0.08,
+      0.02
+    );
 
-    if (glassPrimaryRef.current) {
-      glassPrimaryRef.current.position.x = THREE.MathUtils.damp(
-        glassPrimaryRef.current.position.x,
-        -0.14 - current.current.cutDepth * 0.32,
-        3,
-        delta
-      );
-      glassPrimaryRef.current.position.y = THREE.MathUtils.damp(
-        glassPrimaryRef.current.position.y,
-        current.current.program * -0.08 + current.current.network * 0.05,
-        3,
-        delta
-      );
-      glassPrimaryRef.current.position.z = THREE.MathUtils.damp(
-        glassPrimaryRef.current.position.z,
-        -0.06 + current.current.exposure * 0.22,
-        3,
-        delta
-      );
-    }
+    dampVector(root.position, targetPosition, 5.4, delta);
+    dampVector(root.scale, targetScale, 5.4, delta);
+    dampEuler(root.rotation, targetRotation, 5.2, delta);
 
-    if (glassSecondaryRef.current) {
-      glassSecondaryRef.current.position.x = THREE.MathUtils.damp(
-        glassSecondaryRef.current.position.x,
-        0.48 + current.current.cutDepth * 0.2,
-        3,
-        delta
+    if (shellRef.current) {
+      const shellTarget = new THREE.Vector3(
+        0.16 + preset.shell.split * 0.68,
+        0.06 * preset.shell.exposure,
+        -0.18 - preset.shell.cutDepth * 0.34
       );
-      glassSecondaryRef.current.position.y = THREE.MathUtils.damp(
-        glassSecondaryRef.current.position.y,
-        current.current.program * -0.14,
-        3,
-        delta
+      const shellRotation = new THREE.Euler(
+        0.01,
+        0.08 + preset.shell.split * 0.16,
+        -0.01
       );
-      glassSecondaryRef.current.position.z = THREE.MathUtils.damp(
-        glassSecondaryRef.current.position.z,
-        -0.12 + current.current.cutDepth * 0.16,
-        3,
-        delta
-      );
+      dampVector(shellRef.current.position, shellTarget, 5.2, delta);
+      dampEuler(shellRef.current.rotation, shellRotation, 5.2, delta);
     }
 
     if (labsRef.current) {
-      labsRef.current.position.y = THREE.MathUtils.damp(
-        labsRef.current.position.y,
-        0.1 + current.current.labs * 0.22,
-        3,
+      const emphasis = preset.layers.labs;
+      const target = new THREE.Vector3(
+        -0.08 + emphasis * 0.32,
+        0.08 + emphasis * 0.22,
+        0.04 + emphasis * 0.44
+      );
+      dampVector(labsRef.current.position, target, 5.2, delta);
+      dampEuler(
+        labsRef.current.rotation,
+        new THREE.Euler(0, -0.04 + emphasis * 0.12, 0.02),
+        5.2,
         delta
       );
-      labsRef.current.position.z = THREE.MathUtils.damp(
-        labsRef.current.position.z,
-        current.current.cutDepth * 0.24,
-        3,
-        delta
-      );
-      labsRef.current.scale.setScalar(0.72 + current.current.labs * 0.34);
-      labsRef.current.rotation.y = THREE.MathUtils.damp(
-        labsRef.current.rotation.y,
-        0.08 + current.current.labs * 0.22,
-        3,
+      dampVector(
+        labsRef.current.scale,
+        new THREE.Vector3(
+          0.92 + emphasis * 0.18,
+          0.92 + emphasis * 0.18,
+          0.92 + emphasis * 0.18
+        ),
+        5.2,
         delta
       );
     }
 
     if (programRef.current) {
-      programRef.current.position.z = THREE.MathUtils.damp(
-        programRef.current.position.z,
-        current.current.cutDepth * 0.38,
-        3,
+      const emphasis = preset.layers.program;
+      const target = new THREE.Vector3(
+        0.16 + emphasis * 0.18,
+        -0.16 - emphasis * 0.62,
+        0.1 + emphasis * 0.5
+      );
+      dampVector(programRef.current.position, target, 5.2, delta);
+      dampEuler(
+        programRef.current.rotation,
+        new THREE.Euler(0.04, -0.1 + emphasis * 0.14, 0.04),
+        5.2,
         delta
       );
-      programRef.current.position.y = THREE.MathUtils.damp(
-        programRef.current.position.y,
-        -0.18 - current.current.program * 0.06,
-        3,
-        delta
-      );
-      programRef.current.scale.setScalar(0.74 + current.current.program * 0.34);
-      programRef.current.rotation.y = THREE.MathUtils.damp(
-        programRef.current.rotation.y,
-        -0.16 - current.current.program * 0.24,
-        3,
+      dampVector(
+        programRef.current.scale,
+        new THREE.Vector3(
+          0.9 + emphasis * 0.2,
+          0.9 + emphasis * 0.2,
+          0.9 + emphasis * 0.2
+        ),
+        5.2,
         delta
       );
     }
 
     if (networkRef.current) {
-      networkRef.current.position.y = THREE.MathUtils.damp(
-        networkRef.current.position.y,
-        0.04 + current.current.crown * 0.34,
-        3,
+      const emphasis = preset.layers.network;
+      const crown = preset.shell.crown;
+      const target = new THREE.Vector3(
+        0.12 + emphasis * 0.26,
+        0.34 + crown * 0.86,
+        0.06 + emphasis * 0.22
+      );
+      dampVector(networkRef.current.position, target, 5.2, delta);
+      dampEuler(
+        networkRef.current.rotation,
+        new THREE.Euler(
+          0.02,
+          0.06 + emphasis * 0.12,
+          0.04 + emphasis * 0.08
+        ),
+        5.2,
         delta
       );
-      networkRef.current.position.z = THREE.MathUtils.damp(
-        networkRef.current.position.z,
-        current.current.network * 0.18,
-        3,
-        delta
-      );
-      networkRef.current.scale.setScalar(0.76 + current.current.network * 0.36);
-      networkRef.current.rotation.y = THREE.MathUtils.damp(
-        networkRef.current.rotation.y,
-        current.current.network * 0.22,
-        3,
+      dampVector(
+        networkRef.current.scale,
+        new THREE.Vector3(
+          0.88 + emphasis * 0.26,
+          0.88 + emphasis * 0.26,
+          0.88 + emphasis * 0.26
+        ),
+        5.2,
         delta
       );
     }
 
+    if (signalRef.current) {
+      const target = new THREE.Vector3(
+        0.02,
+        -0.06 + preset.layers.program * 0.08 + preset.layers.network * 0.08,
+        0.08 + preset.signal.density * 0.16
+      );
+      dampVector(signalRef.current.position, target, 5.2, delta);
+    }
+
+    if (plinthRef.current) {
+      dampVector(
+        plinthRef.current.position,
+        new THREE.Vector3(0, 0, 0),
+        4.8,
+        delta
+      );
+    }
+
+    const signalColor =
+      activeStage === "program"
+        ? ROLE_COLORS.program
+        : activeStage === "network"
+          ? ROLE_COLORS.network
+          : ROLE_COLORS.labs;
+
     shellMaterials.current.forEach((material) => {
-      const shellMaterial = material as THREE.MeshPhysicalMaterial | THREE.MeshStandardMaterial;
-      shellMaterial.opacity = 0.72 + (1 - current.current.exposure) * 0.22;
-      shellMaterial.emissiveIntensity = 0.04 + current.current.exposure * 0.12;
+      if (material.color) {
+        material.color.lerp(new THREE.Color("#1b1e21"), 0.04);
+      }
+      if (typeof material.roughness === "number") {
+        material.roughness = dampScalar(
+          material.roughness,
+          0.64 - preset.shell.exposure * 0.12,
+          5.2,
+          delta
+        );
+      }
+      if (typeof material.metalness === "number") {
+        material.metalness = dampScalar(
+          material.metalness,
+          0.42 + preset.shell.cutDepth * 0.08,
+          5.2,
+          delta
+        );
+      }
+      if (typeof material.emissiveIntensity === "number") {
+        material.emissiveIntensity = dampScalar(
+          material.emissiveIntensity,
+          0.18 + preset.lighting.accent * 0.26 + reveal * 0.08,
+          5.2,
+          delta
+        );
+      }
     });
 
-    glassMaterials.current.forEach((material) => {
-      const glassMaterial = material as THREE.MeshPhysicalMaterial;
-      glassMaterial.opacity =
-        TIER_SETTINGS[tier].glassOpacity + current.current.exposure * 0.06;
+    reinforceMaterials.current.forEach((material) => {
+      if (material.color) {
+        material.color.lerp(new THREE.Color("#262c31"), 0.03);
+      }
+      if (typeof material.emissiveIntensity === "number") {
+        material.emissiveIntensity = dampScalar(
+          material.emissiveIntensity,
+          0.04 + preset.lighting.rim * 0.08,
+          5.2,
+          delta
+        );
+      }
     });
 
-    labsMaterials.current.forEach((material) => {
-      const layerMaterial = material as THREE.MeshStandardMaterial;
-      layerMaterial.opacity = 0.12 + current.current.labs * 0.76;
-      layerMaterial.emissiveIntensity = 0.12 + current.current.labs * 0.84;
+    panelMaterials.current.forEach((material) => {
+      if (typeof material.opacity === "number") {
+        material.opacity = dampScalar(
+          material.opacity,
+          0.56 + reveal * 0.12,
+          5.2,
+          delta
+        );
+      }
+      if (typeof material.roughness === "number") {
+        material.roughness = dampScalar(
+          material.roughness,
+          0.28,
+          5.2,
+          delta
+        );
+      }
     });
 
-    programMaterials.current.forEach((material) => {
-      const layerMaterial = material as THREE.MeshStandardMaterial | THREE.MeshPhysicalMaterial;
-      layerMaterial.opacity = 0.12 + current.current.program * 0.76;
-      layerMaterial.emissiveIntensity = 0.12 + current.current.program * 0.9;
+    interiorMaterials.current.forEach((material) => {
+      if (typeof material.opacity === "number") {
+        material.opacity = dampScalar(
+          material.opacity,
+          0.84 + reveal * 0.08,
+          5.2,
+          delta
+        );
+      }
+      if (typeof material.emissiveIntensity === "number") {
+        material.emissiveIntensity = dampScalar(
+          material.emissiveIntensity,
+          0.08 + preset.lighting.fill * 0.08,
+          5.2,
+          delta
+        );
+      }
     });
 
-    networkMaterials.current.forEach((material) => {
-      const layerMaterial = material as THREE.MeshStandardMaterial;
-      layerMaterial.opacity = 0.1 + current.current.network * 0.8;
-      layerMaterial.emissiveIntensity = 0.12 + current.current.network * 0.9;
+    signalMaterials.current.forEach((material) => {
+      if (material.emissive) {
+        material.emissive.lerp(signalColor, 0.08);
+      }
+      if (material.color) {
+        material.color.lerp(new THREE.Color("#1d2624"), 0.02);
+      }
+      if (typeof material.emissiveIntensity === "number") {
+        material.emissiveIntensity = dampScalar(
+          material.emissiveIntensity,
+          0.44 + preset.signal.density * 0.72,
+          5.2,
+          delta
+        );
+      }
     });
+
+    pulseNodes(
+      labNodes.current,
+      preset.layers.labs,
+      ROLE_COLORS.labs,
+      dynamicTime,
+      reducedMotion
+    );
+    pulseNodes(
+      programNodes.current,
+      preset.layers.program,
+      ROLE_COLORS.program,
+      dynamicTime + 0.6,
+      reducedMotion
+    );
+    pulseNodes(
+      networkNodes.current,
+      preset.layers.network,
+      ROLE_COLORS.network,
+      dynamicTime + 1.2,
+      reducedMotion
+    );
+    pulseNodes(
+      trafficNodes.current,
+      Math.max(
+        preset.layers.labs * 0.42,
+        preset.layers.program * 0.54,
+        preset.layers.network * 0.48
+      ),
+      signalColor,
+      dynamicTime + 0.8,
+      reducedMotion
+    );
   });
 
-  return (
-    <group ref={rootRef}>
-      <MonolithShell
-        tier={tier}
-        shellMaterials={shellMaterials}
-        glassMaterials={glassMaterials}
-        leftPanelRef={leftPanelRef}
-        rightPanelRef={rightPanelRef}
-        topCapRef={topCapRef}
-        glassPrimaryRef={glassPrimaryRef}
-        glassSecondaryRef={glassSecondaryRef}
-      />
-      <InfrastructureLayer tier={tier} groupRef={labsRef} materials={labsMaterials} />
-      <ProgramLayer tier={tier} groupRef={programRef} materials={programMaterials} />
-      <NetworkLayer tier={tier} groupRef={networkRef} materials={networkMaterials} />
-      <SignalTraffic
-        tier={tier}
-        activeStage={activeStage}
-        speed={current.current.signalSpeed}
-        density={current.current.signalDensity}
-      />
-      <Atmospherics tier={tier} activeStage={activeStage} />
-    </group>
-  );
+  return <primitive ref={rootRef} object={scene} />;
 }
 
-const MemoMonolithScene = memo(MonolithScene);
-
-function AtlasFallback({ activeStage }: { activeStage: AtlasStateId }) {
+function AtlasFallback({
+  activeStage,
+  variant
+}: {
+  activeStage: AtlasStateId;
+  variant: SceneVariant;
+}) {
   return (
-    <div className={`atlas-fallback atlas-fallback--${activeStage}`} aria-hidden="true">
-      <div className="atlas-fallback__halo" />
-      <div className="atlas-fallback__monolith">
+    <div
+      className={`atlas-fallback atlas-fallback--${activeStage} atlas-fallback--${variant}`}
+      aria-hidden="true"
+    >
+      <div className="atlas-fallback__core">
+        <div className="atlas-fallback__plinth" />
         <div className="atlas-fallback__shell atlas-fallback__shell--back" />
-        <div className="atlas-fallback__shell atlas-fallback__shell--left" />
-        <div className="atlas-fallback__shell atlas-fallback__shell--right" />
-        <div className="atlas-fallback__shell atlas-fallback__shell--top" />
-        <div className="atlas-fallback__shell atlas-fallback__shell--left-door" />
-        <div className="atlas-fallback__shell atlas-fallback__shell--right-door" />
-        <div className="atlas-fallback__glass atlas-fallback__glass--primary" />
-        <div className="atlas-fallback__glass atlas-fallback__glass--secondary" />
-
-        <div className="atlas-fallback__layer atlas-fallback__layer--labs">
-          <span />
-          <span />
+        <div className="atlas-fallback__shell atlas-fallback__shell--front" />
+        <div className="atlas-fallback__cutaway" />
+        <div className="atlas-fallback__labs">
           <span />
           <span />
           <span />
         </div>
-
-        <div className="atlas-fallback__layer atlas-fallback__layer--program">
+        <div className="atlas-fallback__program">
           <i />
           <i />
           <i />
           <i />
         </div>
-
-        <div className="atlas-fallback__layer atlas-fallback__layer--network">
-          <b />
-          <b />
+        <div className="atlas-fallback__crown">
           <b />
           <b />
           <b />
           <b />
         </div>
+        <div className="atlas-fallback__signal" />
       </div>
     </div>
   );
 }
 
-export function AtlasScene({
+function SceneContent({
   activeStage,
   reducedMotion,
   stageProgress,
+  variant,
+  paused,
+  tier
+}: {
+  activeStage: AtlasStateId;
+  reducedMotion: boolean;
+  stageProgress: number;
+  variant: SceneVariant;
+  paused: boolean;
+  tier: ViewportTier;
+}) {
+  return (
+    <>
+      <fog attach="fog" args={["#040607", 11, 25]} />
+      <SceneLighting
+        activeStage={activeStage}
+        stageProgress={stageProgress}
+        reducedMotion={reducedMotion}
+      />
+      <SceneDirector
+        activeStage={activeStage}
+        stageProgress={stageProgress}
+        tier={tier}
+        variant={variant}
+        reducedMotion={reducedMotion}
+        paused={paused}
+      />
+      <AuthoredMonolith
+        activeStage={activeStage}
+        stageProgress={stageProgress}
+        tier={tier}
+        variant={variant}
+        reducedMotion={reducedMotion}
+        paused={paused}
+      />
+    </>
+  );
+}
+
+export const AtlasScene = memo(function AtlasScene({
+  activeStage,
+  reducedMotion = false,
+  stageProgress = 0.5,
   variant = "system",
   paused = false
 }: AtlasSceneProps) {
-  const [hasWebGL, setHasWebGL] = useState(() => webglAvailable());
   const tier = useViewportTier();
+  const hasWebGL = useWebGLSupport();
 
-  useEffect(() => {
-    setHasWebGL(webglAvailable());
-  }, []);
+  if (!hasWebGL) {
+    return <AtlasFallback activeStage={activeStage} variant={variant} />;
+  }
 
   return (
     <div className="atlas-scene">
-      {reducedMotion || !hasWebGL ? (
-        <AtlasFallback activeStage={activeStage} />
-      ) : (
-        <Canvas
-          className="atlas-scene__canvas"
-          dpr={TIER_SETTINGS[tier].dpr}
-          gl={{
-            antialias: tier !== "mobile",
-            alpha: true,
-            powerPreference: "high-performance"
-          }}
-          performance={{ min: tier === "mobile" ? 0.7 : 0.85 }}
-          camera={{
-            position: atlasScenePresets[activeStage].camera.position,
-            fov: atlasScenePresets[activeStage].camera.fov
-          }}
-        >
-          <color attach="background" args={[COLORS.bg]} />
-          <fog attach="fog" args={[COLORS.bg, 7, 18]} />
-          <SceneLighting activeStage={activeStage} />
-          <CameraRig
+      <Canvas
+        className="atlas-scene__canvas"
+        dpr={VIEWPORT_CONFIG[tier].dpr}
+        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        camera={{ position: [0, 0.8, 8.4], fov: 28, near: 0.1, far: 40 }}
+      >
+        <Suspense fallback={null}>
+          <SceneContent
             activeStage={activeStage}
+            reducedMotion={reducedMotion}
             stageProgress={stageProgress}
-            tier={tier}
-            variant={variant}
-          />
-          <MemoMonolithScene
-            activeStage={activeStage}
-            stageProgress={stageProgress}
-            tier={tier}
             variant={variant}
             paused={paused}
+            tier={tier}
           />
-        </Canvas>
-      )}
+        </Suspense>
+      </Canvas>
     </div>
   );
-}
+});
+
+useGLTF.preload(MONOLITH_GLB_URL);

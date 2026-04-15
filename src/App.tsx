@@ -109,7 +109,7 @@ function App() {
     siteContent.roles.entries[0]?.id ?? ""
   );
   const [activeSystemStage, setActiveSystemStage] = useState<OperatingStageId>(
-    siteContent.operatingSystem.entries[0]?.id ?? "labs"
+    siteContent.systemsView.stages[0]?.id ?? "labs"
   );
   const [systemProgress, setSystemProgress] = useState(0.28);
   const [shouldLoadHeroScene, setShouldLoadHeroScene] = useState(false);
@@ -339,7 +339,7 @@ function App() {
               <p className="hero-copy__location">{siteContent.hero.location}</p>
 
               <div className="hero-copy__summary">
-                {siteContent.hero.summary.map((paragraph) => (
+                {siteContent.hero.thesis.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
               </div>
@@ -347,7 +347,7 @@ function App() {
               <InlineLinkRow links={siteContent.hero.links} />
 
               <div className="hero-proof">
-                {siteContent.hero.proof.map((item) => (
+                {siteContent.hero.proofStrip.map((item) => (
                   <article
                     key={item.headline}
                     className={`hero-proof__item hero-proof__item--${
@@ -498,8 +498,8 @@ function App() {
         >
           <div className="shell">
             <div className="section-heading js-reveal">
-              <h2 className="section-title">{siteContent.operatingSystem.heading}</h2>
-              <p className="section-intro">{siteContent.operatingSystem.intro}</p>
+              <h2 className="section-title">{siteContent.systemsView.heading}</h2>
+              <p className="section-intro">{siteContent.systemsView.intro}</p>
             </div>
 
             <div className="system-shell">
@@ -525,7 +525,7 @@ function App() {
                 </div>
 
                 <div className="system-steps">
-                  {siteContent.operatingSystem.entries.map((entry) => (
+                  {siteContent.systemsView.stages.map((entry) => (
                     <article
                       key={entry.id}
                       className={`system-step${

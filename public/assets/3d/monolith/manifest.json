@@ -1,0 +1,14 @@
+{
+  "asset": "monolith",
+  "generatedAt": "2026-04-15T01:37:43.115Z",
+  "generator": "scripts/build-monolith.mjs",
+  "outputs": {
+    "glb": "monolith.glb",
+    "textures": [
+      "monolith-shell-roughness.png",
+      "monolith-shell-emissive.png",
+      "monolith-glass-mask.png"
+    ]
+  },
+  "notes": "Run `node scripts/build-monolith.mjs` from the repo root to regenerate."
+}

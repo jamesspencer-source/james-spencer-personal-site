@@ -44,7 +44,7 @@ export type RoleEntry = {
 
 export type OperatingStageId = Extract<AtlasStateId, "labs" | "program" | "network">;
 
-export type OperatingSystemEntry = {
+export type SystemsViewStage = {
   id: OperatingStageId;
   kicker: string;
   title: string;
@@ -77,13 +77,13 @@ export const siteContent = {
     name: "James M. Spencer",
     title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
-    summary: [
+    thesis: [
       "James M. Spencer manages operations for two Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals.",
-      "His remit includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, operational continuity, and the day-to-day execution that keeps scientific work moving."
+      "His remit includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and the daily operational work that keeps scientific research moving."
     ],
-    proof: [
+    proofStrip: [
       {
-        headline: "Two Investigator laboratories, one shared operating model",
+        headline: "Two Investigator laboratories, one shared operating structure",
         detail:
           "Daily responsibility spans people, equipment, facilities, vendors, and continuity across one shared footprint in two buildings.",
         tone: "labs"
@@ -123,7 +123,7 @@ export const siteContent = {
       {
         title: "Laboratory operations",
         detail:
-          "Budgets, purchasing, equipment, facilities, vendor coordination, and regulated laboratory-space management across active research groups.",
+          "Budgets, purchasing, equipment, facilities, vendor coordination, and management of regulated laboratory space across active research groups.",
         tone: "labs"
       },
       {
@@ -147,7 +147,7 @@ export const siteContent = {
     ] as ScopeDomain[],
     results: [
       {
-        title: "Expanded from one laboratory to two without splitting the operating model",
+        title: "Expanded from one laboratory to two while keeping one shared structure",
         detail:
           "A second Howard Hughes Medical Institute Investigator laboratory was added in August 2025 while keeping shared facilities, equipment, and regulated space coordinated under one system."
       },
@@ -170,8 +170,8 @@ export const siteContent = {
     entries: [
       {
         id: "laboratories",
-        navLabel: "Laboratories",
-        title: "Laboratory manager",
+        navLabel: "Laboratory operations",
+        title: "Laboratory Manager",
         organization:
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
@@ -184,12 +184,12 @@ export const siteContent = {
         ],
         evidence: [
           {
-            label: "Operating context",
+            label: "Scope",
             value:
               "Two Howard Hughes Medical Institute Investigator laboratories with one shared biosafety level 2 laboratory footprint."
           },
           {
-            label: "Current remit",
+            label: "Responsibilities",
             value:
               "Staffing, budgets, equipment, facilities, vendor coordination, onboarding, and continuity."
           }
@@ -211,12 +211,12 @@ export const siteContent = {
         ],
         evidence: [
           {
-            label: "Program structure",
+            label: "Program",
             value:
               "An annual eight-week summer internship program now in its fifth operating cycle."
           },
           {
-            label: "Delivery model",
+            label: "Operations",
             value:
               "Combines laboratory setup, logistics, student support, partner coordination, and closeout."
           }
@@ -228,13 +228,13 @@ export const siteContent = {
       },
       {
         id: "network-leadership",
-        navLabel: "Network",
-        title: "Chair, advisory board",
+        navLabel: "Lab manager network",
+        title: "Chair, Advisory Board",
         organization:
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "Chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development organization for laboratory managers at Howard Hughes Medical Institute laboratories.",
+          "Chairs the advisory board for the Lab Management Network of Professionals, a professional community for laboratory managers at Howard Hughes Medical Institute laboratories.",
         bullets: [
           "Sets board priorities and helps shape regional and national programming for a network of laboratory managers across the institute.",
           "Supports recurring programming, board coordination, and ongoing community support.",
@@ -242,12 +242,12 @@ export const siteContent = {
         ],
         evidence: [
           {
-            label: "Programming scale",
+            label: "Convenings",
             value:
               "Regional gatherings and larger national convenings for laboratory managers and institute partners."
           },
           {
-            label: "Leadership focus",
+            label: "Board role",
             value:
               "Board direction, recurring programming, and professional community support."
           }
@@ -255,17 +255,17 @@ export const siteContent = {
       }
     ] as RoleEntry[]
   },
-  operatingSystem: {
+  systemsView: {
     heading: "Systems View",
     intro:
-      "The monolith visualizes three connected layers of the work: research infrastructure, program delivery, and professional network leadership.",
-    entries: [
+      "The monolith is a systems view of three connected layers of the work: research infrastructure, program delivery, and professional network leadership.",
+    stages: [
       {
         id: "labs",
         kicker: "Laboratory layer",
         title: "Research infrastructure and continuity",
         summary:
-          "Within the monolith, the laboratory layer stands for the infrastructure that keeps research moving: facilities, equipment, vendor coordination, staffing logistics, and regulated-space management across two laboratories.",
+          "The laboratory layer stands for the infrastructure that keeps research moving across two laboratories: facilities, equipment, vendor coordination, staffing logistics, and management of regulated laboratory space.",
         evidence: [
           "Two Howard Hughes Medical Institute Investigator laboratories coordinated through one shared operating model.",
           "Budgets, vendors, equipment, facilities, and staffing logistics kept in sync."
@@ -293,7 +293,7 @@ export const siteContent = {
           "Regional and national convenings bring laboratory managers and institute partners into the same professional space."
         ]
       }
-    ] as OperatingSystemEntry[]
+    ] as SystemsViewStage[]
   },
   background: {
     heading: "Background",
