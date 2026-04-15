@@ -44,6 +44,15 @@ export type CampusScenePreset = {
     accent: number;
     haze: number;
   };
+  atmosphere: {
+    fogColor: string;
+    fogNear: number;
+    fogFar: number;
+    ambientFloor: number;
+    backfield: number;
+    contrast: number;
+    glow: number;
+  };
   motion: {
     drift: number;
     float: number;
@@ -92,6 +101,15 @@ export const campusScenePresets: Record<
       accent: 0.24,
       haze: 0.18
     },
+    atmosphere: {
+      fogColor: "#10181b",
+      fogNear: 13,
+      fogFar: 40,
+      ambientFloor: 0.72,
+      backfield: 0.56,
+      contrast: 0.42,
+      glow: 0.28
+    },
     motion: {
       drift: 0.06,
       float: 0.08,
@@ -134,6 +152,15 @@ export const campusScenePresets: Record<
       rim: 0.82,
       accent: 0.38,
       haze: 0.24
+    },
+    atmosphere: {
+      fogColor: "#11181b",
+      fogNear: 12,
+      fogFar: 43,
+      ambientFloor: 0.8,
+      backfield: 0.62,
+      contrast: 0.58,
+      glow: 0.34
     },
     motion: {
       drift: 0.05,
@@ -178,6 +205,15 @@ export const campusScenePresets: Record<
       accent: 0.64,
       haze: 0.24
     },
+    atmosphere: {
+      fogColor: "#0f161a",
+      fogNear: 11,
+      fogFar: 42,
+      ambientFloor: 0.78,
+      backfield: 0.66,
+      contrast: 0.5,
+      glow: 0.42
+    },
     motion: {
       drift: 0.06,
       float: 0.08,
@@ -221,6 +257,15 @@ export const campusScenePresets: Record<
       accent: 0.88,
       haze: 0.3
     },
+    atmosphere: {
+      fogColor: "#10161a",
+      fogNear: 12,
+      fogFar: 45,
+      ambientFloor: 0.76,
+      backfield: 0.68,
+      contrast: 0.62,
+      glow: 0.46
+    },
     motion: {
       drift: 0.07,
       float: 0.1,
@@ -263,6 +308,15 @@ export const campusScenePresets: Record<
       rim: 0.64,
       accent: 0.34,
       haze: 0.18
+    },
+    atmosphere: {
+      fogColor: "#0b1013",
+      fogNear: 13,
+      fogFar: 38,
+      ambientFloor: 0.6,
+      backfield: 0.46,
+      contrast: 0.3,
+      glow: 0.18
     },
     motion: {
       drift: 0.04,

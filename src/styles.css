@@ -1,10 +1,12 @@
 :root {
   --bg: #050709;
   --bg-soft: #0b0f12;
-  --bg-panel: #0d1316;
-  --bg-panel-strong: #11181c;
-  --bg-panel-soft: rgba(14, 20, 23, 0.84);
-  --bg-frame: #0a0e11;
+  --bg-panel: #11171a;
+  --bg-panel-strong: #151d21;
+  --bg-panel-soft: rgba(19, 27, 31, 0.84);
+  --bg-frame: #0d1215;
+  --bg-core: #141c20;
+  --bg-core-soft: rgba(23, 31, 36, 0.92);
   --ink: #f2efe7;
   --ink-soft: #d7ddd7;
   --muted: #9aa49f;
@@ -14,10 +16,10 @@
   --program: #90b8ff;
   --network: #d8ea8c;
   --stone: #88918b;
-  --shadow: 0 30px 80px rgba(0, 0, 0, 0.32);
-  --shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.24);
+  --shadow: 0 30px 80px rgba(0, 0, 0, 0.28);
+  --shadow-soft: 0 18px 44px rgba(0, 0, 0, 0.22);
   --radius: 8px;
-  --max-width: 79rem;
+  --max-width: 82rem;
   --header-offset: 5.1rem;
 }
 
@@ -230,6 +232,29 @@ button {
   position: relative;
 }
 
+.core-narrative::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 6rem;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 1.2rem;
+  background:
+    radial-gradient(circle at 72% 18%, rgba(144, 184, 255, 0.18), transparent 28rem),
+    radial-gradient(circle at 68% 46%, rgba(255, 255, 255, 0.07), transparent 24rem),
+    radial-gradient(circle at 20% 16%, rgba(107, 197, 155, 0.1), transparent 26rem),
+    linear-gradient(
+      180deg,
+      rgba(21, 29, 33, 0.96) 0%,
+      rgba(17, 24, 28, 0.92) 42%,
+      rgba(12, 18, 21, 0.78) 76%,
+      rgba(7, 10, 12, 0.2) 100%
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 32px 90px rgba(0, 0, 0, 0.18);
+}
+
 .core-narrative::after {
   content: "";
   position: absolute;
@@ -238,15 +263,17 @@ button {
   bottom: 0;
   height: 10rem;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(5, 7, 9, 0), rgba(5, 7, 9, 0.96));
-  opacity: 0.7;
+  background: linear-gradient(180deg, rgba(5, 7, 9, 0), rgba(5, 7, 9, 0.86));
+  opacity: 0.48;
 }
 
 .core-narrative__shell {
+  position: relative;
+  z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 0.78fr) minmax(27rem, 1.22fr);
+  grid-template-columns: minmax(0, 0.92fr) minmax(29rem, 1.08fr);
   gap: clamp(1.5rem, 4vw, 4.25rem);
-  align-items: start;
+  align-items: stretch;
 }
 
 .core-content {
@@ -258,13 +285,15 @@ button {
 .core-scene {
   position: relative;
   min-width: 0;
+  align-self: stretch;
+  min-height: 100%;
   z-index: 1;
   pointer-events: none;
 }
 
 .core-scene__sticky {
   position: sticky;
-  top: calc(var(--header-offset) + 0.8rem);
+  top: calc(var(--header-offset) + 0.7rem);
   min-height: calc(100vh - var(--header-offset) - 1.1rem);
   display: flex;
   align-items: center;
@@ -285,16 +314,18 @@ button {
   margin: 0;
   font-size: clamp(2.15rem, 4vw, 3.25rem);
   font-weight: 600;
-  line-height: 0.96;
-  letter-spacing: -0.035em;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 
 .section-intro {
-  max-width: 42rem;
+  max-width: 46rem;
   margin: 1rem 0 0;
   color: var(--ink-soft);
   font-size: 1rem;
   line-height: 1.64;
+  text-wrap: pretty;
 }
 
 .section-heading {
@@ -304,7 +335,7 @@ button {
 .hero-copy {
   display: grid;
   gap: 1.2rem;
-  max-width: 36rem;
+  max-width: 40rem;
   position: relative;
   z-index: 3;
   padding: 1rem 0 0;
@@ -314,8 +345,9 @@ button {
   margin: 0;
   font-size: clamp(3.35rem, 8vw, 6.4rem);
   font-weight: 600;
-  line-height: 0.91;
-  letter-spacing: -0.04em;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 .hero-copy__title {
@@ -334,7 +366,7 @@ button {
 }
 
 .hero-copy__summary {
-  max-width: 34rem;
+  max-width: 38rem;
   padding-top: 0.95rem;
   border-top: 1px solid var(--line-strong);
 }
@@ -344,6 +376,7 @@ button {
   color: var(--ink-soft);
   font-size: clamp(1.02rem, 1.6vw, 1.1rem);
   line-height: 1.66;
+  text-wrap: pretty;
 }
 
 .inline-links {
@@ -377,7 +410,7 @@ button {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.9rem;
-  max-width: 34rem;
+  max-width: 38rem;
   padding-top: 1.2rem;
   border-top: 1px solid var(--line);
 }
@@ -404,6 +437,7 @@ button {
   font-size: 0.96rem;
   font-weight: 600;
   line-height: 1.22;
+  text-wrap: balance;
 }
 
 .hero-proof__detail {
@@ -411,15 +445,17 @@ button {
   color: var(--muted);
   font-size: 0.9rem;
   line-height: 1.52;
+  text-wrap: pretty;
 }
 
 .scene-frame {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 68% 22%, rgba(107, 197, 155, 0.11), transparent 22rem),
-    radial-gradient(circle at 28% 62%, rgba(144, 184, 255, 0.09), transparent 24rem),
-    linear-gradient(180deg, rgba(11, 14, 16, 0.98), rgba(5, 8, 10, 0.98));
+    radial-gradient(circle at 68% 22%, rgba(107, 197, 155, 0.14), transparent 22rem),
+    radial-gradient(circle at 28% 62%, rgba(144, 184, 255, 0.12), transparent 24rem),
+    radial-gradient(circle at 54% 54%, rgba(255, 255, 255, 0.06), transparent 20rem),
+    linear-gradient(180deg, rgba(24, 31, 35, 0.96), rgba(12, 17, 20, 0.96));
   isolation: isolate;
 }
 
@@ -502,9 +538,11 @@ button {
   margin: -1.5rem -8vw -1rem -1rem;
   overflow: visible;
   background:
-    radial-gradient(circle at 60% 34%, rgba(107, 197, 155, 0.2), transparent 20rem),
-    radial-gradient(circle at 68% 18%, rgba(144, 184, 255, 0.16), transparent 22rem),
-    radial-gradient(circle at 42% 66%, rgba(216, 234, 140, 0.09), transparent 16rem);
+    radial-gradient(circle at 62% 30%, rgba(107, 197, 155, 0.24), transparent 18rem),
+    radial-gradient(circle at 68% 16%, rgba(144, 184, 255, 0.24), transparent 20rem),
+    radial-gradient(circle at 42% 66%, rgba(216, 234, 140, 0.12), transparent 14rem),
+    radial-gradient(circle at 52% 48%, rgba(255, 255, 255, 0.1), transparent 24rem),
+    linear-gradient(180deg, rgba(23, 31, 35, 0.68), rgba(12, 18, 21, 0.12));
 }
 
 .scene-frame--campus::before,
@@ -514,7 +552,7 @@ button {
 
 .scene-frame--campus .atlas-scene,
 .scene-frame--campus .scene-frame__placeholder {
-  filter: drop-shadow(0 36px 110px rgba(0, 0, 0, 0.52));
+  filter: drop-shadow(0 30px 92px rgba(0, 0, 0, 0.34));
 }
 
 .scene-frame--campus-hero {
@@ -547,6 +585,7 @@ button {
   max-width: 45rem;
   font-size: 1.17rem;
   line-height: 1.63;
+  text-wrap: pretty;
 }
 
 .scope-intro__context {
@@ -555,6 +594,7 @@ button {
   color: var(--muted);
   font-size: 0.95rem;
   line-height: 1.56;
+  text-wrap: pretty;
 }
 
 .results-panel {
@@ -590,6 +630,7 @@ button {
   font-size: 0.94rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  text-wrap: balance;
 }
 
 .results-list__detail {
@@ -597,6 +638,7 @@ button {
   color: var(--ink-soft);
   font-size: 0.96rem;
   line-height: 1.58;
+  text-wrap: pretty;
 }
 
 .domains-grid {
@@ -629,6 +671,7 @@ button {
   font-size: 0.98rem;
   font-weight: 600;
   letter-spacing: 0.02em;
+  text-wrap: balance;
 }
 
 .domain-item__detail {
@@ -636,6 +679,7 @@ button {
   color: var(--ink-soft);
   font-size: 0.98rem;
   line-height: 1.58;
+  text-wrap: pretty;
 }
 
 .roles-layout {
@@ -649,8 +693,9 @@ button {
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
   background:
-    radial-gradient(circle at 16% 18%, rgba(107, 197, 155, 0.04), transparent 22rem),
-    linear-gradient(180deg, rgba(11, 14, 16, 0.58), rgba(6, 8, 10, 0.22));
+    radial-gradient(circle at 16% 18%, rgba(107, 197, 155, 0.06), transparent 22rem),
+    radial-gradient(circle at 82% 12%, rgba(144, 184, 255, 0.08), transparent 20rem),
+    linear-gradient(180deg, rgba(18, 24, 28, 0.7), rgba(10, 14, 17, 0.34));
 }
 
 .role-tabs {
@@ -733,8 +778,9 @@ button {
   margin: 0.7rem 0 0;
   font-size: clamp(1.8rem, 3vw, 2.45rem);
   font-weight: 600;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
+  line-height: 1.04;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
 }
 
 .role-detail__dates {
@@ -748,6 +794,7 @@ button {
   color: var(--ink-soft);
   font-size: 1.02rem;
   line-height: 1.62;
+  text-wrap: pretty;
 }
 
 .detail-list {
@@ -764,6 +811,7 @@ button {
   color: var(--ink-soft);
   font-size: 0.98rem;
   line-height: 1.56;
+  text-wrap: pretty;
 }
 
 .detail-list li::before {
@@ -813,9 +861,10 @@ button {
   border-top: 1px solid rgba(255, 255, 255, 0.11);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   background:
-    radial-gradient(circle at 18% 14%, rgba(107, 197, 155, 0.08), transparent 24rem),
-    radial-gradient(circle at 80% 18%, rgba(144, 184, 255, 0.08), transparent 22rem),
-    linear-gradient(180deg, rgba(6, 9, 11, 0.98), rgba(2, 4, 6, 0.99));
+    radial-gradient(circle at 18% 14%, rgba(107, 197, 155, 0.11), transparent 24rem),
+    radial-gradient(circle at 80% 18%, rgba(144, 184, 255, 0.14), transparent 22rem),
+    radial-gradient(circle at 56% 40%, rgba(255, 255, 255, 0.05), transparent 28rem),
+    linear-gradient(180deg, rgba(15, 21, 25, 0.98), rgba(5, 9, 11, 0.99));
 }
 
 .system-shell::before {
@@ -870,8 +919,9 @@ button {
   margin: 0;
   font-size: clamp(1.95rem, 3vw, 2.65rem);
   font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.03em;
+  line-height: 1.04;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
 }
 
 .system-step__summary {
@@ -880,6 +930,7 @@ button {
   color: var(--ink-soft);
   font-size: 1rem;
   line-height: 1.63;
+  text-wrap: pretty;
 }
 
 .system-step__evidence {
@@ -896,6 +947,7 @@ button {
   color: var(--ink-soft);
   font-size: 0.96rem;
   line-height: 1.56;
+  text-wrap: pretty;
 }
 
 .system-step__evidence li::before {
@@ -1304,21 +1356,36 @@ button {
 
   .core-scene {
     order: -1;
+    position: sticky;
+    align-self: auto;
+    min-height: auto;
+    top: calc(var(--header-offset) + 0.25rem);
+    z-index: 4;
+    margin: 0 -0.4rem 0.75rem;
+    padding: 0.35rem 0 0.95rem;
+    background: linear-gradient(
+      180deg,
+      rgba(19, 27, 31, 0.96) 0%,
+      rgba(19, 27, 31, 0.76) 70%,
+      rgba(19, 27, 31, 0) 100%
+    );
+    backdrop-filter: blur(10px);
   }
 
   .core-scene__sticky {
-    top: calc(var(--header-offset) + 0.45rem);
+    position: relative;
+    top: auto;
     min-height: auto;
     justify-content: center;
-    padding: 0.4rem 0 1.2rem;
+    padding: 0;
   }
 
   .scene-frame--campus,
   .scene-frame--campus-hero,
   .scene-frame--campus-immersive {
     width: 100%;
-    min-height: clamp(22rem, 36vh, 28rem);
-    margin: 0 -0.8rem;
+    min-height: clamp(24rem, 40vh, 31rem);
+    margin: 0;
   }
 
   .hero-section {
@@ -1367,6 +1434,7 @@ button {
 
   .hero-copy {
     padding-top: 0;
+    max-width: 100%;
   }
 
   .core-scene__sticky {
@@ -1398,8 +1466,8 @@ button {
   .scene-frame--campus,
   .scene-frame--campus-hero,
   .scene-frame--campus-immersive {
-    min-height: clamp(18rem, 28vh, 22rem);
-    margin: 0 -0.65rem;
+    min-height: clamp(18rem, 32vh, 22rem);
+    margin: 0;
   }
 
   .results-panel {

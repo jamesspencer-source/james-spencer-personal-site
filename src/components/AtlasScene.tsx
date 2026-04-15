@@ -222,7 +222,7 @@ function SceneLighting({
     if (ambientRef.current) {
       ambientRef.current.intensity = dampScalar(
         ambientRef.current.intensity,
-        0.26 + preset.lighting.fill * 0.22,
+        0.42 + preset.atmosphere.ambientFloor * 0.34 + preset.lighting.fill * 0.18,
         6,
         delta
       );
@@ -231,7 +231,10 @@ function SceneLighting({
     if (keyRef.current) {
       keyRef.current.intensity = dampScalar(
         keyRef.current.intensity,
-        1.28 + preset.lighting.key * 0.58 + reveal * 0.08,
+        1.46 +
+          preset.lighting.key * 0.5 +
+          preset.atmosphere.contrast * 0.2 +
+          reveal * 0.1,
         6,
         delta
       );
@@ -240,7 +243,9 @@ function SceneLighting({
     if (fillRef.current) {
       fillRef.current.intensity = dampScalar(
         fillRef.current.intensity,
-        0.34 + preset.lighting.fill * 0.3,
+        0.52 +
+          preset.lighting.fill * 0.28 +
+          preset.atmosphere.backfield * 0.18,
         6,
         delta
       );
@@ -249,7 +254,7 @@ function SceneLighting({
     if (rimRef.current) {
       rimRef.current.intensity = dampScalar(
         rimRef.current.intensity,
-        0.44 + preset.lighting.rim * 0.52,
+        0.6 + preset.lighting.rim * 0.48 + preset.atmosphere.contrast * 0.12,
         6,
         delta
       );
@@ -258,7 +263,7 @@ function SceneLighting({
     if (accentRef.current) {
       accentRef.current.intensity = dampScalar(
         accentRef.current.intensity,
-        0.24 + preset.lighting.accent * 0.66,
+        0.34 + preset.lighting.accent * 0.52 + preset.atmosphere.glow * 0.22,
         6,
         delta
       );
@@ -267,7 +272,10 @@ function SceneLighting({
     if (hazeRef.current) {
       hazeRef.current.intensity = dampScalar(
         hazeRef.current.intensity,
-        0.2 + preset.lighting.haze * 0.54,
+        0.28 +
+          preset.lighting.haze * 0.44 +
+          preset.atmosphere.backfield * 0.18 +
+          preset.atmosphere.glow * 0.1,
         6,
         delta
       );
@@ -276,41 +284,41 @@ function SceneLighting({
 
   return (
     <>
-      <ambientLight ref={ambientRef} color="#d8dfda" intensity={0.34} />
+      <ambientLight ref={ambientRef} color="#ebe7db" intensity={0.54} />
       <directionalLight
         ref={keyRef}
         position={[7.2, 8.6, 9.2]}
-        color="#f4f3ee"
-        intensity={1.68}
+        color="#f8f3e8"
+        intensity={1.9}
       />
       <directionalLight
         ref={fillRef}
         position={[-5.4, 3.4, 5.8]}
-        color="#88b49b"
-        intensity={0.56}
+        color="#a9c8ba"
+        intensity={0.78}
       />
       <pointLight
         ref={rimRef}
         position={[-5.4, 7.8, -6.8]}
-        color="#9ab8ff"
-        intensity={0.78}
-        distance={30}
+        color="#b4c8ff"
+        intensity={0.92}
+        distance={34}
         decay={2}
       />
       <pointLight
         ref={accentRef}
         position={[4.2, -1.8, 4.6]}
-        color="#7fd3b1"
-        intensity={0.72}
-        distance={18}
+        color="#96dcc0"
+        intensity={0.84}
+        distance={20}
         decay={2}
       />
       <pointLight
         ref={hazeRef}
         position={[0, 2.4, 1.6]}
-        color="#d5e88f"
-        intensity={0.42}
-        distance={16}
+        color="#e1ebb2"
+        intensity={0.56}
+        distance={20}
         decay={2}
       />
     </>
@@ -838,7 +846,14 @@ function CampusAsset({
 
     shellMaterials.current.forEach((material) => {
       if (material.color) {
-        material.color.lerp(new THREE.Color("#171b1f"), 0.04);
+        material.color.lerp(
+          activeStage === "closing"
+            ? new THREE.Color("#1c2327")
+            : activeStage === "opening"
+              ? new THREE.Color("#232b2f")
+              : new THREE.Color("#2a3337"),
+          0.04
+        );
       }
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
@@ -868,7 +883,12 @@ function CampusAsset({
 
     metalMaterials.current.forEach((material) => {
       if (material.color) {
-        material.color.lerp(new THREE.Color("#2a3237"), 0.04);
+        material.color.lerp(
+          activeStage === "network"
+            ? new THREE.Color("#404b4f")
+            : new THREE.Color("#384247"),
+          0.04
+        );
       }
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
@@ -892,7 +912,7 @@ function CampusAsset({
       if (typeof material.opacity === "number") {
         material.opacity = dampScalar(
           material.opacity,
-          0.36 + preset.layers.glass * 0.26 + reveal * 0.04,
+          0.42 + preset.layers.glass * 0.22 + reveal * 0.05,
           5,
           delta
         );
@@ -900,7 +920,7 @@ function CampusAsset({
       if (typeof material.transmission === "number") {
         material.transmission = dampScalar(
           material.transmission,
-          0.24 + preset.layers.glass * 0.24,
+          0.3 + preset.layers.glass * 0.2,
           5,
           delta
         );
@@ -908,7 +928,7 @@ function CampusAsset({
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
           material.roughness,
-          0.18 + (1 - preset.layers.glass) * 0.1,
+          0.14 + (1 - preset.layers.glass) * 0.08,
           5,
           delta
         );
@@ -927,10 +947,10 @@ function CampusAsset({
       if (material.color) {
         material.color.lerp(
           activeStage === "program"
-            ? new THREE.Color("#36527d")
+            ? new THREE.Color("#4b6c98")
             : activeStage === "network"
-              ? new THREE.Color("#5a6540")
-              : new THREE.Color("#27473d"),
+              ? new THREE.Color("#747f4e")
+              : new THREE.Color("#356053"),
           0.06
         );
       }
@@ -1063,11 +1083,15 @@ function SceneContent({
   paused: boolean;
   tier: ViewportTier;
 }) {
-  const fogFar = variant === "overview" ? 28 : 34;
+  const preset = campusScenePresets[activeStage];
+  const fogNear =
+    preset.atmosphere.fogNear + (variant === "overview" ? 1.5 : 0);
+  const fogFar =
+    preset.atmosphere.fogFar + (variant === "overview" ? -1.5 : 0);
 
   return (
     <>
-      <fog attach="fog" args={["#040608", 10, fogFar]} />
+      <fog attach="fog" args={[preset.atmosphere.fogColor, fogNear, fogFar]} />
       <SceneLighting
         activeStage={activeStage}
         stageProgress={stageProgress}
@@ -1114,7 +1138,7 @@ export const AtlasScene = memo(function AtlasScene({
         className="atlas-scene__canvas"
         dpr={VIEWPORT_CONFIG[tier].dpr}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        camera={{ position: [0, 0.9, 9.6], fov: 24, near: 0.1, far: 48 }}
+        camera={{ position: [0, 0.9, 9.6], fov: 24, near: 0.1, far: 56 }}
       >
         <Suspense fallback={null}>
           <SceneContent
