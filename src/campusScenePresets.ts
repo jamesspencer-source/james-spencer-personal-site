@@ -1,13 +1,8 @@
-export type CampusSceneStateId =
-  | "opening"
-  | "labs"
-  | "program"
-  | "network"
-  | "closing";
-
+export type MapFocus = "labs" | "program" | "network";
+export type SceneStageId = "opening" | MapFocus | "closing";
 export type Vec3 = [number, number, number];
 
-export type CampusScenePreset = {
+export type ScenePreset = {
   camera: {
     position: Vec3;
     target: Vec3;
@@ -15,313 +10,298 @@ export type CampusScenePreset = {
     travel: Vec3;
     targetTravel: Vec3;
   };
-  shell: {
-    split: number;
-    aperture: number;
-    cutDepth: number;
-    lift: number;
-    tilt: number;
+  root: {
+    position: Vec3;
+    rotation: Vec3;
+    scale: number;
+  };
+  structure: {
+    spineLift: number;
+    labSpread: number;
+    labDepth: number;
+    programRise: number;
+    programScale: number;
+    networkLift: number;
+    networkSpan: number;
+    networkTilt: number;
   };
   layers: {
-    core: number;
+    spine: number;
     labs: number;
     program: number;
     network: number;
-    conduits: number;
-    glass: number;
-  };
-  signal: {
-    density: number;
-    speed: number;
-    labs: number;
-    program: number;
-    network: number;
+    routes: number;
   };
   lighting: {
+    ambient: number;
     key: number;
     fill: number;
     rim: number;
-    accent: number;
     haze: number;
   };
   atmosphere: {
     fogColor: string;
     fogNear: number;
     fogFar: number;
-    ambientFloor: number;
-    backfield: number;
+    background: number;
     contrast: number;
-    glow: number;
   };
   motion: {
     drift: number;
+    pulse: number;
     float: number;
-    rotation: number;
   };
 };
 
-export const campusScenePresets: Record<
-  CampusSceneStateId,
-  CampusScenePreset
-> = {
+export const scenePresets: Record<SceneStageId, ScenePreset> = {
   opening: {
     camera: {
-      position: [1.42, 1.82, 12.4],
-      target: [0.7, 1.02, 0.18],
+      position: [0.92, 0.82, 10.1],
+      target: [0.08, 0.16, 0],
       fov: 22,
-      travel: [0.42, -0.12, -1.18],
-      targetTravel: [0.14, -0.06, 0]
+      travel: [0.26, -0.08, -0.44],
+      targetTravel: [0.1, -0.03, 0]
     },
-    shell: {
-      split: 0.06,
-      aperture: 0.08,
-      cutDepth: 0.1,
-      lift: 0.04,
-      tilt: 0.04
+    root: {
+      position: [0.32, 0.08, 0],
+      rotation: [0.18, -0.52, 0.05],
+      scale: 1.04
+    },
+    structure: {
+      spineLift: 0.02,
+      labSpread: 0.58,
+      labDepth: 0.16,
+      programRise: 0.3,
+      programScale: 0.9,
+      networkLift: 0.3,
+      networkSpan: 0.68,
+      networkTilt: 0.08
     },
     layers: {
-      core: 0.62,
-      labs: 0.24,
-      program: 0.14,
-      network: 0.1,
-      conduits: 0.26,
-      glass: 0.26
-    },
-    signal: {
-      density: 0.18,
-      speed: 0.22,
-      labs: 0.2,
-      program: 0.14,
-      network: 0.12
+      spine: 0.88,
+      labs: 0.34,
+      program: 0.22,
+      network: 0.2,
+      routes: 0.32
     },
     lighting: {
-      key: 0.96,
-      fill: 0.44,
-      rim: 0.52,
-      accent: 0.24,
-      haze: 0.18
+      ambient: 0.94,
+      key: 1.18,
+      fill: 0.72,
+      rim: 0.54,
+      haze: 0.38
     },
     atmosphere: {
-      fogColor: "#182328",
-      fogNear: 13,
-      fogFar: 40,
-      ambientFloor: 0.72,
-      backfield: 0.56,
-      contrast: 0.42,
-      glow: 0.28
+      fogColor: "#132026",
+      fogNear: 12,
+      fogFar: 34,
+      background: 0.72,
+      contrast: 0.64
     },
     motion: {
       drift: 0.04,
-      float: 0.05,
-      rotation: 0.03
+      pulse: 0.28,
+      float: 0.03
     }
   },
   labs: {
     camera: {
-      position: [0.94, 1.94, 9.86],
-      target: [0.18, 1.2, 0.22],
+      position: [0.28, 0.72, 8.7],
+      target: [0.02, 0.08, 0.06],
       fov: 24,
-      travel: [0.18, -0.1, -1],
-      targetTravel: [0.04, -0.08, 0.02]
+      travel: [0.18, -0.02, -0.26],
+      targetTravel: [0.05, -0.04, 0.02]
     },
-    shell: {
-      split: 0.56,
-      aperture: 0.62,
-      cutDepth: 0.48,
-      lift: 0.18,
-      tilt: 0.12
+    root: {
+      position: [0.16, 0, 0],
+      rotation: [0.12, -0.42, 0.03],
+      scale: 1.06
+    },
+    structure: {
+      spineLift: 0.06,
+      labSpread: 1,
+      labDepth: 0.32,
+      programRise: 0.18,
+      programScale: 0.94,
+      networkLift: 0.2,
+      networkSpan: 0.6,
+      networkTilt: 0.02
     },
     layers: {
-      core: 0.86,
+      spine: 1,
       labs: 1,
-      program: 0.12,
-      network: 0.08,
-      conduits: 0.9,
-      glass: 0.7
-    },
-    signal: {
-      density: 0.58,
-      speed: 0.42,
-      labs: 1,
-      program: 0.22,
-      network: 0.14
+      program: 0.24,
+      network: 0.18,
+      routes: 0.78
     },
     lighting: {
-      key: 1.12,
-      fill: 0.4,
-      rim: 0.82,
-      accent: 0.38,
-      haze: 0.24
+      ambient: 1.02,
+      key: 1.24,
+      fill: 0.78,
+      rim: 0.72,
+      haze: 0.42
     },
     atmosphere: {
-      fogColor: "#172328",
+      fogColor: "#15222a",
       fogNear: 12,
-      fogFar: 43,
-      ambientFloor: 0.8,
-      backfield: 0.62,
-      contrast: 0.58,
-      glow: 0.34
+      fogFar: 33,
+      background: 0.84,
+      contrast: 0.74
     },
     motion: {
-      drift: 0.04,
-      float: 0.05,
-      rotation: 0.08
+      drift: 0.035,
+      pulse: 0.44,
+      float: 0.03
     }
   },
   program: {
     camera: {
-      position: [0.18, 0.18, 8.52],
-      target: [0.16, -0.88, 0.3],
-      fov: 24,
-      travel: [-0.08, -0.26, -0.54],
-      targetTravel: [0.02, -0.16, 0.06]
+      position: [-0.38, -0.34, 8.3],
+      target: [0.04, -1.08, 0.02],
+      fov: 25,
+      travel: [-0.1, -0.18, -0.22],
+      targetTravel: [0.06, -0.12, 0]
     },
-    shell: {
-      split: 0.8,
-      aperture: 0.92,
-      cutDepth: 0.9,
-      lift: 0.08,
-      tilt: -0.08
+    root: {
+      position: [0.12, -0.08, 0],
+      rotation: [0.26, -0.32, 0.09],
+      scale: 1.05
+    },
+    structure: {
+      spineLift: 0,
+      labSpread: 0.74,
+      labDepth: 0.2,
+      programRise: -0.08,
+      programScale: 1.08,
+      networkLift: 0.18,
+      networkSpan: 0.56,
+      networkTilt: -0.02
     },
     layers: {
-      core: 0.68,
-      labs: 0.08,
+      spine: 0.72,
+      labs: 0.22,
       program: 1,
-      network: 0.1,
-      conduits: 0.58,
-      glass: 0.92
-    },
-    signal: {
-      density: 0.82,
-      speed: 0.68,
-      labs: 0.2,
-      program: 1,
-      network: 0.16
+      network: 0.16,
+      routes: 0.82
     },
     lighting: {
-      key: 1.02,
-      fill: 0.52,
+      ambient: 1,
+      key: 1.18,
+      fill: 0.8,
       rim: 0.64,
-      accent: 0.64,
-      haze: 0.24
+      haze: 0.46
     },
     atmosphere: {
-      fogColor: "#172126",
+      fogColor: "#17242c",
       fogNear: 11,
-      fogFar: 42,
-      ambientFloor: 0.78,
-      backfield: 0.66,
-      contrast: 0.5,
-      glow: 0.42
+      fogFar: 32,
+      background: 0.88,
+      contrast: 0.7
     },
     motion: {
-      drift: 0.05,
-      float: 0.06,
-      rotation: -0.06
+      drift: 0.04,
+      pulse: 0.56,
+      float: 0.035
     }
   },
   network: {
     camera: {
-      position: [-0.18, 2.86, 10.88],
-      target: [0.16, 2.36, 0.14],
-      fov: 24,
-      travel: [-0.2, 0.16, 0.48],
-      targetTravel: [0.08, 0.22, 0]
+      position: [0.18, 1.68, 8.95],
+      target: [0.02, 1.38, 0.02],
+      fov: 23,
+      travel: [0.16, 0.12, 0.1],
+      targetTravel: [0.06, 0.08, 0]
     },
-    shell: {
-      split: 0.3,
-      aperture: 0.28,
-      cutDepth: 0.18,
-      lift: 1.12,
-      tilt: 0.2
+    root: {
+      position: [0.18, 0.12, 0],
+      rotation: [0.08, -0.56, -0.03],
+      scale: 1.03
+    },
+    structure: {
+      spineLift: 0.03,
+      labSpread: 0.68,
+      labDepth: 0.16,
+      programRise: 0.22,
+      programScale: 0.92,
+      networkLift: 0.78,
+      networkSpan: 1,
+      networkTilt: 0.18
     },
     layers: {
-      core: 0.58,
-      labs: 0.08,
-      program: 0.12,
+      spine: 0.74,
+      labs: 0.18,
+      program: 0.14,
       network: 1,
-      conduits: 0.62,
-      glass: 0.4
-    },
-    signal: {
-      density: 0.62,
-      speed: 0.5,
-      labs: 0.14,
-      program: 0.18,
-      network: 1
+      routes: 0.84
     },
     lighting: {
-      key: 1.08,
-      fill: 0.42,
-      rim: 0.96,
-      accent: 0.88,
-      haze: 0.3
+      ambient: 0.98,
+      key: 1.22,
+      fill: 0.76,
+      rim: 0.86,
+      haze: 0.52
     },
     atmosphere: {
-      fogColor: "#162229",
-      fogNear: 12,
-      fogFar: 45,
-      ambientFloor: 0.76,
-      backfield: 0.68,
-      contrast: 0.62,
-      glow: 0.46
+      fogColor: "#14222a",
+      fogNear: 11,
+      fogFar: 33,
+      background: 0.86,
+      contrast: 0.76
     },
     motion: {
-      drift: 0.05,
-      float: 0.07,
-      rotation: 0.06
+      drift: 0.038,
+      pulse: 0.5,
+      float: 0.032
     }
   },
   closing: {
     camera: {
-      position: [0.52, 1.34, 10.1],
-      target: [0.18, 0.88, 0.08],
+      position: [0.42, 0.74, 9.5],
+      target: [0.06, 0.08, 0],
       fov: 23,
-      travel: [-0.14, -0.06, -0.28],
-      targetTravel: [-0.04, -0.04, 0]
+      travel: [0.04, -0.04, -0.1],
+      targetTravel: [0.04, -0.02, 0]
     },
-    shell: {
-      split: 0.14,
-      aperture: 0.16,
-      cutDepth: 0.14,
-      lift: 0.18,
-      tilt: 0.02
+    root: {
+      position: [0.16, 0, 0],
+      rotation: [0.16, -0.48, 0.04],
+      scale: 1
+    },
+    structure: {
+      spineLift: 0.02,
+      labSpread: 0.64,
+      labDepth: 0.18,
+      programRise: 0.2,
+      programScale: 0.92,
+      networkLift: 0.28,
+      networkSpan: 0.7,
+      networkTilt: 0.06
     },
     layers: {
-      core: 0.7,
-      labs: 0.38,
-      program: 0.34,
-      network: 0.42,
-      conduits: 0.46,
-      glass: 0.48
-    },
-    signal: {
-      density: 0.28,
-      speed: 0.22,
-      labs: 0.34,
-      program: 0.32,
-      network: 0.4
+      spine: 0.78,
+      labs: 0.36,
+      program: 0.28,
+      network: 0.26,
+      routes: 0.34
     },
     lighting: {
-      key: 1.02,
-      fill: 0.42,
-      rim: 0.64,
-      accent: 0.34,
-      haze: 0.18
+      ambient: 0.92,
+      key: 1.08,
+      fill: 0.68,
+      rim: 0.52,
+      haze: 0.32
     },
     atmosphere: {
-      fogColor: "#131b1f",
+      fogColor: "#142128",
       fogNear: 13,
-      fogFar: 38,
-      ambientFloor: 0.6,
-      backfield: 0.46,
-      contrast: 0.3,
-      glow: 0.18
+      fogFar: 35,
+      background: 0.68,
+      contrast: 0.56
     },
     motion: {
-      drift: 0.04,
-      float: 0.05,
-      rotation: 0.02
+      drift: 0.025,
+      pulse: 0.18,
+      float: 0.02
     }
   }
 };

@@ -1,4 +1,4 @@
-import type { CampusSceneStateId } from "./campusScenePresets";
+import type { MapFocus } from "./campusScenePresets";
 
 export type ActionLink = {
   label: string;
@@ -33,7 +33,7 @@ export type RoleEvidence = {
 export type RoleEntry = {
   id: string;
   navLabel: string;
-  sceneFocus: Extract<CampusSceneStateId, "labs" | "program" | "network">;
+  sceneFocus: MapFocus;
   title: string;
   organization: string;
   dates: string;
@@ -43,10 +43,7 @@ export type RoleEntry = {
   link?: ActionLink;
 };
 
-export type OperatingStageId = Extract<
-  CampusSceneStateId,
-  "labs" | "program" | "network"
->;
+export type OperatingStageId = MapFocus;
 
 export type SystemsViewStage = {
   id: OperatingStageId;
@@ -67,6 +64,19 @@ export type EducationEntry = {
   degree: string;
   organization: string;
   dates: string;
+};
+
+export type SceneLegendItem = {
+  label: string;
+  detail: string;
+  tone?: AccentTone;
+};
+
+export type SceneLegendBlock = {
+  kicker: string;
+  title: string;
+  summary: string;
+  items: SceneLegendItem[];
 };
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
@@ -253,10 +263,140 @@ export const siteContent = {
       }
     ] as RoleEntry[]
   },
+  sceneLegend: {
+    overview: {
+      kicker: "Systems Map",
+      title: "Three operating surfaces, one shared system",
+      summary:
+        "The map compresses James's current work into linked layers rather than a literal building: shared laboratory infrastructure, a recurring summer program, and professional leadership beyond one local operation.",
+      items: [
+        {
+          label: "Shared lab backbone",
+          detail:
+            "A central operations spine feeds two active research laboratories with one coordinated operating model.",
+          tone: "labs"
+        },
+        {
+          label: "Program cycle",
+          detail:
+            "A lower loop stands for the setup, delivery, and closeout required each summer.",
+          tone: "program"
+        },
+        {
+          label: "Network layer",
+          detail:
+            "An upper lattice represents convenings, board leadership, and professional community work.",
+          tone: "network"
+        }
+      ]
+    } as SceneLegendBlock,
+    scope: {
+      kicker: "Current Read",
+      title: "The laboratory backbone is active first",
+      summary:
+        "The map stays anchored on the shared lab system in this section because that operating surface holds together the broader remit around it.",
+      items: [
+        {
+          label: "Shared utilities",
+          detail:
+            "Facilities, equipment, vendor relationships, and regulated space sit on the same spine.",
+          tone: "labs"
+        },
+        {
+          label: "People and continuity",
+          detail:
+            "Hiring, onboarding, scheduling, and day-to-day continuity radiate outward from that backbone.",
+          tone: "neutral"
+        }
+      ]
+    } as SceneLegendBlock,
+    roles: {
+      kicker: "Current Roles",
+      title: "The scene stays lab-led while the role detail changes",
+      summary:
+        "Laboratory operations remain the primary visual state here. Program and network roles are shown as extensions of the same operating system rather than separate worlds.",
+      items: [
+        {
+          label: "Primary anchor",
+          detail:
+            "The two-laboratory operating model remains the dominant read in this section.",
+          tone: "labs"
+        },
+        {
+          label: "Local emphasis only",
+          detail:
+            "Role selection can strengthen a layer, but it does not rebuild the whole scene.",
+          tone: "neutral"
+        }
+      ]
+    } as SceneLegendBlock,
+    systems: {
+      labs: {
+        kicker: "Systems View",
+        title: "Shared lab infrastructure comes first",
+        summary:
+          "Parallel decks, service bays, and the central spine stand in for the infrastructure researchers depend on every day.",
+        items: [
+          {
+            label: "Two active labs",
+            detail:
+              "Parallel decks represent two research laboratories operating through one shared system.",
+            tone: "labs"
+          },
+          {
+            label: "One operating backbone",
+            detail:
+              "Facilities, equipment, vendor coordination, and regulated space stay tied to the same central route.",
+            tone: "labs"
+          }
+        ]
+      } as SceneLegendBlock,
+      program: {
+        kicker: "Systems View",
+        title: "A recurring program reads as a managed cycle",
+        summary:
+          "The lower loop stands for preparation, setup, student support, daily execution, and closeout across each annual run of Community Phages.",
+        items: [
+          {
+            label: "Checkpoint rhythm",
+            detail:
+              "Gates and repeated stations represent the recurring steps that make the program run cleanly.",
+            tone: "program"
+          },
+          {
+            label: "Visible experience, hidden setup",
+            detail:
+              "The student-facing program depends on a stable operating loop beneath it.",
+            tone: "program"
+          }
+        ]
+      } as SceneLegendBlock,
+      network: {
+        kicker: "Systems View",
+        title: "Network leadership extends beyond one laboratory",
+        summary:
+          "The upper bridge structure represents board work, convenings, and the professional ties that connect lab managers across institutions.",
+        items: [
+          {
+            label: "Regional and national reach",
+            detail:
+              "The elevated lattice broadens the map beyond one local operation.",
+            tone: "network"
+          },
+          {
+            label: "Professional convenings",
+            detail:
+              "Bridges and nodes stand for recurring programming, coordination, and community leadership.",
+            tone: "network"
+          }
+        ]
+      } as SceneLegendBlock
+    }
+  },
   systemsView: {
     heading: "Systems View",
     intro:
-      "The campus is not a literal facility. It is a structured view of the systems beneath the visible work: shared research infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
+      "The systems map is not a literal facility. It condenses the work beneath the visible role into linked structures for shared laboratory infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
     stages: [
       {
         id: "labs",

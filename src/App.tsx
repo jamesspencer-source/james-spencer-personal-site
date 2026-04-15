@@ -130,7 +130,7 @@ function App() {
     activeSection === "roles" ||
     activeSection === "system";
 
-  const activeCampusStage = useMemo(() => {
+  const activeSceneStage = useMemo(() => {
     switch (activeSection) {
       case "scope":
       case "roles":
@@ -143,6 +143,23 @@ function App() {
       case "overview":
       default:
         return "opening" as const;
+    }
+  }, [activeSection, activeSystemStage]);
+
+  const activeSceneLegend = useMemo(() => {
+    switch (activeSection) {
+      case "scope":
+        return siteContent.sceneLegend.scope;
+      case "roles":
+        return siteContent.sceneLegend.roles;
+      case "system":
+        return siteContent.sceneLegend.systems[activeSystemStage];
+      case "background":
+      case "contact":
+        return siteContent.sceneLegend.overview;
+      case "overview":
+      default:
+        return siteContent.sceneLegend.overview;
     }
   }, [activeSection, activeSystemStage]);
 
@@ -268,13 +285,10 @@ function App() {
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
-          start: "top center",
-          end: "bottom center",
-          onToggle: (self) => {
-            if (self.isActive) {
-              setActiveSection(section.id as SectionId);
-            }
-          }
+          start: "top 45%",
+          end: "bottom 45%",
+          onEnter: () => setActiveSection(section.id as SectionId),
+          onEnterBack: () => setActiveSection(section.id as SectionId)
         });
       });
 
@@ -303,13 +317,10 @@ function App() {
 
           ScrollTrigger.create({
             trigger: step,
-            start: "top 58%",
-            end: "bottom 42%",
-            onToggle: (self) => {
-              if (self.isActive) {
-                setActiveSystemStage(stageId);
-              }
-            },
+            start: "top 62%",
+            end: "bottom 38%",
+            onEnter: () => setActiveSystemStage(stageId),
+            onEnterBack: () => setActiveSystemStage(stageId),
             onUpdate: (self) => {
               if (self.isActive) {
                 setActiveSystemStage(stageId);
@@ -540,24 +551,30 @@ function App() {
               </section>
             </div>
 
-            <aside className="core-scene js-reveal" aria-hidden="true">
+            <aside className="core-scene js-reveal">
               <div className="core-scene__sticky">
                 <div
-                  className={`scene-frame scene-frame--campus${
+                  className={`scene-frame scene-frame--map${
                     activeSection === "overview"
-                      ? " scene-frame--campus-hero"
+                      ? " scene-frame--map-hero"
                       : ""
                   }${activeSection === "system"
-                    ? " scene-frame--campus-immersive"
+                    ? " scene-frame--map-immersive"
                     : ""
                   }`}
+                  aria-hidden="true"
                 >
                   {shouldLoadNarrativeScene ? (
                     <Suspense
                       fallback={<div className="scene-frame__placeholder" />}
                     >
                       <AtlasScene
-                        activeStage={activeCampusStage}
+                        activeStage={activeSceneStage}
+                        focus={
+                          activeSection === "roles"
+                            ? activeRole?.sceneFocus
+                            : undefined
+                        }
                         reducedMotion={prefersReducedMotion}
                         stageProgress={activeSceneProgress}
                         motionProfile={sceneMotionProfile}
@@ -570,6 +587,35 @@ function App() {
                   ) : (
                     <div className="scene-frame__placeholder" />
                   )}
+                </div>
+
+                <div className="scene-legend">
+                  <p className="scene-legend__kicker">
+                    {activeSceneLegend.kicker}
+                  </p>
+                  <h3 className="scene-legend__title">
+                    {activeSceneLegend.title}
+                  </h3>
+                  <p className="scene-legend__summary">
+                    {activeSceneLegend.summary}
+                  </p>
+                  <div className="scene-legend__items">
+                    {activeSceneLegend.items.map((item) => (
+                      <article
+                        key={item.label}
+                        className={`scene-legend__item scene-legend__item--${
+                          item.tone ?? "neutral"
+                        }`}
+                      >
+                        <h4 className="scene-legend__item-label">
+                          {item.label}
+                        </h4>
+                        <p className="scene-legend__item-detail">
+                          {item.detail}
+                        </p>
+                      </article>
+                    ))}
+                  </div>
                 </div>
               </div>
             </aside>
