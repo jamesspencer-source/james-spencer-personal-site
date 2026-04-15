@@ -219,8 +219,57 @@ button {
 }
 
 .hero-section {
-  padding-top: 5.9rem;
+  padding-top: 6.2rem;
   padding-bottom: 4.4rem;
+  min-height: calc(100vh - var(--header-offset) - 1.2rem);
+  display: flex;
+  align-items: center;
+}
+
+.core-narrative {
+  position: relative;
+}
+
+.core-narrative::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10rem;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(5, 7, 9, 0), rgba(5, 7, 9, 0.96));
+  opacity: 0.7;
+}
+
+.core-narrative__shell {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(27rem, 1.22fr);
+  gap: clamp(1.5rem, 4vw, 4.25rem);
+  align-items: start;
+}
+
+.core-content {
+  min-width: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.core-scene {
+  position: relative;
+  min-width: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.core-scene__sticky {
+  position: sticky;
+  top: calc(var(--header-offset) + 0.8rem);
+  min-height: calc(100vh - var(--header-offset) - 1.1rem);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem 0 1.4rem;
 }
 
 .section-label {
@@ -252,18 +301,10 @@ button {
   margin-bottom: 1.65rem;
 }
 
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(18rem, 0.74fr) minmax(30rem, 1.26fr);
-  gap: 1.2rem 0;
-  align-items: center;
-  overflow: visible;
-}
-
 .hero-copy {
   display: grid;
   gap: 1.2rem;
-  max-width: 35rem;
+  max-width: 36rem;
   position: relative;
   z-index: 3;
   padding: 1rem 0 0;
@@ -372,13 +413,6 @@ button {
   line-height: 1.52;
 }
 
-.hero-visual {
-  min-width: 0;
-  position: relative;
-  min-height: clamp(34rem, 62vw, 47rem);
-  overflow: visible;
-}
-
 .scene-frame {
   position: relative;
   overflow: hidden;
@@ -460,6 +494,36 @@ button {
   background:
     radial-gradient(circle at 66% 36%, rgba(255, 255, 255, 0.05), transparent 28%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 26%);
+}
+
+.scene-frame--campus {
+  width: min(100%, 50rem);
+  min-height: clamp(34rem, 76vh, 59rem);
+  margin: -1.5rem -8vw -1rem -1rem;
+  overflow: visible;
+  background:
+    radial-gradient(circle at 60% 34%, rgba(107, 197, 155, 0.2), transparent 20rem),
+    radial-gradient(circle at 68% 18%, rgba(144, 184, 255, 0.16), transparent 22rem),
+    radial-gradient(circle at 42% 66%, rgba(216, 234, 140, 0.09), transparent 16rem);
+}
+
+.scene-frame--campus::before,
+.scene-frame--campus::after {
+  display: none;
+}
+
+.scene-frame--campus .atlas-scene,
+.scene-frame--campus .scene-frame__placeholder {
+  filter: drop-shadow(0 36px 110px rgba(0, 0, 0, 0.52));
+}
+
+.scene-frame--campus-hero {
+  min-height: clamp(38rem, 82vh, 62rem);
+}
+
+.scene-frame--campus-immersive {
+  min-height: clamp(42rem, 86vh, 66rem);
+  margin-right: -10vw;
 }
 
 .scope-section {
@@ -623,6 +687,13 @@ button {
     rgba(7, 10, 12, 0.28);
 }
 
+.role-tabs__button--primary {
+  border-left-color: rgba(107, 197, 155, 0.34);
+  background:
+    linear-gradient(180deg, rgba(107, 197, 155, 0.04), rgba(107, 197, 155, 0.015)),
+    rgba(7, 10, 12, 0.28);
+}
+
 .role-tabs__button.is-active {
   border-color: rgba(107, 197, 155, 0.45);
   border-left-color: rgba(107, 197, 155, 0.8);
@@ -736,10 +807,6 @@ button {
   margin-top: 1.15rem;
 }
 
-.system-section {
-  padding-top: 5.1rem;
-}
-
 .system-shell {
   position: relative;
   overflow: hidden;
@@ -762,22 +829,9 @@ button {
   opacity: 0.06;
 }
 
-.system-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.22fr) minmax(19rem, 0.78fr);
-  gap: 0;
-}
-
-.system-scene-column {
-  position: sticky;
-  top: calc(var(--header-offset) + 1rem);
-  align-self: start;
-  padding: 1.5rem 1.5rem 1.5rem 1rem;
-}
-
 .system-steps {
   display: grid;
-  padding: 1.6rem 1.6rem 1.6rem 0;
+  padding: 0.6rem 0;
   align-content: start;
 }
 
@@ -985,12 +1039,12 @@ button {
   padding: 1.25rem;
 }
 
-.atlas-fallback__switchyard {
+.atlas-fallback__campus {
   position: relative;
   width: min(36vw, 22rem);
   height: min(72vh, 38rem);
   transform-style: preserve-3d;
-  transform: translate3d(0, 0, 0) rotateX(8deg) rotateY(-18deg);
+  transform: translate3d(0, 0, 0) rotateX(8deg) rotateY(-16deg);
   transition: transform 700ms ease;
 }
 
@@ -1180,8 +1234,8 @@ button {
   transform: translateZ(-0.8rem);
 }
 
-.atlas-fallback--hero .atlas-fallback__switchyard {
-  transform: translate3d(8%, 0, 0) rotateX(8deg) rotateY(-20deg) scale(1.08);
+.atlas-fallback--overview .atlas-fallback__campus {
+  transform: translate3d(8%, 0, 0) rotateX(8deg) rotateY(-18deg) scale(1.08);
 }
 
 .atlas-fallback--opening .atlas-fallback__deck,
@@ -1223,12 +1277,12 @@ button {
   opacity: 0.56;
 }
 
-.atlas-fallback--closing .atlas-fallback__switchyard {
+.atlas-fallback--closing .atlas-fallback__campus {
   transform: translate3d(0, 0, 0) rotateX(8deg) rotateY(-16deg) scale(0.99);
 }
 
 @media (max-width: 1180px) {
-  .atlas-fallback__switchyard {
+  .atlas-fallback__campus {
     width: min(72vw, 21rem);
     height: min(54vh, 29rem);
   }
@@ -1237,41 +1291,46 @@ button {
     width: min(calc(100% - 2rem), var(--max-width));
   }
 
-  .hero-grid,
+  .core-narrative__shell,
   .scope-intro-grid,
   .roles-layout,
   .background-grid {
     grid-template-columns: 1fr;
   }
 
-  .hero-grid {
-    gap: 1.8rem;
+  .core-narrative__shell {
+    gap: 0;
   }
 
-  .hero-visual {
-    min-height: 30rem;
+  .core-scene {
+    order: -1;
   }
 
-  .scene-frame--hero {
-    min-height: 30rem;
-    margin: -1rem -1rem -1rem -1rem;
+  .core-scene__sticky {
+    top: calc(var(--header-offset) + 0.45rem);
+    min-height: auto;
+    justify-content: center;
+    padding: 0.4rem 0 1.2rem;
   }
 
-  .system-layout {
-    grid-template-columns: 1fr;
-  }
-
-  .system-scene-column {
-    position: relative;
-    top: auto;
-    max-width: 52rem;
-    margin: 0 auto;
+  .scene-frame--campus,
+  .scene-frame--campus-hero,
+  .scene-frame--campus-immersive {
     width: 100%;
-    padding: 1.25rem 1.25rem 0;
+    min-height: clamp(22rem, 36vh, 28rem);
+    margin: 0 -0.8rem;
+  }
+
+  .hero-section {
+    min-height: auto;
+  }
+
+  .system-shell {
+    margin-top: 0.5rem;
   }
 
   .system-steps {
-    padding: 0 1.4rem 1.4rem;
+    padding: 0 0.2rem 0.2rem;
   }
 
   .system-step {
@@ -1282,7 +1341,7 @@ button {
 }
 
 @media (max-width: 720px) {
-  .atlas-fallback__switchyard {
+  .atlas-fallback__campus {
     width: min(78vw, 17rem);
     height: min(42vh, 22rem);
     transform: translate3d(0, 0, 0) rotateX(6deg) rotateY(-14deg);
@@ -1310,6 +1369,10 @@ button {
     padding-top: 0;
   }
 
+  .core-scene__sticky {
+    padding-bottom: 1rem;
+  }
+
   .role-detail,
   .education-block {
     padding-left: 1rem;
@@ -1332,13 +1395,11 @@ button {
     grid-template-columns: 1fr;
   }
 
-  .scene-frame--hero {
-    min-height: 24rem;
-    margin: 0 -0.75rem -0.5rem;
-  }
-
-  .scene-frame--system {
-    min-height: 28rem;
+  .scene-frame--campus,
+  .scene-frame--campus-hero,
+  .scene-frame--campus-immersive {
+    min-height: clamp(18rem, 28vh, 22rem);
+    margin: 0 -0.65rem;
   }
 
   .results-panel {
@@ -1348,12 +1409,8 @@ button {
     padding-top: 1.15rem;
   }
 
-  .system-scene-column {
-    padding: 0.85rem 0.85rem 0;
-  }
-
   .system-steps {
-    padding: 0 1rem 1rem;
+    padding: 0;
   }
 
   .system-step {

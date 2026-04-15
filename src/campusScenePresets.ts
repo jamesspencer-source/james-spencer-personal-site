@@ -1,0 +1,273 @@
+export type CampusSceneStateId =
+  | "opening"
+  | "labs"
+  | "program"
+  | "network"
+  | "closing";
+
+export type Vec3 = [number, number, number];
+
+export type CampusScenePreset = {
+  camera: {
+    position: Vec3;
+    target: Vec3;
+    fov: number;
+    travel: Vec3;
+    targetTravel: Vec3;
+  };
+  shell: {
+    split: number;
+    aperture: number;
+    cutDepth: number;
+    lift: number;
+    tilt: number;
+  };
+  layers: {
+    core: number;
+    labs: number;
+    program: number;
+    network: number;
+    conduits: number;
+    glass: number;
+  };
+  signal: {
+    density: number;
+    speed: number;
+    labs: number;
+    program: number;
+    network: number;
+  };
+  lighting: {
+    key: number;
+    fill: number;
+    rim: number;
+    accent: number;
+    haze: number;
+  };
+  motion: {
+    drift: number;
+    float: number;
+    rotation: number;
+  };
+};
+
+export const campusScenePresets: Record<
+  CampusSceneStateId,
+  CampusScenePreset
+> = {
+  opening: {
+    camera: {
+      position: [1.42, 1.82, 12.4],
+      target: [0.7, 1.02, 0.18],
+      fov: 22,
+      travel: [0.42, -0.12, -1.18],
+      targetTravel: [0.14, -0.06, 0]
+    },
+    shell: {
+      split: 0.06,
+      aperture: 0.08,
+      cutDepth: 0.1,
+      lift: 0.04,
+      tilt: 0.04
+    },
+    layers: {
+      core: 0.62,
+      labs: 0.24,
+      program: 0.14,
+      network: 0.1,
+      conduits: 0.26,
+      glass: 0.26
+    },
+    signal: {
+      density: 0.18,
+      speed: 0.22,
+      labs: 0.2,
+      program: 0.14,
+      network: 0.12
+    },
+    lighting: {
+      key: 0.96,
+      fill: 0.44,
+      rim: 0.52,
+      accent: 0.24,
+      haze: 0.18
+    },
+    motion: {
+      drift: 0.06,
+      float: 0.08,
+      rotation: 0.04
+    }
+  },
+  labs: {
+    camera: {
+      position: [0.94, 1.94, 9.86],
+      target: [0.18, 1.2, 0.22],
+      fov: 24,
+      travel: [0.18, -0.1, -1],
+      targetTravel: [0.04, -0.08, 0.02]
+    },
+    shell: {
+      split: 0.48,
+      aperture: 0.54,
+      cutDepth: 0.42,
+      lift: 0.14,
+      tilt: 0.12
+    },
+    layers: {
+      core: 0.86,
+      labs: 1,
+      program: 0.24,
+      network: 0.16,
+      conduits: 0.84,
+      glass: 0.7
+    },
+    signal: {
+      density: 0.58,
+      speed: 0.42,
+      labs: 1,
+      program: 0.22,
+      network: 0.14
+    },
+    lighting: {
+      key: 1.12,
+      fill: 0.4,
+      rim: 0.82,
+      accent: 0.38,
+      haze: 0.24
+    },
+    motion: {
+      drift: 0.05,
+      float: 0.08,
+      rotation: 0.12
+    }
+  },
+  program: {
+    camera: {
+      position: [0.34, 0.3, 8.78],
+      target: [0.18, -0.72, 0.26],
+      fov: 24,
+      travel: [-0.14, -0.38, -0.72],
+      targetTravel: [0.02, -0.22, 0.06]
+    },
+    shell: {
+      split: 0.68,
+      aperture: 0.84,
+      cutDepth: 0.78,
+      lift: 0.08,
+      tilt: -0.08
+    },
+    layers: {
+      core: 0.72,
+      labs: 0.22,
+      program: 1,
+      network: 0.18,
+      conduits: 0.66,
+      glass: 0.86
+    },
+    signal: {
+      density: 0.82,
+      speed: 0.68,
+      labs: 0.2,
+      program: 1,
+      network: 0.16
+    },
+    lighting: {
+      key: 1.02,
+      fill: 0.52,
+      rim: 0.64,
+      accent: 0.64,
+      haze: 0.24
+    },
+    motion: {
+      drift: 0.06,
+      float: 0.08,
+      rotation: -0.08
+    }
+  },
+  network: {
+    camera: {
+      position: [-0.44, 2.68, 10.62],
+      target: [0.18, 2.18, 0.16],
+      fov: 24,
+      travel: [-0.32, 0.28, 0.64],
+      targetTravel: [0.1, 0.28, 0]
+    },
+    shell: {
+      split: 0.42,
+      aperture: 0.38,
+      cutDepth: 0.28,
+      lift: 0.92,
+      tilt: 0.2
+    },
+    layers: {
+      core: 0.62,
+      labs: 0.16,
+      program: 0.2,
+      network: 1,
+      conduits: 0.74,
+      glass: 0.48
+    },
+    signal: {
+      density: 0.62,
+      speed: 0.5,
+      labs: 0.14,
+      program: 0.18,
+      network: 1
+    },
+    lighting: {
+      key: 1.08,
+      fill: 0.42,
+      rim: 0.96,
+      accent: 0.88,
+      haze: 0.3
+    },
+    motion: {
+      drift: 0.07,
+      float: 0.1,
+      rotation: 0.08
+    }
+  },
+  closing: {
+    camera: {
+      position: [0.52, 1.34, 10.1],
+      target: [0.18, 0.88, 0.08],
+      fov: 23,
+      travel: [-0.14, -0.06, -0.28],
+      targetTravel: [-0.04, -0.04, 0]
+    },
+    shell: {
+      split: 0.14,
+      aperture: 0.16,
+      cutDepth: 0.14,
+      lift: 0.18,
+      tilt: 0.02
+    },
+    layers: {
+      core: 0.7,
+      labs: 0.38,
+      program: 0.34,
+      network: 0.42,
+      conduits: 0.46,
+      glass: 0.48
+    },
+    signal: {
+      density: 0.28,
+      speed: 0.22,
+      labs: 0.34,
+      program: 0.32,
+      network: 0.4
+    },
+    lighting: {
+      key: 1.02,
+      fill: 0.42,
+      rim: 0.64,
+      accent: 0.34,
+      haze: 0.18
+    },
+    motion: {
+      drift: 0.04,
+      float: 0.06,
+      rotation: 0.02
+    }
+  }
+};

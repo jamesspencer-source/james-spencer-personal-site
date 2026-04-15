@@ -102,7 +102,7 @@ function InlineLinkRow({
 function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const systemSectionRef = useRef<HTMLElement>(null);
+  const coreNarrativeRef = useRef<HTMLDivElement>(null);
 
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
   const [activeRoleId, setActiveRoleId] = useState(
@@ -112,8 +112,8 @@ function App() {
     siteContent.systemsView.stages[0]?.id ?? "labs"
   );
   const [systemProgress, setSystemProgress] = useState(0.28);
-  const [shouldLoadHeroScene] = useState(true);
-  const [shouldLoadSystemScene, setShouldLoadSystemScene] = useState(false);
+  const [shouldLoadNarrativeScene, setShouldLoadNarrativeScene] =
+    useState(true);
 
   const activeRole = useMemo(
     () =>
@@ -121,6 +121,46 @@ function App() {
       siteContent.roles.entries[0],
     [activeRoleId]
   );
+
+  const isCoreNarrativeSection =
+    activeSection === "overview" ||
+    activeSection === "scope" ||
+    activeSection === "roles" ||
+    activeSection === "system";
+
+  const activeCampusStage = useMemo(() => {
+    switch (activeSection) {
+      case "scope":
+        return "labs" as const;
+      case "roles":
+        return activeRole?.sceneFocus ?? "labs";
+      case "system":
+        return activeSystemStage;
+      case "background":
+      case "contact":
+        return "closing" as const;
+      case "overview":
+      default:
+        return "opening" as const;
+    }
+  }, [activeRole, activeSection, activeSystemStage]);
+
+  const activeSceneProgress = useMemo(() => {
+    switch (activeSection) {
+      case "scope":
+        return 0.46;
+      case "roles":
+        return 0.6;
+      case "system":
+        return Math.max(0.22, systemProgress);
+      case "background":
+      case "contact":
+        return 0.88;
+      case "overview":
+      default:
+        return 0.28;
+    }
+  }, [activeSection, systemProgress]);
 
   useEffect(() => {
     document.title = siteContent.meta.title;
@@ -132,7 +172,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const node = systemSectionRef.current;
+    const node = coreNarrativeRef.current;
     if (!node) {
       return undefined;
     }
@@ -141,7 +181,7 @@ function App() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            setShouldLoadSystemScene(true);
+            setShouldLoadNarrativeScene(true);
           }
         });
       },
@@ -299,226 +339,227 @@ function App() {
       </header>
 
       <main id="content" className="site-main">
-        <section
-          id="overview"
-          className="site-section hero-section"
-          data-section="overview"
+        <div
+          ref={coreNarrativeRef}
+          className={`core-narrative${
+            activeSection === "system" ? " is-system-active" : ""
+          }${isCoreNarrativeSection ? " is-scene-active" : ""}`}
         >
-          <div className="shell hero-grid">
-            <div className="hero-copy js-reveal">
-              <p className="section-label">Overview</p>
-              <h1 className="hero-copy__name">{siteContent.hero.name}</h1>
-              <p className="hero-copy__title">{siteContent.hero.title}</p>
-              <p className="hero-copy__location">{siteContent.hero.location}</p>
+          <div className="shell core-narrative__shell">
+            <div className="core-content">
+              <section
+                id="overview"
+                className="site-section hero-section"
+                data-section="overview"
+              >
+                <div className="hero-copy js-reveal">
+                  <p className="section-label">Overview</p>
+                  <h1 className="hero-copy__name">{siteContent.hero.name}</h1>
+                  <p className="hero-copy__title">{siteContent.hero.title}</p>
+                  <p className="hero-copy__location">{siteContent.hero.location}</p>
 
-              <div className="hero-copy__summary">
-                <p>{siteContent.hero.thesis}</p>
-              </div>
+                  <div className="hero-copy__summary">
+                    <p>{siteContent.hero.thesis}</p>
+                  </div>
 
-              <InlineLinkRow links={siteContent.hero.links} />
+                  <InlineLinkRow links={siteContent.hero.links} />
 
-              <div className="hero-proof">
-                {siteContent.hero.proofStrip.map((item) => (
-                  <article
-                    key={item.headline}
-                    className={`hero-proof__item hero-proof__item--${
-                      item.tone ?? "neutral"
-                    }`}
-                  >
-                    <h2 className="hero-proof__headline">{item.headline}</h2>
-                    <p className="hero-proof__detail">{item.detail}</p>
+                  <div className="hero-proof">
+                    {siteContent.hero.proofStrip.map((item) => (
+                      <article
+                        key={item.headline}
+                        className={`hero-proof__item hero-proof__item--${
+                          item.tone ?? "neutral"
+                        }`}
+                      >
+                        <h2 className="hero-proof__headline">{item.headline}</h2>
+                        <p className="hero-proof__detail">{item.detail}</p>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </section>
+
+              <section
+                id="scope"
+                className="site-section scope-section"
+                data-section="scope"
+              >
+                <div className="section-heading js-reveal">
+                  <h2 className="section-title">{siteContent.scope.heading}</h2>
+                </div>
+
+                <div className="scope-intro-grid">
+                  <article className="scope-intro js-reveal">
+                    <p className="scope-intro__lead">{siteContent.scope.intro}</p>
+                    <p className="scope-intro__context">{siteContent.scope.context}</p>
                   </article>
-                ))}
-              </div>
+
+                  <aside className="results-panel js-reveal">
+                    <p className="results-panel__label">Selected Results</p>
+                    <div className="results-list">
+                      {siteContent.scope.results.map((result) => (
+                        <article key={result.title} className="results-list__item">
+                          <h3 className="results-list__title">{result.title}</h3>
+                          <p className="results-list__detail">{result.detail}</p>
+                        </article>
+                      ))}
+                    </div>
+                  </aside>
+                </div>
+
+                <div className="domains-grid js-reveal">
+                  {siteContent.scope.domains.map((domain) => (
+                    <article
+                      key={domain.title}
+                      className={`domain-item domain-item--${domain.tone ?? "neutral"}`}
+                    >
+                      <h3 className="domain-item__title">{domain.title}</h3>
+                      <p className="domain-item__detail">{domain.detail}</p>
+                    </article>
+                  ))}
+                </div>
+              </section>
+
+              <section
+                id="roles"
+                className="site-section roles-section"
+                data-section="roles"
+              >
+                <div className="section-heading js-reveal">
+                  <h2 className="section-title">{siteContent.roles.heading}</h2>
+                  <p className="section-intro">{siteContent.roles.intro}</p>
+                </div>
+
+                <div className="roles-layout">
+                  <div
+                    className="role-tabs js-reveal"
+                    role="tablist"
+                    aria-label="Current roles"
+                  >
+                    {siteContent.roles.entries.map((entry) => (
+                      <button
+                        key={entry.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={activeRole?.id === entry.id}
+                        className={`role-tabs__button${
+                          entry.sceneFocus === "labs"
+                            ? " role-tabs__button--primary"
+                            : ""
+                        }${
+                          activeRole?.id === entry.id ? " is-active" : ""
+                        }`}
+                        onClick={() => setActiveRoleId(entry.id)}
+                      >
+                        <span className="role-tabs__label">{entry.navLabel}</span>
+                        <span className="role-tabs__meta">{entry.dates}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {activeRole ? (
+                    <article className="role-detail js-reveal" role="tabpanel">
+                      <p className="role-detail__eyebrow">{activeRole.organization}</p>
+                      <h3 className="role-detail__title">{activeRole.title}</h3>
+                      <p className="role-detail__dates">{activeRole.dates}</p>
+                      <p className="role-detail__summary">{activeRole.summary}</p>
+
+                      <ul className="detail-list">
+                        {activeRole.bullets.map((bullet) => (
+                          <li key={bullet}>{bullet}</li>
+                        ))}
+                      </ul>
+
+                      <dl className="detail-evidence">
+                        {activeRole.evidence.map((item) => (
+                          <div key={item.label} className="detail-evidence__item">
+                            <dt>{item.label}</dt>
+                            <dd>{item.value}</dd>
+                          </div>
+                        ))}
+                      </dl>
+
+                      {activeRole.link ? (
+                        <InlineLinkRow
+                          links={[activeRole.link]}
+                          className="inline-links--detail"
+                        />
+                      ) : null}
+                    </article>
+                  ) : null}
+                </div>
+              </section>
+
+              <section
+                id="system"
+                className="site-section system-section"
+                data-section="system"
+              >
+                <div className="section-heading js-reveal">
+                  <h2 className="section-title">{siteContent.systemsView.heading}</h2>
+                  <p className="section-intro">{siteContent.systemsView.intro}</p>
+                </div>
+
+                <div className="system-shell js-reveal">
+                  <div className="system-steps">
+                    {siteContent.systemsView.stages.map((entry) => (
+                      <article
+                        key={entry.id}
+                        className={`system-step${
+                          activeSystemStage === entry.id ? " is-active" : ""
+                        }`}
+                        data-operating-stage={entry.id}
+                      >
+                        <p className="system-step__kicker">{entry.kicker}</p>
+                        <h3 className="system-step__title">{entry.title}</h3>
+                        <p className="system-step__summary">{entry.summary}</p>
+                        <ul className="system-step__evidence">
+                          {entry.evidence.map((line) => (
+                            <li key={line}>{line}</li>
+                          ))}
+                        </ul>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              </section>
             </div>
 
-            <aside className="hero-visual js-reveal">
-              <div className="scene-frame scene-frame--hero scene-frame--hero-breakout">
-                {shouldLoadHeroScene ? (
-                  <Suspense
-                    fallback={<div className="scene-frame__placeholder" />}
-                  >
-                    <AtlasScene
-                      activeStage="opening"
-                      reducedMotion={prefersReducedMotion}
-                      stageProgress={0.42}
-                      variant="hero"
-                      paused={activeSection !== "overview"}
-                    />
-                  </Suspense>
-                ) : (
-                  <div className="scene-frame__placeholder" />
-                )}
+            <aside className="core-scene js-reveal" aria-hidden="true">
+              <div className="core-scene__sticky">
+                <div
+                  className={`scene-frame scene-frame--campus${
+                    activeSection === "overview"
+                      ? " scene-frame--campus-hero"
+                      : ""
+                  }${activeSection === "system"
+                    ? " scene-frame--campus-immersive"
+                    : ""
+                  }`}
+                >
+                  {shouldLoadNarrativeScene ? (
+                    <Suspense
+                      fallback={<div className="scene-frame__placeholder" />}
+                    >
+                      <AtlasScene
+                        activeStage={activeCampusStage}
+                        reducedMotion={prefersReducedMotion}
+                        stageProgress={activeSceneProgress}
+                        variant={
+                          activeSection === "overview" ? "overview" : "narrative"
+                        }
+                        paused={!isCoreNarrativeSection}
+                      />
+                    </Suspense>
+                  ) : (
+                    <div className="scene-frame__placeholder" />
+                  )}
+                </div>
               </div>
             </aside>
           </div>
-        </section>
-
-        <section
-          id="scope"
-          className="site-section scope-section"
-          data-section="scope"
-        >
-          <div className="shell">
-            <div className="section-heading js-reveal">
-              <h2 className="section-title">{siteContent.scope.heading}</h2>
-            </div>
-
-            <div className="scope-intro-grid">
-              <article className="scope-intro js-reveal">
-                <p className="scope-intro__lead">{siteContent.scope.intro}</p>
-                <p className="scope-intro__context">{siteContent.scope.context}</p>
-              </article>
-
-              <aside className="results-panel js-reveal">
-                <p className="results-panel__label">Selected Results</p>
-                <div className="results-list">
-                  {siteContent.scope.results.map((result) => (
-                    <article key={result.title} className="results-list__item">
-                      <h3 className="results-list__title">{result.title}</h3>
-                      <p className="results-list__detail">{result.detail}</p>
-                    </article>
-                  ))}
-                </div>
-              </aside>
-            </div>
-
-            <div className="domains-grid js-reveal">
-              {siteContent.scope.domains.map((domain) => (
-                <article
-                  key={domain.title}
-                  className={`domain-item domain-item--${domain.tone ?? "neutral"}`}
-                >
-                  <h3 className="domain-item__title">{domain.title}</h3>
-                  <p className="domain-item__detail">{domain.detail}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="roles"
-          className="site-section roles-section"
-          data-section="roles"
-        >
-          <div className="shell">
-            <div className="section-heading js-reveal">
-              <h2 className="section-title">{siteContent.roles.heading}</h2>
-              <p className="section-intro">{siteContent.roles.intro}</p>
-            </div>
-
-            <div className="roles-layout">
-              <div className="role-tabs js-reveal" role="tablist" aria-label="Current roles">
-                {siteContent.roles.entries.map((entry) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeRole?.id === entry.id}
-                    className={`role-tabs__button${
-                      activeRole?.id === entry.id ? " is-active" : ""
-                    }`}
-                    onClick={() => setActiveRoleId(entry.id)}
-                  >
-                    <span className="role-tabs__label">{entry.navLabel}</span>
-                    <span className="role-tabs__meta">{entry.dates}</span>
-                  </button>
-                ))}
-              </div>
-
-              {activeRole ? (
-                <article className="role-detail js-reveal" role="tabpanel">
-                  <p className="role-detail__eyebrow">{activeRole.organization}</p>
-                  <h3 className="role-detail__title">{activeRole.title}</h3>
-                  <p className="role-detail__dates">{activeRole.dates}</p>
-                  <p className="role-detail__summary">{activeRole.summary}</p>
-
-                  <ul className="detail-list">
-                    {activeRole.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-
-                  <dl className="detail-evidence">
-                    {activeRole.evidence.map((item) => (
-                      <div key={item.label} className="detail-evidence__item">
-                        <dt>{item.label}</dt>
-                        <dd>{item.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-
-                  {activeRole.link ? (
-                    <InlineLinkRow
-                      links={[activeRole.link]}
-                      className="inline-links--detail"
-                    />
-                  ) : null}
-                </article>
-              ) : null}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="system"
-          ref={systemSectionRef}
-          className="site-section system-section"
-          data-section="system"
-        >
-          <div className="shell">
-            <div className="section-heading js-reveal">
-              <h2 className="section-title">{siteContent.systemsView.heading}</h2>
-              <p className="section-intro">{siteContent.systemsView.intro}</p>
-            </div>
-
-            <div className="system-shell js-reveal">
-              <div className="system-layout">
-                <div className="system-scene-column">
-                  <div className="scene-frame scene-frame--system scene-frame--system-immersive">
-                    {shouldLoadSystemScene ? (
-                      <Suspense
-                        fallback={<div className="scene-frame__placeholder" />}
-                      >
-                        <AtlasScene
-                          activeStage={activeSystemStage}
-                          reducedMotion={prefersReducedMotion}
-                          stageProgress={systemProgress}
-                          variant="system"
-                          paused={activeSection !== "system"}
-                        />
-                      </Suspense>
-                    ) : (
-                      <div className="scene-frame__placeholder" />
-                    )}
-                  </div>
-                </div>
-
-                <div className="system-steps">
-                  {siteContent.systemsView.stages.map((entry) => (
-                    <article
-                      key={entry.id}
-                      className={`system-step${
-                        activeSystemStage === entry.id ? " is-active" : ""
-                      }`}
-                      data-operating-stage={entry.id}
-                    >
-                      <p className="system-step__kicker">{entry.kicker}</p>
-                      <h3 className="system-step__title">{entry.title}</h3>
-                      <p className="system-step__summary">{entry.summary}</p>
-                      <ul className="system-step__evidence">
-                        {entry.evidence.map((line) => (
-                          <li key={line}>{line}</li>
-                        ))}
-                      </ul>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        </div>
 
         <section
           id="background"

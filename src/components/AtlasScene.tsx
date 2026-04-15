@@ -10,16 +10,16 @@ import {
 } from "react";
 import * as THREE from "three";
 import {
-  switchyardScenePresets,
-  type SwitchyardStateId,
+  campusScenePresets,
+  type CampusSceneStateId,
   type Vec3
-} from "../switchyardScenePresets";
+} from "../campusScenePresets";
 
 type ViewportTier = "mobile" | "tablet" | "desktop";
-type SceneVariant = "hero" | "system";
+type SceneVariant = "overview" | "narrative";
 
 export type AtlasSceneProps = {
-  activeStage: SwitchyardStateId;
+  activeStage: CampusSceneStateId;
   reducedMotion?: boolean;
   stageProgress?: number;
   variant?: SceneVariant;
@@ -37,34 +37,34 @@ type MaterialSurface = THREE.Material & {
   transmission?: number;
 };
 
-const SWITCHYARD_GLB_URL = `${import.meta.env.BASE_URL}assets/3d/switchyard/switchyard.glb`;
+const CAMPUS_GLB_URL = `${import.meta.env.BASE_URL}assets/3d/campus/campus.glb`;
 
 const VIEWPORT_CONFIG: Record<
   ViewportTier,
   {
     dpr: [number, number];
-    heroScale: number;
-    systemScale: number;
+    overviewScale: number;
+    narrativeScale: number;
     cameraOffset: Vec3;
   }
 > = {
   mobile: {
     dpr: [1, 1.2],
-    heroScale: 1.06,
-    systemScale: 0.94,
-    cameraOffset: [0.14, 0.18, 0.92]
+    overviewScale: 0.96,
+    narrativeScale: 0.88,
+    cameraOffset: [0.12, 0.18, 0.86]
   },
   tablet: {
     dpr: [1, 1.5],
-    heroScale: 1.12,
-    systemScale: 1.02,
-    cameraOffset: [0.26, 0.1, 0.42]
+    overviewScale: 1.04,
+    narrativeScale: 0.96,
+    cameraOffset: [0.18, 0.08, 0.28]
   },
   desktop: {
     dpr: [1, 1.75],
-    heroScale: 1.22,
-    systemScale: 1.1,
-    cameraOffset: [0.46, 0.04, -0.36]
+    overviewScale: 1.18,
+    narrativeScale: 1.08,
+    cameraOffset: [0.36, 0.06, -0.18]
   }
 };
 
@@ -202,7 +202,7 @@ function SceneLighting({
   stageProgress,
   reducedMotion
 }: {
-  activeStage: SwitchyardStateId;
+  activeStage: CampusSceneStateId;
   stageProgress: number;
   reducedMotion: boolean;
 }) {
@@ -214,7 +214,7 @@ function SceneLighting({
   const hazeRef = useRef<THREE.PointLight>(null);
 
   useFrame((_, delta) => {
-    const preset = switchyardScenePresets[activeStage];
+    const preset = campusScenePresets[activeStage];
     const reveal = reducedMotion
       ? 0.18
       : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
@@ -325,7 +325,7 @@ function SceneDirector({
   reducedMotion,
   paused
 }: {
-  activeStage: SwitchyardStateId;
+  activeStage: CampusSceneStateId;
   stageProgress: number;
   tier: ViewportTier;
   variant: SceneVariant;
@@ -338,10 +338,10 @@ function SceneDirector({
 
   useFrame((state, delta) => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
-    const preset = switchyardScenePresets[activeStage];
+    const preset = campusScenePresets[activeStage];
     const tierOffset = VIEWPORT_CONFIG[tier].cameraOffset;
     const reveal =
-      variant === "hero"
+      variant === "overview"
         ? 0.26
         : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.94);
 
@@ -357,9 +357,9 @@ function SceneDirector({
     );
 
     const variantOffset =
-      variant === "hero"
-        ? new THREE.Vector3(1.92, 0.16, -2.18)
-        : new THREE.Vector3(-0.08, 0.06, 0.32);
+      variant === "overview"
+        ? new THREE.Vector3(1.72, 0.14, -1.96)
+        : new THREE.Vector3(0.02, 0.1, 0.24);
 
     desiredPosition.current.copy(basePosition);
     desiredPosition.current.add(vec3(tierOffset));
@@ -367,9 +367,9 @@ function SceneDirector({
 
     lookTarget.current.copy(baseTarget);
     lookTarget.current.add(
-      variant === "hero"
-        ? new THREE.Vector3(1.16, 0.14, -0.04)
-        : new THREE.Vector3(0.12, 0.02, 0)
+      variant === "overview"
+        ? new THREE.Vector3(1.02, 0.16, -0.06)
+        : new THREE.Vector3(0.08, 0.02, 0)
     );
 
     if (!reducedMotion && !paused) {
@@ -384,7 +384,7 @@ function SceneDirector({
     dampVector(perspectiveCamera.position, desiredPosition.current, 4.8, delta);
     perspectiveCamera.fov = dampScalar(
       perspectiveCamera.fov,
-      preset.camera.fov + (variant === "hero" ? -1.8 : 0.6),
+      preset.camera.fov + (variant === "overview" ? -1.2 : 0.4),
       5.2,
       delta
     );
@@ -458,7 +458,7 @@ function Atmospherics({
   );
 }
 
-function SwitchyardAsset({
+function CampusAsset({
   activeStage,
   stageProgress,
   tier,
@@ -466,14 +466,14 @@ function SwitchyardAsset({
   reducedMotion,
   paused
 }: {
-  activeStage: SwitchyardStateId;
+  activeStage: CampusSceneStateId;
   stageProgress: number;
   tier: ViewportTier;
   variant: SceneVariant;
   reducedMotion: boolean;
   paused: boolean;
 }) {
-  const gltf = useGLTF(SWITCHYARD_GLB_URL) as { scene: THREE.Group };
+  const gltf = useGLTF(CAMPUS_GLB_URL) as { scene: THREE.Group };
   const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
   const rootRef = useRef<THREE.Group>(null);
 
@@ -512,9 +512,9 @@ function SwitchyardAsset({
     routeSegments.current = [];
 
     scene.traverse((object) => {
-      if (object.name === "shell") {
+      if (object.name === "campus-shell") {
         shellRef.current = object;
-      } else if (object.name === "core-spine") {
+      } else if (object.name === "service-spine") {
         coreRef.current = object;
       } else if (object.name === "lab-decks") {
         labsRef.current = object;
@@ -522,7 +522,7 @@ function SwitchyardAsset({
         programRef.current = object;
       } else if (object.name === "network-bridges") {
         networkRef.current = object;
-      } else if (object.name === "service-conduits") {
+      } else if (object.name === "conduits") {
         conduitRef.current = object;
       } else if (object.name === "glass-volumes") {
         glassRef.current = object;
@@ -561,19 +561,19 @@ function SwitchyardAsset({
         const surface = material as MaterialSurface;
         surface.transparent = true;
         switch (surface.name) {
-          case "switchyard-shell-material":
+          case "campus-shell-material":
             shellMaterials.current.push(surface);
             break;
-          case "switchyard-structure-material":
+          case "campus-structure-material":
             metalMaterials.current.push(surface);
             break;
-          case "switchyard-glass-material":
+          case "campus-glass-material":
             glassMaterials.current.push(surface);
             break;
-          case "switchyard-accent-material":
+          case "campus-accent-material":
             accentMaterials.current.push(surface);
             break;
-          case "switchyard-signal-material":
+          case "campus-signal-material":
             signalMaterials.current.push(surface);
             break;
           default:
@@ -584,10 +584,13 @@ function SwitchyardAsset({
       if (
         mesh.name.includes("lab-service-rail") ||
         mesh.name.includes("lab-equipment-bay") ||
-        mesh.name === "core-seam-plate"
+        mesh.name.includes("lab-checkpoint")
       ) {
         labNodes.current.push(mesh);
-      } else if (mesh.name.includes("program-gate") && mesh.name.includes("header")) {
+      } else if (
+        mesh.name.includes("program-checkpoint") &&
+        mesh.name.includes("header")
+      ) {
         programNodes.current.push(mesh);
       } else if (mesh.name.includes("network-node")) {
         networkNodes.current.push(mesh);
@@ -605,10 +608,10 @@ function SwitchyardAsset({
   }, [scene]);
 
   useFrame((state, delta) => {
-    const preset = switchyardScenePresets[activeStage];
+    const preset = campusScenePresets[activeStage];
     const viewport = VIEWPORT_CONFIG[tier];
     const reveal =
-      variant === "hero"
+      variant === "overview"
         ? 0.26
         : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.96);
     const time = state.clock.getElapsedTime();
@@ -620,7 +623,9 @@ function SwitchyardAsset({
     }
 
     const baseScale =
-      variant === "hero" ? viewport.heroScale : viewport.systemScale;
+      variant === "overview"
+        ? viewport.overviewScale
+        : viewport.narrativeScale;
     const targetScale = new THREE.Vector3(
       baseScale,
       baseScale,
@@ -628,15 +633,15 @@ function SwitchyardAsset({
     ).multiplyScalar(activeStage === "network" ? 1.06 : 1);
 
     const targetPosition =
-      variant === "hero"
-        ? new THREE.Vector3(2.2, -0.94, 0)
-        : new THREE.Vector3(0.58, -0.78, 0);
+      variant === "overview"
+        ? new THREE.Vector3(1.86, -0.82, 0)
+        : new THREE.Vector3(0.42, -0.74, 0);
 
     const targetRotation = new THREE.Euler(
       -0.16 + Math.sin(dynamicTime * 0.16) * preset.motion.float * 0.04,
-      variant === "hero"
-        ? -1.08 + preset.motion.rotation * 0.05
-        : -0.48 + preset.motion.rotation * 0.08,
+      variant === "overview"
+        ? -0.98 + preset.motion.rotation * 0.05
+        : -0.42 + preset.motion.rotation * 0.08,
       0.02
     );
 
@@ -1013,7 +1018,7 @@ function AtlasFallback({
   activeStage,
   variant
 }: {
-  activeStage: SwitchyardStateId;
+  activeStage: CampusSceneStateId;
   variant: SceneVariant;
 }) {
   return (
@@ -1021,7 +1026,7 @@ function AtlasFallback({
       className={`atlas-fallback atlas-fallback--${activeStage} atlas-fallback--${variant}`}
       aria-hidden="true"
     >
-      <div className="atlas-fallback__switchyard">
+      <div className="atlas-fallback__campus">
         <div className="atlas-fallback__spine" />
         <div className="atlas-fallback__shell atlas-fallback__shell--rear" />
         <div className="atlas-fallback__shell atlas-fallback__shell--front" />
@@ -1051,14 +1056,14 @@ function SceneContent({
   paused,
   tier
 }: {
-  activeStage: SwitchyardStateId;
+  activeStage: CampusSceneStateId;
   reducedMotion: boolean;
   stageProgress: number;
   variant: SceneVariant;
   paused: boolean;
   tier: ViewportTier;
 }) {
-  const fogFar = variant === "hero" ? 28 : 34;
+  const fogFar = variant === "overview" ? 28 : 34;
 
   return (
     <>
@@ -1077,7 +1082,7 @@ function SceneContent({
         paused={paused}
       />
       <Atmospherics reducedMotion={reducedMotion} paused={paused} tier={tier} />
-      <SwitchyardAsset
+      <CampusAsset
         activeStage={activeStage}
         stageProgress={stageProgress}
         tier={tier}
@@ -1093,7 +1098,7 @@ export const AtlasScene = memo(function AtlasScene({
   activeStage,
   reducedMotion = false,
   stageProgress = 0.5,
-  variant = "system",
+  variant = "narrative",
   paused = false
 }: AtlasSceneProps) {
   const tier = useViewportTier();
@@ -1126,4 +1131,4 @@ export const AtlasScene = memo(function AtlasScene({
   );
 });
 
-useGLTF.preload(SWITCHYARD_GLB_URL);
+useGLTF.preload(CAMPUS_GLB_URL);

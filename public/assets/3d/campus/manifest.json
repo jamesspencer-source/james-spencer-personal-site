@@ -1,0 +1,36 @@
+{
+  "asset": "campus",
+  "generatedAt": "2026-04-15T12:33:27.286Z",
+  "generator": "scripts/build-campus.mjs",
+  "outputs": {
+    "glb": "campus.glb",
+    "textures": [
+      "campus-ao.png",
+      "campus-roughness.png",
+      "campus-normal.png",
+      "campus-emissive.png",
+      "campus-glass-mask.png"
+    ]
+  },
+  "rootObject": "campus-asset",
+  "subassemblies": [
+    "campus-shell",
+    "service-spine",
+    "lab-decks",
+    "program-loop",
+    "network-bridges",
+    "conduits",
+    "glass-volumes",
+    "signal-paths",
+    "plinth"
+  ],
+  "materials": [
+    "campus-shell-material",
+    "campus-structure-material",
+    "campus-glass-material",
+    "campus-signal-material",
+    "campus-accent-material",
+    "campus-plinth-material"
+  ],
+  "notes": "Run `node scripts/build-campus.mjs` from the repo root to regenerate."
+}
