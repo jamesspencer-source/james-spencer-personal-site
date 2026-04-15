@@ -18,9 +18,10 @@ import {
 
 type AtlasSceneProps = {
   activeStage: AtlasStateId;
-  activeLabel: string;
   reducedMotion: boolean;
   stageProgress: number;
+  variant?: "hero" | "system";
+  paused?: boolean;
 };
 
 type ViewportTier = "mobile" | "tablet" | "desktop";
@@ -226,7 +227,9 @@ function buildLabNodeInstances(count: number) {
         -1 + step * 1.95,
         1.08 + Math.sin(step * Math.PI * 1.4) * 0.28,
         step < 0.5 ? 0.42 : 0.18
-      ] as Point3
+      ] as Point3,
+      scale: [0.82, 1.12, 0.68] as Point3,
+      rotation: [0.18, step * 0.4 - 0.2, 0] as Point3
     };
   });
 }
@@ -246,7 +249,9 @@ function buildProgramCheckpoints(count: number) {
   return Array.from({ length: count }, (_, index) => {
     const angle = (index / count) * Math.PI * 2;
     return {
-      position: pointOnEllipse(1.12, 0.78, angle, -0.78)
+      position: pointOnEllipse(1.12, 0.78, angle, -0.78),
+      rotation: [0, -angle, 0] as Point3,
+      scale: [0.9, 1.14, 0.84] as Point3
     };
   });
 }
@@ -255,9 +260,77 @@ function buildNetworkNodes(count: number) {
   return Array.from({ length: count }, (_, index) => {
     const angle = (index / count) * Math.PI * 2 + Math.PI / 14;
     return {
-      position: pointOnEllipse(1.88, 1.26, angle, 2.14 + Math.sin(angle * 2) * 0.08)
+      position: pointOnEllipse(1.88, 1.26, angle, 2.14 + Math.sin(angle * 2) * 0.08),
+      rotation: [0, -angle + Math.PI / 2, 0] as Point3,
+      scale: [0.9, 1 + Math.sin(angle * 2) * 0.12, 0.82] as Point3
     };
   });
+}
+
+function buildShellRibs() {
+  return Array.from({ length: 8 }, (_, index) => ({
+    position: [-0.94 + index * 0.28, 0.02, 0.8 - Math.abs(3.5 - index) * 0.012] as Point3,
+    scale: [1, 1, 1] as Point3
+  }));
+}
+
+function buildShellSeamPlates() {
+  return Array.from({ length: 7 }, (_, index) => ({
+    position: [-0.78 + index * 0.28, 2.18 - index * 0.62, 0.88 - index * 0.02] as Point3,
+    rotation: [0, 0.02 * (index % 2 === 0 ? 1 : -1), 0] as Point3,
+    scale: [1, 1, 1] as Point3
+  }));
+}
+
+function buildLabAuxFrames(count: number) {
+  return Array.from({ length: count }, (_, index) => {
+    const step = count === 1 ? 0 : index / (count - 1);
+    return {
+      position: [
+        -0.96 + step * 1.9,
+        1.52 - Math.sin(step * Math.PI) * 0.34,
+        0.28 - step * 0.2
+      ] as Point3,
+      rotation: [0.08, step * 0.18 - 0.08, 0] as Point3,
+      scale: [0.92, 1, 0.84] as Point3
+    };
+  });
+}
+
+function buildProgramMarkers(count: number) {
+  return Array.from({ length: count }, (_, index) => {
+    const angle = (index / count) * Math.PI * 2 + Math.PI / 10;
+    return {
+      position: pointOnEllipse(0.76, 0.5, angle, -0.8),
+      rotation: [0, -angle, 0] as Point3,
+      scale: [0.84, 0.92, 0.7] as Point3
+    };
+  });
+}
+
+function buildNetworkSpines() {
+  return [
+    {
+      position: [-1.36, 2.18, 0.12] as Point3,
+      rotation: [0, 0.46, 0.1] as Point3,
+      scale: [1, 1, 1] as Point3
+    },
+    {
+      position: [-0.48, 2.34, -0.14] as Point3,
+      rotation: [0, 0.12, 0.06] as Point3,
+      scale: [1, 1, 1] as Point3
+    },
+    {
+      position: [0.52, 2.36, -0.16] as Point3,
+      rotation: [0, -0.08, -0.04] as Point3,
+      scale: [1, 1, 1] as Point3
+    },
+    {
+      position: [1.44, 2.18, 0.1] as Point3,
+      rotation: [0, -0.42, -0.1] as Point3,
+      scale: [1, 1, 1] as Point3
+    }
+  ];
 }
 
 function buildParticlePositions(count: number) {
@@ -274,6 +347,36 @@ function buildParticlePositions(count: number) {
   }
 
   return positions;
+}
+
+function buildNoiseTexture(size = 48, seed = 1) {
+  const data = new Uint8Array(size * size * 4);
+
+  for (let y = 0; y < size; y += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const index = (y * size + x) * 4;
+      const grain = Math.floor(
+        64 +
+          ((Math.sin((x + seed) * 0.61) + Math.cos((y + seed) * 0.47)) * 0.5 +
+            seededRandom(index + seed * 17) * 0.9) *
+            72
+      );
+      const seam = x % 12 === 0 || y % 10 === 0 ? 22 : 0;
+      const value = THREE.MathUtils.clamp(grain + seam, 26, 188);
+
+      data[index] = value;
+      data[index + 1] = value;
+      data[index + 2] = value;
+      data[index + 3] = 255;
+    }
+  }
+
+  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(2.4, 6.8);
+  texture.needsUpdate = true;
+  return texture;
 }
 
 function registerMaterial(
@@ -342,61 +445,6 @@ function InstancedBoxes({
   );
 }
 
-function InstancedSpheres({
-  instances,
-  radius,
-  color,
-  emissive,
-  opacity,
-  roughness,
-  metalness,
-  materialRef
-}: {
-  instances: InstanceSpec[];
-  radius: number;
-  color: string;
-  emissive: string;
-  opacity: number;
-  roughness: number;
-  metalness: number;
-  materialRef?: (material: THREE.MeshStandardMaterial | null) => void;
-}) {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-
-  useLayoutEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) {
-      return;
-    }
-
-    instances.forEach((instance, index) => {
-      dummy.position.set(...instance.position);
-      dummy.rotation.set(...(instance.rotation ?? [0, 0, 0]));
-      dummy.scale.set(...(instance.scale ?? [1, 1, 1]));
-      dummy.updateMatrix();
-      mesh.setMatrixAt(index, dummy.matrix);
-    });
-
-    mesh.instanceMatrix.needsUpdate = true;
-  }, [dummy, instances]);
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, instances.length]}>
-      <sphereGeometry args={[radius, 14, 14]} />
-      <meshStandardMaterial
-        ref={materialRef}
-        color={color}
-        emissive={emissive}
-        transparent
-        opacity={opacity}
-        roughness={roughness}
-        metalness={metalness}
-      />
-    </instancedMesh>
-  );
-}
-
 function MovingPulses({
   curve,
   count,
@@ -417,6 +465,7 @@ function MovingPulses({
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
   const dummy = useMemo(() => new THREE.Object3D(), []);
+  const lookTarget = useMemo(() => new THREE.Vector3(), []);
 
   useFrame((state) => {
     const mesh = meshRef.current;
@@ -428,10 +477,14 @@ function MovingPulses({
       const offset = count === 1 ? 0 : index / count;
       const t = (state.clock.elapsedTime * speed + phase + offset) % 1;
       const point = curve.getPointAt(t);
+      const tangent = curve.getTangentAt(t).normalize();
       const scale = radius * (0.7 + intensity * 0.7);
 
       dummy.position.copy(point);
-      dummy.scale.setScalar(scale);
+      lookTarget.copy(point).addScaledVector(tangent, 1);
+      dummy.lookAt(lookTarget);
+      dummy.rotateY(Math.PI / 2);
+      dummy.scale.set(scale * 2.8, scale * 0.62, scale * 0.62);
       dummy.updateMatrix();
       mesh.setMatrixAt(index, dummy.matrix);
     }
@@ -446,7 +499,7 @@ function MovingPulses({
 
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
-      <sphereGeometry args={[radius, 12, 12]} />
+      <boxGeometry args={[radius, radius, radius]} />
       <meshStandardMaterial
         ref={materialRef}
         color={color}
@@ -463,11 +516,13 @@ function MovingPulses({
 function CameraRig({
   activeStage,
   stageProgress,
-  tier
+  tier,
+  variant
 }: {
   activeStage: AtlasStateId;
   stageProgress: number;
   tier: ViewportTier;
+  variant: "hero" | "system";
 }) {
   const { camera, pointer } = useThree();
   const perspectiveCamera = camera as THREE.PerspectiveCamera;
@@ -486,10 +541,16 @@ function CameraRig({
     const targetTravel = preset.camera.targetTravel;
     const tierPositionOffset =
       tier === "mobile"
-        ? ([0.42, 0.2, 1.18] as const)
+        ? (variant === "hero"
+            ? ([0.3, 0.16, 1.38] as const)
+            : ([0.46, 0.18, 1.02] as const))
         : tier === "tablet"
-          ? ([0.16, 0.08, 0.46] as const)
-          : ([0, 0, 0] as const);
+          ? (variant === "hero"
+              ? ([0.1, 0.04, 0.6] as const)
+              : ([0.18, 0.04, 0.28] as const))
+          : (variant === "hero"
+              ? ([0.12, 0.02, 0.64] as const)
+              : ([0, -0.04, 0.12] as const));
     const tierTargetOffset =
       tier === "mobile"
         ? ([0.1, 0.16, 0] as const)
@@ -671,6 +732,9 @@ function MonolithShell({
   glassSecondaryRef: MutableRefObject<THREE.Mesh | null>;
 }) {
   const glassOpacity = TIER_SETTINGS[tier].glassOpacity;
+  const shellTexture = useMemo(() => buildNoiseTexture(48, tier === "desktop" ? 5 : 3), [tier]);
+  const shellRibs = useMemo(() => buildShellRibs(), []);
+  const shellSeamPlates = useMemo(() => buildShellSeamPlates(), []);
 
   return (
     <group>
@@ -690,6 +754,9 @@ function MonolithShell({
           roughness={0.86}
           metalness={0.18}
           clearcoat={0.06}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.02}
         />
       </mesh>
 
@@ -704,6 +771,9 @@ function MonolithShell({
           roughness={0.84}
           metalness={0.18}
           clearcoat={0.05}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.018}
         />
       </mesh>
 
@@ -718,6 +788,9 @@ function MonolithShell({
           roughness={0.8}
           metalness={0.2}
           clearcoat={0.06}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.018}
         />
       </mesh>
 
@@ -732,6 +805,9 @@ function MonolithShell({
           roughness={0.82}
           metalness={0.18}
           clearcoat={0.08}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.018}
         />
       </mesh>
 
@@ -746,6 +822,9 @@ function MonolithShell({
           roughness={0.84}
           metalness={0.16}
           clearcoat={0.05}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.018}
         />
       </mesh>
 
@@ -760,6 +839,9 @@ function MonolithShell({
           roughness={0.8}
           metalness={0.18}
           clearcoat={0.06}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.014}
         />
       </mesh>
 
@@ -774,6 +856,9 @@ function MonolithShell({
           roughness={0.82}
           metalness={0.16}
           clearcoat={0.06}
+          roughnessMap={shellTexture}
+          bumpMap={shellTexture}
+          bumpScale={0.014}
         />
       </mesh>
 
@@ -827,6 +912,7 @@ function MonolithShell({
           roughness={0.3}
           metalness={0.04}
           clearcoat={0.08}
+          roughnessMap={shellTexture}
         />
       </mesh>
 
@@ -841,8 +927,31 @@ function MonolithShell({
           roughness={0.34}
           metalness={0.04}
           clearcoat={0.06}
+          roughnessMap={shellTexture}
         />
       </mesh>
+
+      <InstancedBoxes
+        instances={shellRibs}
+        args={[0.03, 4.9, 0.08]}
+        color={COLORS.steel}
+        emissive={COLORS.shellEdge}
+        opacity={0.2}
+        roughness={0.42}
+        metalness={0.4}
+        materialRef={registerMaterial(shellMaterials, 10)}
+      />
+
+      <InstancedBoxes
+        instances={shellSeamPlates}
+        args={[0.28, 0.024, 0.16]}
+        color={COLORS.steel}
+        emissive={COLORS.shellEdge}
+        opacity={0.22}
+        roughness={0.34}
+        metalness={0.38}
+        materialRef={registerMaterial(shellMaterials, 11)}
+      />
     </group>
   );
 }
@@ -863,6 +972,10 @@ function InfrastructureLayer({
   );
   const supportNodes = useMemo(
     () => buildLabNodeInstances(settings.labNodeCount),
+    [settings.labNodeCount]
+  );
+  const auxFrames = useMemo(
+    () => buildLabAuxFrames(Math.max(4, settings.labNodeCount - 1)),
     [settings.labNodeCount]
   );
 
@@ -965,9 +1078,9 @@ function InfrastructureLayer({
       <Line points={conduitPath} color={COLORS.labs} transparent opacity={0.48} />
       <Line points={secondaryPath} color={COLORS.labs} transparent opacity={0.36} />
 
-      <InstancedSpheres
+      <InstancedBoxes
         instances={supportNodes}
-        radius={0.08}
+        args={[0.09, 0.16, 0.09]}
         color={COLORS.labs}
         emissive={COLORS.labs}
         opacity={0.76}
@@ -975,6 +1088,30 @@ function InfrastructureLayer({
         metalness={0.08}
         materialRef={registerMaterial(materials, 5)}
       />
+
+      <InstancedBoxes
+        instances={auxFrames}
+        args={[0.16, 0.04, 0.24]}
+        color={COLORS.steel}
+        emissive={COLORS.labs}
+        opacity={0.46}
+        roughness={0.24}
+        metalness={0.18}
+        materialRef={registerMaterial(materials, 6)}
+      />
+
+      <mesh position={[0.12, 1.76, -0.04]}>
+        <boxGeometry args={[1.84, 0.08, 0.2]} />
+        <meshStandardMaterial
+          ref={registerMaterial(materials, 7)}
+          color={COLORS.graphite}
+          emissive={COLORS.labs}
+          transparent
+          opacity={0.4}
+          roughness={0.24}
+          metalness={0.22}
+        />
+      </mesh>
     </group>
   );
 }
@@ -996,6 +1133,10 @@ function ProgramLayer({
   const checkpoints = useMemo(
     () => buildProgramCheckpoints(settings.checkpointCount),
     [settings.checkpointCount]
+  );
+  const markers = useMemo(
+    () => buildProgramMarkers(Math.max(4, settings.stationCount - 1)),
+    [settings.stationCount]
   );
 
   const outerLoop = useMemo(
@@ -1065,15 +1206,26 @@ function ProgramLayer({
         materialRef={registerMaterial(materials, 1)}
       />
 
-      <InstancedSpheres
+      <InstancedBoxes
         instances={checkpoints}
-        radius={0.065}
+        args={[0.08, 0.18, 0.06]}
         color={COLORS.program}
         emissive={COLORS.program}
         opacity={0.74}
         roughness={0.18}
         metalness={0.08}
         materialRef={registerMaterial(materials, 2)}
+      />
+
+      <InstancedBoxes
+        instances={markers}
+        args={[0.12, 0.05, 0.08]}
+        color={COLORS.steel}
+        emissive={COLORS.program}
+        opacity={0.5}
+        roughness={0.22}
+        metalness={0.18}
+        materialRef={registerMaterial(materials, 5)}
       />
 
       <mesh position={[-0.22, -0.64, 0.26]} rotation={[0, 0.22, 0]}>
@@ -1101,6 +1253,19 @@ function ProgramLayer({
           metalness={0.12}
         />
       </mesh>
+
+      <mesh position={[0.04, -1.24, 0.18]}>
+        <boxGeometry args={[1.12, 0.05, 0.24]} />
+        <meshStandardMaterial
+          ref={registerMaterial(materials, 6)}
+          color={COLORS.steel}
+          emissive={COLORS.program}
+          transparent
+          opacity={0.34}
+          roughness={0.26}
+          metalness={0.18}
+        />
+      </mesh>
     </group>
   );
 }
@@ -1119,11 +1284,23 @@ function NetworkLayer({
     () => buildNetworkNodes(settings.networkNodeCount),
     [settings.networkNodeCount]
   );
+  const spines = useMemo(() => buildNetworkSpines(), []);
 
   const outerCrown = useMemo(
     () =>
       sampleCurve(
-        sampleEllipse(1.86, 1.24, 2.18, 12, Math.PI / 10),
+        [
+          [-1.88, 2.08, 0.1],
+          [-1.46, 2.38, -0.24],
+          [-0.72, 2.58, -0.34],
+          [0.12, 2.62, -0.28],
+          [0.96, 2.44, -0.2],
+          [1.72, 2.14, 0.06],
+          [1.44, 1.96, 0.34],
+          [0.72, 1.9, 0.44],
+          [-0.16, 1.96, 0.4],
+          [-1.02, 2.02, 0.3]
+        ],
         true,
         96
       ),
@@ -1133,7 +1310,17 @@ function NetworkLayer({
   const innerCrown = useMemo(
     () =>
       sampleCurve(
-        sampleEllipse(1.34, 0.92, 2.04, 10, Math.PI / 8),
+        [
+          [-1.28, 2, 0.1],
+          [-0.84, 2.2, -0.12],
+          [-0.24, 2.28, -0.16],
+          [0.42, 2.24, -0.1],
+          [1, 2.04, 0.04],
+          [0.86, 1.92, 0.24],
+          [0.3, 1.84, 0.3],
+          [-0.42, 1.86, 0.28],
+          [-1.02, 1.92, 0.22]
+        ],
         true,
         72
       ),
@@ -1188,9 +1375,9 @@ function NetworkLayer({
         />
       ))}
 
-      <InstancedSpheres
+      <InstancedBoxes
         instances={networkNodes}
-        radius={0.07}
+        args={[0.11, 0.16, 0.08]}
         color={COLORS.network}
         emissive={COLORS.network}
         opacity={0.76}
@@ -1199,28 +1386,39 @@ function NetworkLayer({
         materialRef={registerMaterial(materials, 0)}
       />
 
-      <mesh rotation={[Math.PI / 2, 0.06, 0]} position={[0, 2.1, -0.08]}>
-        <torusGeometry args={[1.92, 0.02, 12, 180]} />
-        <meshStandardMaterial
-          ref={registerMaterial(materials, 1)}
-          color={COLORS.network}
-          emissive={COLORS.network}
-          transparent
-          opacity={0.44}
-          roughness={0.24}
-          metalness={0.1}
-        />
-      </mesh>
+      <InstancedBoxes
+        instances={spines}
+        args={[0.58, 0.04, 0.08]}
+        color={COLORS.steel}
+        emissive={COLORS.network}
+        opacity={0.34}
+        roughness={0.28}
+        metalness={0.26}
+        materialRef={registerMaterial(materials, 1)}
+      />
 
-      <mesh rotation={[Math.PI / 2, -0.08, 0]} position={[0.06, 2.32, -0.26]}>
-        <torusGeometry args={[1.18, 0.014, 10, 160]} />
+      <mesh position={[0.06, 2.12, -0.18]} rotation={[0.08, -0.04, 0]}>
+        <boxGeometry args={[1.86, 0.05, 0.18]} />
         <meshStandardMaterial
           ref={registerMaterial(materials, 2)}
           color={COLORS.steel}
           emissive={COLORS.network}
           transparent
-          opacity={0.22}
-          roughness={0.26}
+          opacity={0.26}
+          roughness={0.24}
+          metalness={0.22}
+        />
+      </mesh>
+
+      <mesh position={[0.12, 2.42, -0.24]} rotation={[0, 0.08, 0]}>
+        <boxGeometry args={[1.26, 0.04, 0.14]} />
+        <meshStandardMaterial
+          ref={registerMaterial(materials, 3)}
+          color={COLORS.network}
+          emissive={COLORS.network}
+          transparent
+          opacity={0.32}
+          roughness={0.18}
           metalness={0.16}
         />
       </mesh>
@@ -1271,7 +1469,21 @@ function SignalTraffic({
   );
   const networkCurve = useMemo(
     () =>
-      curveFromPoints(sampleEllipse(1.86, 1.24, 2.18, 12, Math.PI / 10), true),
+      curveFromPoints(
+        [
+          [-1.88, 2.08, 0.1],
+          [-1.46, 2.38, -0.24],
+          [-0.72, 2.58, -0.34],
+          [0.12, 2.62, -0.28],
+          [0.96, 2.44, -0.2],
+          [1.72, 2.14, 0.06],
+          [1.44, 1.96, 0.34],
+          [0.72, 1.9, 0.44],
+          [-0.16, 1.96, 0.4],
+          [-1.02, 2.02, 0.3]
+        ],
+        true
+      ),
     []
   );
 
@@ -1363,11 +1575,15 @@ function Atmospherics({
 function MonolithScene({
   activeStage,
   stageProgress,
-  tier
+  tier,
+  variant,
+  paused = false
 }: {
   activeStage: AtlasStateId;
   stageProgress: number;
   tier: ViewportTier;
+  variant: "hero" | "system";
+  paused?: boolean;
 }) {
   const rootRef = useRef<THREE.Group>(null);
   const shellMaterials = useRef<THREE.Material[]>([]);
@@ -1404,6 +1620,7 @@ function MonolithScene({
     const preset = atlasScenePresets[activeStage];
     const phase = smoothPhase(stageProgress);
     const elapsed = state.clock.elapsedTime;
+    const motionScale = paused ? 0.18 : 1;
     const revealBoost =
       activeStage === "program" ? 0.12 : activeStage === "labs" ? 0.08 : 0.04;
     const splitBoost =
@@ -1479,11 +1696,48 @@ function MonolithScene({
     );
 
     if (rootRef.current) {
-      rootRef.current.position.y =
-        Math.sin(elapsed * 0.42) * current.current.float * 0.16;
+      const targetScale =
+        variant === "hero"
+          ? tier === "mobile"
+            ? 0.8
+            : tier === "tablet"
+              ? 0.86
+              : 0.91
+          : tier === "mobile"
+            ? 1.02
+            : tier === "tablet"
+              ? 1.06
+              : 1.12;
+      const targetX = variant === "hero" ? 0.08 : 0;
+      const targetY =
+        (variant === "hero" ? 0.02 : -0.08) +
+        Math.sin(elapsed * 0.42) * current.current.float * 0.16 * motionScale;
+
+      rootRef.current.position.x = THREE.MathUtils.damp(
+        rootRef.current.position.x,
+        targetX,
+        3,
+        delta
+      );
+      rootRef.current.position.y = THREE.MathUtils.damp(
+        rootRef.current.position.y,
+        targetY,
+        3,
+        delta
+      );
+      rootRef.current.position.z = THREE.MathUtils.damp(
+        rootRef.current.position.z,
+        variant === "hero" ? 0.06 : -0.04,
+        3,
+        delta
+      );
+      rootRef.current.scale.setScalar(
+        THREE.MathUtils.damp(rootRef.current.scale.x, targetScale, 3, delta)
+      );
       rootRef.current.rotation.y = THREE.MathUtils.damp(
         rootRef.current.rotation.y,
-        current.current.rotation + (phase - 0.5) * 0.08,
+        current.current.rotation * motionScale +
+          (phase - 0.5) * (variant === "hero" ? 0.05 : 0.08),
         2.4,
         delta
       );
@@ -1767,9 +2021,10 @@ function AtlasFallback({ activeStage }: { activeStage: AtlasStateId }) {
 
 export function AtlasScene({
   activeStage,
-  activeLabel,
   reducedMotion,
-  stageProgress
+  stageProgress,
+  variant = "system",
+  paused = false
 }: AtlasSceneProps) {
   const [hasWebGL, setHasWebGL] = useState(() => webglAvailable());
   const tier = useViewportTier();
@@ -1804,11 +2059,14 @@ export function AtlasScene({
             activeStage={activeStage}
             stageProgress={stageProgress}
             tier={tier}
+            variant={variant}
           />
           <MemoMonolithScene
             activeStage={activeStage}
             stageProgress={stageProgress}
             tier={tier}
+            variant={variant}
+            paused={paused}
           />
         </Canvas>
       )}
