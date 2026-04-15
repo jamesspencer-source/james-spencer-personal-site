@@ -1,0 +1,35 @@
+{
+  "asset": "switchyard",
+  "generatedAt": "2026-04-15T11:07:28.572Z",
+  "generator": "scripts/build-switchyard.mjs",
+  "outputs": {
+    "glb": "switchyard.glb",
+    "textures": [
+      "switchyard-ao.png",
+      "switchyard-roughness.png",
+      "switchyard-normal.png",
+      "switchyard-emissive.png",
+      "switchyard-glass-mask.png"
+    ]
+  },
+  "rootObject": "switchyard-asset",
+  "subassemblies": [
+    "core-spine",
+    "lab-decks",
+    "program-loop",
+    "network-bridges",
+    "service-conduits",
+    "glass-volumes",
+    "signal-paths",
+    "plinth"
+  ],
+  "materials": [
+    "switchyard-shell-material",
+    "switchyard-structure-material",
+    "switchyard-glass-material",
+    "switchyard-signal-material",
+    "switchyard-accent-material",
+    "switchyard-plinth-material"
+  ],
+  "notes": "Run `node scripts/build-switchyard.mjs` from the repo root to regenerate."
+}
