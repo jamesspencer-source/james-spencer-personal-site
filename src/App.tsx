@@ -112,7 +112,7 @@ function App() {
     siteContent.systemsView.stages[0]?.id ?? "labs"
   );
   const [systemProgress, setSystemProgress] = useState(0.28);
-  const [shouldLoadHeroScene, setShouldLoadHeroScene] = useState(false);
+  const [shouldLoadHeroScene] = useState(true);
   const [shouldLoadSystemScene, setShouldLoadSystemScene] = useState(false);
 
   const activeRole = useMemo(
@@ -130,33 +130,6 @@ function App() {
     updateMetaTag("twitter:title", siteContent.meta.title);
     updateMetaTag("twitter:description", siteContent.meta.description);
   }, []);
-
-  useEffect(() => {
-    let timeoutId: number | undefined;
-    let idleId: number | undefined;
-
-    if (prefersReducedMotion) {
-      setShouldLoadHeroScene(true);
-      return undefined;
-    }
-
-    const loadHero = () => setShouldLoadHeroScene(true);
-
-    if ("requestIdleCallback" in window) {
-      idleId = window.requestIdleCallback(loadHero, { timeout: 1000 });
-    } else {
-      timeoutId = globalThis.setTimeout(loadHero, 220);
-    }
-
-    return () => {
-      if (idleId !== undefined && "cancelIdleCallback" in window) {
-        window.cancelIdleCallback(idleId);
-      }
-      if (timeoutId !== undefined) {
-        globalThis.clearTimeout(timeoutId);
-      }
-    };
-  }, [prefersReducedMotion]);
 
   useEffect(() => {
     const node = systemSectionRef.current;
@@ -339,9 +312,7 @@ function App() {
               <p className="hero-copy__location">{siteContent.hero.location}</p>
 
               <div className="hero-copy__summary">
-                {siteContent.hero.thesis.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
+                <p>{siteContent.hero.thesis}</p>
               </div>
 
               <InlineLinkRow links={siteContent.hero.links} />
@@ -362,7 +333,7 @@ function App() {
             </div>
 
             <aside className="hero-visual js-reveal">
-              <div className="scene-frame scene-frame--hero">
+              <div className="scene-frame scene-frame--hero scene-frame--hero-breakout">
                 {shouldLoadHeroScene ? (
                   <Suspense
                     fallback={<div className="scene-frame__placeholder" />}
@@ -502,10 +473,10 @@ function App() {
               <p className="section-intro">{siteContent.systemsView.intro}</p>
             </div>
 
-            <div className="system-shell">
+            <div className="system-shell js-reveal">
               <div className="system-layout">
-                <div className="system-scene-column js-reveal">
-                  <div className="scene-frame scene-frame--system">
+                <div className="system-scene-column">
+                  <div className="scene-frame scene-frame--system scene-frame--system-immersive">
                     {shouldLoadSystemScene ? (
                       <Suspense
                         fallback={<div className="scene-frame__placeholder" />}

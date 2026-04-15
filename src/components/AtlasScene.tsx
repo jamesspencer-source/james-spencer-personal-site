@@ -10,16 +10,16 @@ import {
 } from "react";
 import * as THREE from "three";
 import {
-  atlasScenePresets,
-  type AtlasStateId,
+  switchyardScenePresets,
+  type SwitchyardStateId,
   type Vec3
-} from "../atlasScenePresets";
+} from "../switchyardScenePresets";
 
 type ViewportTier = "mobile" | "tablet" | "desktop";
 type SceneVariant = "hero" | "system";
 
 export type AtlasSceneProps = {
-  activeStage: AtlasStateId;
+  activeStage: SwitchyardStateId;
   reducedMotion?: boolean;
   stageProgress?: number;
   variant?: SceneVariant;
@@ -34,9 +34,10 @@ type MaterialSurface = THREE.Material & {
   roughness?: number;
   opacity?: number;
   transparent?: boolean;
+  transmission?: number;
 };
 
-const MONOLITH_GLB_URL = `${import.meta.env.BASE_URL}assets/3d/monolith/monolith.glb`;
+const SWITCHYARD_GLB_URL = `${import.meta.env.BASE_URL}assets/3d/switchyard/switchyard.glb`;
 
 const VIEWPORT_CONFIG: Record<
   ViewportTier,
@@ -49,21 +50,21 @@ const VIEWPORT_CONFIG: Record<
 > = {
   mobile: {
     dpr: [1, 1.2],
-    heroScale: 0.92,
-    systemScale: 0.88,
-    cameraOffset: [0, 0.16, 1.15]
+    heroScale: 1.06,
+    systemScale: 0.94,
+    cameraOffset: [0.14, 0.18, 0.92]
   },
   tablet: {
     dpr: [1, 1.5],
-    heroScale: 1.03,
-    systemScale: 0.98,
-    cameraOffset: [0.12, 0.08, 0.7]
+    heroScale: 1.12,
+    systemScale: 1.02,
+    cameraOffset: [0.26, 0.1, 0.42]
   },
   desktop: {
     dpr: [1, 1.75],
-    heroScale: 1.12,
-    systemScale: 1.08,
-    cameraOffset: [0.2, 0, 0]
+    heroScale: 1.22,
+    systemScale: 1.1,
+    cameraOffset: [0.46, 0.04, -0.36]
   }
 };
 
@@ -170,12 +171,38 @@ function useWebGLSupport() {
   return hasWebGL;
 }
 
+function pulseNodes(
+  nodes: THREE.Mesh[],
+  focus: number,
+  color: THREE.Color,
+  time: number,
+  reducedMotion: boolean
+) {
+  nodes.forEach((node, index) => {
+    const material = node.material as MaterialSurface;
+    const cycle = reducedMotion
+      ? 0.72
+      : 0.58 + Math.sin(time * 2.4 + index * 0.5) * 0.42;
+    const scale = 1 + focus * 0.18 * cycle;
+
+    node.scale.setScalar(scale);
+
+    if (material.color) {
+      material.color.lerp(color, 0.08);
+    }
+
+    if (typeof material.emissiveIntensity === "number") {
+      material.emissiveIntensity = 0.26 + focus * 0.82 * cycle;
+    }
+  });
+}
+
 function SceneLighting({
   activeStage,
   stageProgress,
   reducedMotion
 }: {
-  activeStage: AtlasStateId;
+  activeStage: SwitchyardStateId;
   stageProgress: number;
   reducedMotion: boolean;
 }) {
@@ -184,21 +211,18 @@ function SceneLighting({
   const fillRef = useRef<THREE.DirectionalLight>(null);
   const rimRef = useRef<THREE.PointLight>(null);
   const accentRef = useRef<THREE.PointLight>(null);
+  const hazeRef = useRef<THREE.PointLight>(null);
 
   useFrame((_, delta) => {
-    const preset = atlasScenePresets[activeStage];
-    const reveal = reducedMotion ? 0.18 : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
-    const accentBoost =
-      activeStage === "program"
-        ? 0.12
-        : activeStage === "network"
-          ? 0.18
-          : 0.08;
+    const preset = switchyardScenePresets[activeStage];
+    const reveal = reducedMotion
+      ? 0.18
+      : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
 
     if (ambientRef.current) {
       ambientRef.current.intensity = dampScalar(
         ambientRef.current.intensity,
-        0.34 + preset.lighting.fill * 0.22,
+        0.26 + preset.lighting.fill * 0.22,
         6,
         delta
       );
@@ -207,7 +231,7 @@ function SceneLighting({
     if (keyRef.current) {
       keyRef.current.intensity = dampScalar(
         keyRef.current.intensity,
-        1.5 + preset.lighting.key * 0.52 + reveal * 0.12,
+        1.28 + preset.lighting.key * 0.58 + reveal * 0.08,
         6,
         delta
       );
@@ -216,7 +240,7 @@ function SceneLighting({
     if (fillRef.current) {
       fillRef.current.intensity = dampScalar(
         fillRef.current.intensity,
-        0.46 + preset.lighting.fill * 0.34,
+        0.34 + preset.lighting.fill * 0.3,
         6,
         delta
       );
@@ -225,7 +249,7 @@ function SceneLighting({
     if (rimRef.current) {
       rimRef.current.intensity = dampScalar(
         rimRef.current.intensity,
-        0.38 + preset.lighting.rim * 0.48 + reveal * 0.08,
+        0.44 + preset.lighting.rim * 0.52,
         6,
         delta
       );
@@ -234,7 +258,16 @@ function SceneLighting({
     if (accentRef.current) {
       accentRef.current.intensity = dampScalar(
         accentRef.current.intensity,
-        0.26 + preset.lighting.accent * 0.56 + accentBoost,
+        0.24 + preset.lighting.accent * 0.66,
+        6,
+        delta
+      );
+    }
+
+    if (hazeRef.current) {
+      hazeRef.current.intensity = dampScalar(
+        hazeRef.current.intensity,
+        0.2 + preset.lighting.haze * 0.54,
         6,
         delta
       );
@@ -243,32 +276,40 @@ function SceneLighting({
 
   return (
     <>
-      <ambientLight ref={ambientRef} color="#dde5dc" intensity={0.48} />
+      <ambientLight ref={ambientRef} color="#d8dfda" intensity={0.34} />
       <directionalLight
         ref={keyRef}
-        position={[5.4, 7.4, 8.8]}
-        color="#f6f4ef"
-        intensity={1.85}
+        position={[7.2, 8.6, 9.2]}
+        color="#f4f3ee"
+        intensity={1.68}
       />
       <directionalLight
         ref={fillRef}
-        position={[-5.2, 2.8, 5.8]}
-        color="#8ab89d"
-        intensity={0.68}
+        position={[-5.4, 3.4, 5.8]}
+        color="#88b49b"
+        intensity={0.56}
       />
       <pointLight
         ref={rimRef}
-        position={[-4.8, 6.4, -5.6]}
-        color="#a7bfff"
-        intensity={0.72}
-        distance={24}
+        position={[-5.4, 7.8, -6.8]}
+        color="#9ab8ff"
+        intensity={0.78}
+        distance={30}
         decay={2}
       />
       <pointLight
         ref={accentRef}
-        position={[3.4, -1.8, 4.2]}
+        position={[4.2, -1.8, 4.6]}
         color="#7fd3b1"
-        intensity={0.74}
+        intensity={0.72}
+        distance={18}
+        decay={2}
+      />
+      <pointLight
+        ref={hazeRef}
+        position={[0, 2.4, 1.6]}
+        color="#d5e88f"
+        intensity={0.42}
         distance={16}
         decay={2}
       />
@@ -284,7 +325,7 @@ function SceneDirector({
   reducedMotion,
   paused
 }: {
-  activeStage: AtlasStateId;
+  activeStage: SwitchyardStateId;
   stageProgress: number;
   tier: ViewportTier;
   variant: SceneVariant;
@@ -297,12 +338,12 @@ function SceneDirector({
 
   useFrame((state, delta) => {
     const perspectiveCamera = camera as THREE.PerspectiveCamera;
-    const preset = atlasScenePresets[activeStage];
+    const preset = switchyardScenePresets[activeStage];
     const tierOffset = VIEWPORT_CONFIG[tier].cameraOffset;
     const reveal =
       variant === "hero"
-        ? 0.16
-        : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.96);
+        ? 0.26
+        : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.94);
 
     const basePosition = addScaledVector(
       preset.camera.position,
@@ -317,8 +358,8 @@ function SceneDirector({
 
     const variantOffset =
       variant === "hero"
-        ? new THREE.Vector3(1.18, 0.26, -1.1)
-        : new THREE.Vector3(-0.18, -0.06, 0.22);
+        ? new THREE.Vector3(1.92, 0.16, -2.18)
+        : new THREE.Vector3(-0.08, 0.06, 0.32);
 
     desiredPosition.current.copy(basePosition);
     desiredPosition.current.add(vec3(tierOffset));
@@ -327,22 +368,23 @@ function SceneDirector({
     lookTarget.current.copy(baseTarget);
     lookTarget.current.add(
       variant === "hero"
-        ? new THREE.Vector3(0.58, 0.2, 0.02)
-        : new THREE.Vector3(0.08, 0.02, 0)
+        ? new THREE.Vector3(1.16, 0.14, -0.04)
+        : new THREE.Vector3(0.12, 0.02, 0)
     );
 
     if (!reducedMotion && !paused) {
       const drift = preset.motion.drift;
       const time = state.clock.getElapsedTime();
-      desiredPosition.current.x += Math.sin(time * 0.28) * drift * 0.36;
-      desiredPosition.current.y += Math.cos(time * 0.22) * drift * 0.26;
-      lookTarget.current.y += Math.sin(time * 0.16) * drift * 0.12;
+
+      desiredPosition.current.x += Math.sin(time * 0.22) * drift * 0.42;
+      desiredPosition.current.y += Math.cos(time * 0.18) * drift * 0.28;
+      lookTarget.current.y += Math.sin(time * 0.12) * drift * 0.12;
     }
 
-    dampVector(perspectiveCamera.position, desiredPosition.current, 5.2, delta);
+    dampVector(perspectiveCamera.position, desiredPosition.current, 4.8, delta);
     perspectiveCamera.fov = dampScalar(
       perspectiveCamera.fov,
-      preset.camera.fov + (variant === "hero" ? -1.4 : 0.6),
+      preset.camera.fov + (variant === "hero" ? -1.8 : 0.6),
       5.2,
       delta
     );
@@ -353,31 +395,70 @@ function SceneDirector({
   return null;
 }
 
-function pulseNodes(
-  nodes: THREE.Mesh[],
-  focus: number,
-  color: THREE.Color,
-  time: number,
-  reducedMotion: boolean
-) {
-  nodes.forEach((node, index) => {
-    const material = node.material as MaterialSurface;
-    const cycle = reducedMotion
-      ? 0.7
-      : 0.62 + Math.sin(time * 2.1 + index * 0.55) * 0.38;
-    const scale = 1 + focus * 0.16 * cycle;
+function Atmospherics({
+  reducedMotion,
+  paused,
+  tier
+}: {
+  reducedMotion: boolean;
+  paused: boolean;
+  tier: ViewportTier;
+}) {
+  const groupRef = useRef<THREE.Group>(null);
+  const count = tier === "mobile" ? 12 : tier === "tablet" ? 18 : 26;
 
-    node.scale.setScalar(scale);
-    if (material.color) {
-      material.color.lerp(color, 0.08);
+  const positions = useMemo(() => {
+    const values = new Float32Array(count * 3);
+    for (let i = 0; i < count; i += 1) {
+      const angle = (i / count) * Math.PI * 2;
+      const radius = 2.8 + (i % 5) * 0.34;
+      values[i * 3 + 0] = Math.cos(angle) * radius * 0.82;
+      values[i * 3 + 1] = -1.4 + (i % 7) * 0.68;
+      values[i * 3 + 2] = -0.8 + ((i * 13) % 9) * 0.32;
     }
-    if (typeof material.emissiveIntensity === "number") {
-      material.emissiveIntensity = 0.34 + focus * 0.74 * cycle;
+    return values;
+  }, [count]);
+
+  useFrame((state, delta) => {
+    if (!groupRef.current || reducedMotion || paused) {
+      return;
     }
+
+    const time = state.clock.getElapsedTime();
+    groupRef.current.rotation.y = dampScalar(
+      groupRef.current.rotation.y,
+      Math.sin(time * 0.08) * 0.12,
+      3,
+      delta
+    );
+    groupRef.current.position.y = Math.sin(time * 0.18) * 0.08;
   });
+
+  return (
+    <group ref={groupRef}>
+      <points>
+        <bufferGeometry>
+          <bufferAttribute
+            attach="attributes-position"
+            args={[positions, 3]}
+            count={positions.length / 3}
+            itemSize={3}
+          />
+        </bufferGeometry>
+        <pointsMaterial
+          color="#dde6dd"
+          size={tier === "mobile" ? 0.03 : 0.04}
+          sizeAttenuation
+          transparent
+          opacity={0.16}
+          depthWrite={false}
+        />
+      </points>
+    </group>
+  );
 }
 
-function AuthoredMonolith({
+function SwitchyardAsset({
   activeStage,
   stageProgress,
   tier,
@@ -385,56 +466,67 @@ function AuthoredMonolith({
   reducedMotion,
   paused
 }: {
-  activeStage: AtlasStateId;
+  activeStage: SwitchyardStateId;
   stageProgress: number;
   tier: ViewportTier;
   variant: SceneVariant;
   reducedMotion: boolean;
   paused: boolean;
 }) {
-  const gltf = useGLTF(MONOLITH_GLB_URL) as { scene: THREE.Group };
+  const gltf = useGLTF(SWITCHYARD_GLB_URL) as { scene: THREE.Group };
   const scene = useMemo(() => gltf.scene.clone(true), [gltf.scene]);
   const rootRef = useRef<THREE.Group>(null);
 
   const shellRef = useRef<THREE.Object3D | null>(null);
+  const coreRef = useRef<THREE.Object3D | null>(null);
   const labsRef = useRef<THREE.Object3D | null>(null);
   const programRef = useRef<THREE.Object3D | null>(null);
   const networkRef = useRef<THREE.Object3D | null>(null);
+  const conduitRef = useRef<THREE.Object3D | null>(null);
+  const glassRef = useRef<THREE.Object3D | null>(null);
   const signalRef = useRef<THREE.Object3D | null>(null);
   const plinthRef = useRef<THREE.Object3D | null>(null);
 
   const shellMaterials = useRef<MaterialSurface[]>([]);
-  const reinforceMaterials = useRef<MaterialSurface[]>([]);
-  const panelMaterials = useRef<MaterialSurface[]>([]);
-  const interiorMaterials = useRef<MaterialSurface[]>([]);
+  const metalMaterials = useRef<MaterialSurface[]>([]);
+  const glassMaterials = useRef<MaterialSurface[]>([]);
+  const accentMaterials = useRef<MaterialSurface[]>([]);
   const signalMaterials = useRef<MaterialSurface[]>([]);
 
   const labNodes = useRef<THREE.Mesh[]>([]);
   const programNodes = useRef<THREE.Mesh[]>([]);
   const networkNodes = useRef<THREE.Mesh[]>([]);
-  const trafficNodes = useRef<THREE.Mesh[]>([]);
+  const relayNodes = useRef<THREE.Mesh[]>([]);
+  const routeSegments = useRef<THREE.Mesh[]>([]);
 
   useEffect(() => {
     shellMaterials.current = [];
-    reinforceMaterials.current = [];
-    panelMaterials.current = [];
-    interiorMaterials.current = [];
+    metalMaterials.current = [];
+    glassMaterials.current = [];
+    accentMaterials.current = [];
     signalMaterials.current = [];
     labNodes.current = [];
     programNodes.current = [];
     networkNodes.current = [];
-    trafficNodes.current = [];
+    relayNodes.current = [];
+    routeSegments.current = [];
 
     scene.traverse((object) => {
       if (object.name === "shell") {
         shellRef.current = object;
-      } else if (object.name === "lab-core") {
+      } else if (object.name === "core-spine") {
+        coreRef.current = object;
+      } else if (object.name === "lab-decks") {
         labsRef.current = object;
-      } else if (object.name === "program-core") {
+      } else if (object.name === "program-loop") {
         programRef.current = object;
-      } else if (object.name === "network-crown") {
+      } else if (object.name === "network-bridges") {
         networkRef.current = object;
-      } else if (object.name === "signal-traffic") {
+      } else if (object.name === "service-conduits") {
+        conduitRef.current = object;
+      } else if (object.name === "glass-volumes") {
+        glassRef.current = object;
+      } else if (object.name === "signal-paths") {
         signalRef.current = object;
       } else if (object.name === "plinth") {
         plinthRef.current = object;
@@ -443,6 +535,17 @@ function AuthoredMonolith({
       const mesh = object as THREE.Mesh;
       if (!mesh.isMesh || !mesh.material) {
         return;
+      }
+
+      mesh.geometry = mesh.geometry.clone();
+      if (
+        mesh.geometry.attributes.uv &&
+        !mesh.geometry.attributes.uv2
+      ) {
+        mesh.geometry.setAttribute(
+          "uv2",
+          mesh.geometry.attributes.uv.clone()
+        );
       }
 
       const materials = Array.isArray(mesh.material)
@@ -458,19 +561,19 @@ function AuthoredMonolith({
         const surface = material as MaterialSurface;
         surface.transparent = true;
         switch (surface.name) {
-          case "shell-material":
+          case "switchyard-shell-material":
             shellMaterials.current.push(surface);
             break;
-          case "reinforce-material":
-            reinforceMaterials.current.push(surface);
+          case "switchyard-structure-material":
+            metalMaterials.current.push(surface);
             break;
-          case "panel-material":
-            panelMaterials.current.push(surface);
+          case "switchyard-glass-material":
+            glassMaterials.current.push(surface);
             break;
-          case "interior-material":
-            interiorMaterials.current.push(surface);
+          case "switchyard-accent-material":
+            accentMaterials.current.push(surface);
             break;
-          case "signal-material":
+          case "switchyard-signal-material":
             signalMaterials.current.push(surface);
             break;
           default:
@@ -478,24 +581,35 @@ function AuthoredMonolith({
         }
       });
 
-      if (mesh.name.includes("chamber-node")) {
+      if (
+        mesh.name.includes("lab-service-rail") ||
+        mesh.name.includes("lab-equipment-bay") ||
+        mesh.name === "core-seam-plate"
+      ) {
         labNodes.current.push(mesh);
-      } else if (mesh.name.includes("program-gate")) {
+      } else if (mesh.name.includes("program-gate") && mesh.name.includes("header")) {
         programNodes.current.push(mesh);
-      } else if (mesh.name.includes("crown-node")) {
+      } else if (mesh.name.includes("network-node")) {
         networkNodes.current.push(mesh);
-      } else if (mesh.name.includes("pulse")) {
-        trafficNodes.current.push(mesh);
+      } else if (mesh.name.includes("signal-node")) {
+        relayNodes.current.push(mesh);
+      }
+
+      if (
+        mesh.name.includes("signal") &&
+        !mesh.name.includes("signal-node")
+      ) {
+        routeSegments.current.push(mesh);
       }
     });
   }, [scene]);
 
   useFrame((state, delta) => {
-    const preset = atlasScenePresets[activeStage];
+    const preset = switchyardScenePresets[activeStage];
     const viewport = VIEWPORT_CONFIG[tier];
     const reveal =
       variant === "hero"
-        ? 0.18
+        ? 0.26
         : THREE.MathUtils.smoothstep(stageProgress, 0.08, 0.96);
     const time = state.clock.getElapsedTime();
     const dynamicTime = reducedMotion || paused ? 0 : time;
@@ -511,52 +625,83 @@ function AuthoredMonolith({
       baseScale,
       baseScale,
       baseScale
-    ).multiplyScalar(activeStage === "network" ? 1.04 : 1);
+    ).multiplyScalar(activeStage === "network" ? 1.06 : 1);
 
     const targetPosition =
       variant === "hero"
-        ? new THREE.Vector3(1.16, -0.36, 0)
-        : new THREE.Vector3(0.02, -0.44, 0);
+        ? new THREE.Vector3(2.2, -0.94, 0)
+        : new THREE.Vector3(0.58, -0.78, 0);
 
     const targetRotation = new THREE.Euler(
-      -0.1 + Math.sin(dynamicTime * 0.18) * preset.motion.float * 0.02,
+      -0.16 + Math.sin(dynamicTime * 0.16) * preset.motion.float * 0.04,
       variant === "hero"
-        ? -0.92 + preset.motion.rotation * 0.05
-        : -0.56 + preset.motion.rotation * 0.08,
+        ? -1.08 + preset.motion.rotation * 0.05
+        : -0.48 + preset.motion.rotation * 0.08,
       0.02
     );
 
-    dampVector(root.position, targetPosition, 5.4, delta);
-    dampVector(root.scale, targetScale, 5.4, delta);
+    dampVector(root.position, targetPosition, 5.2, delta);
+    dampVector(root.scale, targetScale, 5.2, delta);
     dampEuler(root.rotation, targetRotation, 5.2, delta);
 
     if (shellRef.current) {
-      const shellTarget = new THREE.Vector3(
-        0.16 + preset.shell.split * 0.68,
-        0.06 * preset.shell.exposure,
-        -0.18 - preset.shell.cutDepth * 0.34
+      dampVector(
+        shellRef.current.position,
+        new THREE.Vector3(
+          0.22 + preset.shell.split * 0.92,
+          0.08 + preset.shell.lift * 0.16,
+          -0.12 - preset.shell.cutDepth * 0.46
+        ),
+        5,
+        delta
       );
-      const shellRotation = new THREE.Euler(
-        0.01,
-        0.08 + preset.shell.split * 0.16,
-        -0.01
+      dampEuler(
+        shellRef.current.rotation,
+        new THREE.Euler(
+          0.01 + preset.shell.tilt * 0.06,
+          0.08 + preset.shell.split * 0.22,
+          -0.01
+        ),
+        5,
+        delta
       );
-      dampVector(shellRef.current.position, shellTarget, 5.2, delta);
-      dampEuler(shellRef.current.rotation, shellRotation, 5.2, delta);
+    }
+
+    if (coreRef.current) {
+      dampVector(
+        coreRef.current.position,
+        new THREE.Vector3(
+          -0.14 + preset.layers.core * 0.1,
+          0.04 + preset.layers.core * 0.18,
+          0.06 + preset.layers.core * 0.16
+        ),
+        5,
+        delta
+      );
+      dampEuler(
+        coreRef.current.rotation,
+        new THREE.Euler(0.01, -0.04 + preset.layers.core * 0.06, 0),
+        5,
+        delta
+      );
     }
 
     if (labsRef.current) {
       const emphasis = preset.layers.labs;
-      const target = new THREE.Vector3(
-        -0.08 + emphasis * 0.32,
-        0.08 + emphasis * 0.22,
-        0.04 + emphasis * 0.44
+      dampVector(
+        labsRef.current.position,
+        new THREE.Vector3(
+          -0.14 + emphasis * 0.48,
+          0.24 + emphasis * 0.34,
+          0.12 + emphasis * 0.54
+        ),
+        5,
+        delta
       );
-      dampVector(labsRef.current.position, target, 5.2, delta);
       dampEuler(
         labsRef.current.rotation,
-        new THREE.Euler(0, -0.04 + emphasis * 0.12, 0.02),
-        5.2,
+        new THREE.Euler(0.04, -0.08 + emphasis * 0.16, 0.02),
+        5,
         delta
       );
       dampVector(
@@ -566,75 +711,108 @@ function AuthoredMonolith({
           0.92 + emphasis * 0.18,
           0.92 + emphasis * 0.18
         ),
-        5.2,
+        5,
         delta
       );
     }
 
     if (programRef.current) {
       const emphasis = preset.layers.program;
-      const target = new THREE.Vector3(
-        0.16 + emphasis * 0.18,
-        -0.16 - emphasis * 0.62,
-        0.1 + emphasis * 0.5
+      dampVector(
+        programRef.current.position,
+        new THREE.Vector3(
+          0.14 + emphasis * 0.22,
+          -0.22 - emphasis * 0.74,
+          0.18 + emphasis * 0.62
+        ),
+        5,
+        delta
       );
-      dampVector(programRef.current.position, target, 5.2, delta);
       dampEuler(
         programRef.current.rotation,
-        new THREE.Euler(0.04, -0.1 + emphasis * 0.14, 0.04),
-        5.2,
+        new THREE.Euler(0.08, -0.14 + emphasis * 0.18, 0.06),
+        5,
         delta
       );
       dampVector(
         programRef.current.scale,
         new THREE.Vector3(
-          0.9 + emphasis * 0.2,
-          0.9 + emphasis * 0.2,
-          0.9 + emphasis * 0.2
+          0.9 + emphasis * 0.22,
+          0.9 + emphasis * 0.22,
+          0.9 + emphasis * 0.22
         ),
-        5.2,
+        5,
         delta
       );
     }
 
     if (networkRef.current) {
       const emphasis = preset.layers.network;
-      const crown = preset.shell.crown;
-      const target = new THREE.Vector3(
-        0.12 + emphasis * 0.26,
-        0.34 + crown * 0.86,
-        0.06 + emphasis * 0.22
+      dampVector(
+        networkRef.current.position,
+        new THREE.Vector3(
+          0.12 + emphasis * 0.22,
+          0.42 + preset.shell.lift * 1.02,
+          0.08 + emphasis * 0.18
+        ),
+        5,
+        delta
       );
-      dampVector(networkRef.current.position, target, 5.2, delta);
       dampEuler(
         networkRef.current.rotation,
         new THREE.Euler(
-          0.02,
-          0.06 + emphasis * 0.12,
-          0.04 + emphasis * 0.08
+          0.04,
+          0.08 + emphasis * 0.14,
+          0.06 + emphasis * 0.1
         ),
-        5.2,
+        5,
         delta
       );
       dampVector(
         networkRef.current.scale,
         new THREE.Vector3(
-          0.88 + emphasis * 0.26,
-          0.88 + emphasis * 0.26,
-          0.88 + emphasis * 0.26
+          0.9 + emphasis * 0.28,
+          0.9 + emphasis * 0.28,
+          0.9 + emphasis * 0.28
         ),
-        5.2,
+        5,
+        delta
+      );
+    }
+
+    if (conduitRef.current) {
+      const emphasis = preset.layers.conduits;
+      dampVector(
+        conduitRef.current.position,
+        new THREE.Vector3(0.02, -0.04 + emphasis * 0.08, 0.12 + emphasis * 0.12),
+        5,
+        delta
+      );
+      dampEuler(
+        conduitRef.current.rotation,
+        new THREE.Euler(0.01, emphasis * 0.04, 0),
+        5,
+        delta
+      );
+    }
+
+    if (glassRef.current) {
+      const emphasis = preset.layers.glass;
+      dampVector(
+        glassRef.current.position,
+        new THREE.Vector3(0.02 + emphasis * 0.06, 0.02, 0.06 + emphasis * 0.08),
+        5,
         delta
       );
     }
 
     if (signalRef.current) {
-      const target = new THREE.Vector3(
-        0.02,
-        -0.06 + preset.layers.program * 0.08 + preset.layers.network * 0.08,
-        0.08 + preset.signal.density * 0.16
+      dampVector(
+        signalRef.current.position,
+        new THREE.Vector3(0.02, -0.08 + preset.signal.density * 0.08, 0.1),
+        5,
+        delta
       );
-      dampVector(signalRef.current.position, target, 5.2, delta);
     }
 
     if (plinthRef.current) {
@@ -655,98 +833,140 @@ function AuthoredMonolith({
 
     shellMaterials.current.forEach((material) => {
       if (material.color) {
-        material.color.lerp(new THREE.Color("#1b1e21"), 0.04);
+        material.color.lerp(new THREE.Color("#171b1f"), 0.04);
       }
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
           material.roughness,
-          0.64 - preset.shell.exposure * 0.12,
-          5.2,
+          0.56 - preset.shell.aperture * 0.08,
+          5,
           delta
         );
       }
       if (typeof material.metalness === "number") {
         material.metalness = dampScalar(
           material.metalness,
-          0.42 + preset.shell.cutDepth * 0.08,
-          5.2,
+          0.48 + preset.layers.core * 0.08,
+          5,
           delta
         );
       }
       if (typeof material.emissiveIntensity === "number") {
         material.emissiveIntensity = dampScalar(
           material.emissiveIntensity,
-          0.18 + preset.lighting.accent * 0.26 + reveal * 0.08,
-          5.2,
+          0.12 + preset.lighting.accent * 0.16 + reveal * 0.08,
+          5,
           delta
         );
       }
     });
 
-    reinforceMaterials.current.forEach((material) => {
+    metalMaterials.current.forEach((material) => {
       if (material.color) {
-        material.color.lerp(new THREE.Color("#262c31"), 0.03);
+        material.color.lerp(new THREE.Color("#2a3237"), 0.04);
       }
-      if (typeof material.emissiveIntensity === "number") {
-        material.emissiveIntensity = dampScalar(
-          material.emissiveIntensity,
-          0.04 + preset.lighting.rim * 0.08,
-          5.2,
+      if (typeof material.roughness === "number") {
+        material.roughness = dampScalar(
+          material.roughness,
+          0.38,
+          5,
+          delta
+        );
+      }
+      if (typeof material.metalness === "number") {
+        material.metalness = dampScalar(
+          material.metalness,
+          0.78,
+          5,
           delta
         );
       }
     });
 
-    panelMaterials.current.forEach((material) => {
+    glassMaterials.current.forEach((material) => {
       if (typeof material.opacity === "number") {
         material.opacity = dampScalar(
           material.opacity,
-          0.56 + reveal * 0.12,
-          5.2,
+          0.36 + preset.layers.glass * 0.26 + reveal * 0.04,
+          5,
+          delta
+        );
+      }
+      if (typeof material.transmission === "number") {
+        material.transmission = dampScalar(
+          material.transmission,
+          0.24 + preset.layers.glass * 0.24,
+          5,
           delta
         );
       }
       if (typeof material.roughness === "number") {
         material.roughness = dampScalar(
           material.roughness,
-          0.28,
-          5.2,
-          delta
-        );
-      }
-    });
-
-    interiorMaterials.current.forEach((material) => {
-      if (typeof material.opacity === "number") {
-        material.opacity = dampScalar(
-          material.opacity,
-          0.84 + reveal * 0.08,
-          5.2,
+          0.18 + (1 - preset.layers.glass) * 0.1,
+          5,
           delta
         );
       }
       if (typeof material.emissiveIntensity === "number") {
         material.emissiveIntensity = dampScalar(
           material.emissiveIntensity,
-          0.08 + preset.lighting.fill * 0.08,
-          5.2,
+          0.04 + preset.signal.program * 0.06,
+          5,
           delta
         );
       }
     });
 
-    signalMaterials.current.forEach((material) => {
+    accentMaterials.current.forEach((material) => {
+      if (material.color) {
+        material.color.lerp(
+          activeStage === "program"
+            ? new THREE.Color("#36527d")
+            : activeStage === "network"
+              ? new THREE.Color("#5a6540")
+              : new THREE.Color("#27473d"),
+          0.06
+        );
+      }
+    });
+
+    signalMaterials.current.forEach((material, index) => {
       if (material.emissive) {
         material.emissive.lerp(signalColor, 0.08);
       }
-      if (material.color) {
-        material.color.lerp(new THREE.Color("#1d2624"), 0.02);
-      }
       if (typeof material.emissiveIntensity === "number") {
+        const pulse =
+          reducedMotion || paused
+            ? 0.72
+            : 0.52 +
+              Math.sin(dynamicTime * (0.8 + preset.signal.speed * 1.8) + index * 0.35) *
+                0.48;
         material.emissiveIntensity = dampScalar(
           material.emissiveIntensity,
-          0.44 + preset.signal.density * 0.72,
-          5.2,
+          0.34 + preset.signal.density * 0.74 * pulse,
+          5,
+          delta
+        );
+      }
+    });
+
+    routeSegments.current.forEach((mesh, index) => {
+      const material = mesh.material as MaterialSurface;
+      if (typeof material.emissiveIntensity === "number") {
+        const lane = mesh.name.includes("lab")
+          ? preset.signal.labs
+          : mesh.name.includes("program")
+            ? preset.signal.program
+            : preset.signal.network;
+        const wave =
+          reducedMotion || paused
+            ? 0.7
+            : 0.58 + Math.sin(dynamicTime * (0.9 + preset.signal.speed) + index * 0.44) * 0.42;
+        material.emissiveIntensity = dampScalar(
+          material.emissiveIntensity,
+          0.16 + lane * 0.9 * wave,
+          5,
           delta
         );
       }
@@ -754,31 +974,31 @@ function AuthoredMonolith({
 
     pulseNodes(
       labNodes.current,
-      preset.layers.labs,
+      preset.signal.labs,
       ROLE_COLORS.labs,
       dynamicTime,
       reducedMotion
     );
     pulseNodes(
       programNodes.current,
-      preset.layers.program,
+      preset.signal.program,
       ROLE_COLORS.program,
-      dynamicTime + 0.6,
+      dynamicTime + 0.5,
       reducedMotion
     );
     pulseNodes(
       networkNodes.current,
-      preset.layers.network,
+      preset.signal.network,
       ROLE_COLORS.network,
-      dynamicTime + 1.2,
+      dynamicTime + 1.1,
       reducedMotion
     );
     pulseNodes(
-      trafficNodes.current,
+      relayNodes.current,
       Math.max(
-        preset.layers.labs * 0.42,
-        preset.layers.program * 0.54,
-        preset.layers.network * 0.48
+        preset.signal.labs * 0.42,
+        preset.signal.program * 0.5,
+        preset.signal.network * 0.46
       ),
       signalColor,
       dynamicTime + 0.8,
@@ -793,7 +1013,7 @@ function AtlasFallback({
   activeStage,
   variant
 }: {
-  activeStage: AtlasStateId;
+  activeStage: SwitchyardStateId;
   variant: SceneVariant;
 }) {
   return (
@@ -801,29 +1021,23 @@ function AtlasFallback({
       className={`atlas-fallback atlas-fallback--${activeStage} atlas-fallback--${variant}`}
       aria-hidden="true"
     >
-      <div className="atlas-fallback__core">
-        <div className="atlas-fallback__plinth" />
-        <div className="atlas-fallback__shell atlas-fallback__shell--back" />
+      <div className="atlas-fallback__switchyard">
+        <div className="atlas-fallback__spine" />
+        <div className="atlas-fallback__shell atlas-fallback__shell--rear" />
         <div className="atlas-fallback__shell atlas-fallback__shell--front" />
-        <div className="atlas-fallback__cutaway" />
-        <div className="atlas-fallback__labs">
-          <span />
-          <span />
-          <span />
-        </div>
-        <div className="atlas-fallback__program">
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
-        <div className="atlas-fallback__crown">
-          <b />
-          <b />
-          <b />
-          <b />
-        </div>
-        <div className="atlas-fallback__signal" />
+        <div className="atlas-fallback__deck atlas-fallback__deck--a" />
+        <div className="atlas-fallback__deck atlas-fallback__deck--b" />
+        <div className="atlas-fallback__deck atlas-fallback__deck--c" />
+        <div className="atlas-fallback__loop" />
+        <div className="atlas-fallback__bridge atlas-fallback__bridge--a" />
+        <div className="atlas-fallback__bridge atlas-fallback__bridge--b" />
+        <div className="atlas-fallback__conduit atlas-fallback__conduit--a" />
+        <div className="atlas-fallback__conduit atlas-fallback__conduit--b" />
+        <div className="atlas-fallback__conduit atlas-fallback__conduit--c" />
+        <div className="atlas-fallback__node atlas-fallback__node--labs" />
+        <div className="atlas-fallback__node atlas-fallback__node--program" />
+        <div className="atlas-fallback__node atlas-fallback__node--network" />
+        <div className="atlas-fallback__glow" />
       </div>
     </div>
   );
@@ -837,16 +1051,18 @@ function SceneContent({
   paused,
   tier
 }: {
-  activeStage: AtlasStateId;
+  activeStage: SwitchyardStateId;
   reducedMotion: boolean;
   stageProgress: number;
   variant: SceneVariant;
   paused: boolean;
   tier: ViewportTier;
 }) {
+  const fogFar = variant === "hero" ? 28 : 34;
+
   return (
     <>
-      <fog attach="fog" args={["#040607", 11, 25]} />
+      <fog attach="fog" args={["#040608", 10, fogFar]} />
       <SceneLighting
         activeStage={activeStage}
         stageProgress={stageProgress}
@@ -860,7 +1076,8 @@ function SceneContent({
         reducedMotion={reducedMotion}
         paused={paused}
       />
-      <AuthoredMonolith
+      <Atmospherics reducedMotion={reducedMotion} paused={paused} tier={tier} />
+      <SwitchyardAsset
         activeStage={activeStage}
         stageProgress={stageProgress}
         tier={tier}
@@ -892,7 +1109,7 @@ export const AtlasScene = memo(function AtlasScene({
         className="atlas-scene__canvas"
         dpr={VIEWPORT_CONFIG[tier].dpr}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        camera={{ position: [0, 0.8, 8.4], fov: 28, near: 0.1, far: 40 }}
+        camera={{ position: [0, 0.9, 9.6], fov: 24, near: 0.1, far: 48 }}
       >
         <Suspense fallback={null}>
           <SceneContent
@@ -909,4 +1126,4 @@ export const AtlasScene = memo(function AtlasScene({
   );
 });
 
-useGLTF.preload(MONOLITH_GLB_URL);
+useGLTF.preload(SWITCHYARD_GLB_URL);
