@@ -303,224 +303,449 @@ button {
   inset: 0;
   display: grid;
   place-items: center;
-}
-
-.atlas-fallback__halo,
-.atlas-fallback__ring,
-.atlas-fallback__labs,
-.atlas-fallback__program,
-.atlas-fallback__network {
-  position: absolute;
+  perspective: 1100px;
+  perspective-origin: 50% 42%;
 }
 
 .atlas-fallback__halo {
-  width: min(50vw, 34rem);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(107, 197, 155, 0.18) 0%, transparent 66%);
-  filter: blur(18px);
-}
-
-.atlas-fallback__ring {
-  left: 50%;
-  top: 50%;
-  border: 1px solid var(--line);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.atlas-fallback__ring--inner {
-  width: min(32vw, 22rem);
-  aspect-ratio: 1;
-}
-
-.atlas-fallback__ring--outer {
-  width: min(44vw, 31rem);
-  aspect-ratio: 1;
-}
-
-.atlas-fallback__labs {
-  left: 50%;
-  top: 50%;
-  width: min(22vw, 16rem);
-  height: min(18vw, 13rem);
-  transform: translate(-50%, -50%);
-}
-
-.atlas-fallback__labs span {
   position: absolute;
-  bottom: 0;
-  width: 28%;
-  border-radius: 6px;
-  background: linear-gradient(180deg, rgba(107, 197, 155, 0.85), rgba(107, 197, 155, 0.25));
-  box-shadow: 0 0 28px rgba(107, 197, 155, 0.22);
+  width: min(48vw, 35rem);
+  height: min(68vh, 40rem);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(107, 197, 155, 0.14), transparent 44%),
+    radial-gradient(circle at 54% 56%, rgba(144, 184, 255, 0.16), transparent 52%),
+    radial-gradient(circle at 50% 74%, rgba(216, 234, 140, 0.12), transparent 58%);
+  filter: blur(18px);
+  opacity: 0.84;
+  transform: translate3d(0, 0, -6rem) scale(0.96);
+  transition: transform 700ms ease, opacity 700ms ease;
 }
 
-.atlas-fallback__labs span:first-child {
-  left: 8%;
-  height: 82%;
+.atlas-fallback__monolith {
+  position: relative;
+  width: min(28vw, 18rem);
+  height: min(64vh, 34rem);
+  transform-style: preserve-3d;
+  transform: translate3d(0, 2%, 0) rotateX(8deg) rotateY(-16deg);
+  transition: transform 700ms ease;
 }
 
-.atlas-fallback__labs span:last-child {
-  right: 10%;
-  height: 66%;
+.atlas-fallback__shell,
+.atlas-fallback__glass,
+.atlas-fallback__layer,
+.atlas-fallback__layer::before,
+.atlas-fallback__layer::after {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.7rem;
+  transition:
+    transform 700ms cubic-bezier(0.2, 0.7, 0.22, 1),
+    opacity 520ms ease,
+    border-color 520ms ease,
+    background 520ms ease,
+    box-shadow 520ms ease;
 }
 
-.atlas-fallback__program {
-  left: 50%;
-  top: 50%;
-  width: min(30vw, 21rem);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
+.atlas-fallback__shell {
+  background:
+    linear-gradient(155deg, rgba(24, 31, 33, 0.98), rgba(8, 12, 13, 0.94)),
+    linear-gradient(180deg, rgba(106, 197, 155, 0.08), transparent 26%);
+  border: 1px solid rgba(242, 240, 232, 0.09);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+    0 28px 50px rgba(0, 0, 0, 0.34);
 }
 
-.atlas-fallback__program i,
-.atlas-fallback__network b {
+.atlas-fallback__shell--back {
+  inset: 6% 19% 5% 21%;
+  transform: translateZ(-0.7rem);
+}
+
+.atlas-fallback__shell--left,
+.atlas-fallback__shell--right {
+  top: 8%;
+  bottom: 8%;
+  width: 18%;
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(180deg, rgba(14, 20, 21, 0.96), rgba(7, 11, 12, 0.98)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 22%);
+}
+
+.atlas-fallback__shell--left {
+  left: 18%;
+  transform: translateZ(0.3rem) rotateY(14deg);
+}
+
+.atlas-fallback__shell--right {
+  right: 16%;
+  transform: translateZ(0.3rem) rotateY(-12deg);
+}
+
+.atlas-fallback__shell--top {
+  top: 3%;
+  left: 22%;
+  right: 18%;
+  height: 12%;
+  border-radius: 1rem 1rem 0.7rem 0.7rem;
+  transform: translateZ(0.8rem) rotateX(72deg);
+}
+
+.atlas-fallback__shell--left-door,
+.atlas-fallback__shell--right-door {
+  top: 12%;
+  bottom: 13%;
+  width: 20%;
+  z-index: 4;
+  background:
+    linear-gradient(180deg, rgba(22, 29, 30, 0.98), rgba(6, 10, 11, 0.98)),
+    linear-gradient(90deg, rgba(99, 198, 157, 0.04), transparent 45%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025),
+    0 18px 28px rgba(0, 0, 0, 0.24);
+}
+
+.atlas-fallback__shell--left-door {
+  left: 21%;
+  transform-origin: left center;
+  transform: translate3d(0, 0, 1.1rem) rotateY(0deg);
+}
+
+.atlas-fallback__shell--right-door {
+  right: 19%;
+  transform-origin: right center;
+  transform: translate3d(0, 0, 1.1rem) rotateY(0deg);
+}
+
+.atlas-fallback__glass {
+  border: 1px solid rgba(218, 230, 229, 0.1);
+  background:
+    linear-gradient(180deg, rgba(146, 180, 184, 0.16), rgba(40, 48, 52, 0.04)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 52%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.atlas-fallback__glass--primary {
+  inset: 18% 29% 22% 30%;
+  transform: translateZ(-0.4rem);
+  opacity: 0.72;
+}
+
+.atlas-fallback__glass--secondary {
+  inset: 24% 35% 28% 37%;
+  transform: translateZ(-1.2rem);
+  opacity: 0.34;
+}
+
+.atlas-fallback__layer {
+  inset: 18% 29% 16% 29%;
+  pointer-events: none;
+  opacity: 0.28;
+}
+
+.atlas-fallback__layer--labs {
+  transform: translateZ(0.5rem);
+}
+
+.atlas-fallback__layer--labs span {
   position: absolute;
   display: block;
+  border-radius: 0.4rem;
+  background:
+    linear-gradient(180deg, rgba(99, 198, 157, 0.88), rgba(99, 198, 157, 0.18));
+  box-shadow:
+    0 0 18px rgba(99, 198, 157, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.atlas-fallback__layer--labs::before {
+  content: "";
+  inset: 10% 8% 12%;
+  border: 1px solid rgba(107, 197, 155, 0.18);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 0.85rem,
+      rgba(107, 197, 155, 0.08) 0.85rem,
+      rgba(107, 197, 155, 0.08) 1rem
+    );
+}
+
+.atlas-fallback__layer--labs::after {
+  content: "";
+  inset: 26% 22% 22%;
+  border-left: 1px solid rgba(107, 197, 155, 0.26);
+  border-right: 1px solid rgba(107, 197, 155, 0.18);
+  transform: translateZ(0.2rem);
+}
+
+.atlas-fallback__layer--labs span:nth-child(1) {
+  left: 10%;
+  bottom: 16%;
+  width: 18%;
+  height: 28%;
+}
+
+.atlas-fallback__layer--labs span:nth-child(2) {
+  left: 33%;
+  bottom: 19%;
+  width: 15%;
+  height: 44%;
+}
+
+.atlas-fallback__layer--labs span:nth-child(3) {
+  right: 18%;
+  bottom: 24%;
+  width: 14%;
+  height: 32%;
+}
+
+.atlas-fallback__layer--labs span:nth-child(4) {
+  left: 22%;
+  top: 14%;
+  width: 46%;
+  height: 0.18rem;
+  border-radius: 999px;
+}
+
+.atlas-fallback__layer--labs span:nth-child(5) {
+  left: 16%;
+  top: 28%;
+  width: 58%;
+  height: 0.14rem;
+  border-radius: 999px;
+  opacity: 0.7;
+}
+
+.atlas-fallback__layer--program {
+  inset: 23% 32% 20% 32%;
+  transform: translateZ(1.4rem);
+}
+
+.atlas-fallback__layer--program::before {
+  content: "";
+  inset: 14% 10% 14%;
+  border: 1px solid rgba(144, 184, 255, 0.22);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 1px rgba(144, 184, 255, 0.06),
+    0 0 18px rgba(144, 184, 255, 0.09);
+}
+
+.atlas-fallback__layer--program::after {
+  content: "";
+  inset: 28% 24% 28%;
+  border: 1px solid rgba(144, 184, 255, 0.16);
   border-radius: 50%;
 }
 
-.atlas-fallback__program i {
-  left: 50%;
-  top: 50%;
-  width: 0.52rem;
-  height: 0.52rem;
-  margin: -0.26rem;
+.atlas-fallback__layer--program i,
+.atlas-fallback__layer--network b {
+  position: absolute;
+  display: block;
+  border-radius: 999px;
+}
+
+.atlas-fallback__layer--program i {
+  width: 0.44rem;
+  height: 0.44rem;
+  margin: -0.22rem;
   background: var(--program);
-  box-shadow: 0 0 16px rgba(144, 184, 255, 0.22);
+  box-shadow: 0 0 16px rgba(144, 184, 255, 0.28);
 }
 
-.atlas-fallback__program i:nth-child(1) {
-  transform: translate(6.4rem, 0);
-}
-
-.atlas-fallback__program i:nth-child(2) {
-  transform: translate(4.3rem, 4.2rem);
-}
-
-.atlas-fallback__program i:nth-child(3) {
-  transform: translate(0, 6.1rem);
-}
-
-.atlas-fallback__program i:nth-child(4) {
-  transform: translate(-4.2rem, 4.2rem);
-}
-
-.atlas-fallback__program i:nth-child(5) {
-  transform: translate(-6.4rem, 0);
-}
-
-.atlas-fallback__program i:nth-child(6) {
-  transform: translate(-4.2rem, -4.2rem);
-}
-
-.atlas-fallback__program i:nth-child(7) {
-  transform: translate(0, -6.1rem);
-}
-
-.atlas-fallback__program i:nth-child(8) {
-  transform: translate(4.2rem, -4.2rem);
-}
-
-.atlas-fallback__network {
+.atlas-fallback__layer--program i:nth-child(1) {
   left: 50%;
-  top: 50%;
-  width: min(42vw, 29rem);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
+  top: 12%;
 }
 
-.atlas-fallback__network b {
+.atlas-fallback__layer--program i:nth-child(2) {
+  left: 82%;
+  top: 48%;
+}
+
+.atlas-fallback__layer--program i:nth-child(3) {
   left: 50%;
-  top: 50%;
-  width: 0.42rem;
-  height: 0.42rem;
-  margin: -0.21rem;
+  top: 84%;
+}
+
+.atlas-fallback__layer--program i:nth-child(4) {
+  left: 18%;
+  top: 48%;
+}
+
+.atlas-fallback__layer--network {
+  inset: 2% 14% 4% 14%;
+  transform: translateZ(2.2rem);
+}
+
+.atlas-fallback__layer--network::before {
+  content: "";
+  inset: 0 7% auto;
+  height: 30%;
+  border: 1px solid rgba(216, 234, 140, 0.18);
+  border-bottom: none;
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+}
+
+.atlas-fallback__layer--network::after {
+  content: "";
+  inset: 12% 18% auto;
+  height: 20%;
+  border-top: 1px solid rgba(216, 234, 140, 0.14);
+  border-radius: 999px;
+}
+
+.atlas-fallback__layer--network b {
+  width: 0.38rem;
+  height: 0.38rem;
+  margin: -0.19rem;
   background: var(--network);
-  box-shadow: 0 0 14px rgba(216, 234, 140, 0.25);
+  box-shadow: 0 0 14px rgba(216, 234, 140, 0.28);
 }
 
-.atlas-fallback__network b:nth-child(1) {
-  transform: translate(11rem, 0.6rem);
+.atlas-fallback__layer--network b:nth-child(1) {
+  left: 18%;
+  top: 24%;
 }
 
-.atlas-fallback__network b:nth-child(2) {
-  transform: translate(8rem, 7rem);
+.atlas-fallback__layer--network b:nth-child(2) {
+  left: 34%;
+  top: 12%;
 }
 
-.atlas-fallback__network b:nth-child(3) {
-  transform: translate(2rem, 10rem);
+.atlas-fallback__layer--network b:nth-child(3) {
+  left: 50%;
+  top: 8%;
 }
 
-.atlas-fallback__network b:nth-child(4) {
-  transform: translate(-5rem, 9rem);
+.atlas-fallback__layer--network b:nth-child(4) {
+  left: 66%;
+  top: 12%;
 }
 
-.atlas-fallback__network b:nth-child(5) {
-  transform: translate(-10rem, 3rem);
+.atlas-fallback__layer--network b:nth-child(5) {
+  left: 82%;
+  top: 24%;
 }
 
-.atlas-fallback__network b:nth-child(6) {
-  transform: translate(-10rem, -4rem);
-}
-
-.atlas-fallback__network b:nth-child(7) {
-  transform: translate(-4rem, -9rem);
-}
-
-.atlas-fallback__network b:nth-child(8) {
-  transform: translate(3rem, -10rem);
-}
-
-.atlas-fallback__network b:nth-child(9) {
-  transform: translate(8rem, -7rem);
-}
-
-.atlas-fallback__network b:nth-child(10) {
-  transform: translate(10rem, -1rem);
+.atlas-fallback__layer--network b:nth-child(6) {
+  left: 50%;
+  top: 20%;
 }
 
 .atlas-fallback--opening .atlas-fallback__halo {
-  transform: scale(0.94);
-  opacity: 0.86;
+  transform: translate3d(0, -2%, -6rem) scale(0.92);
 }
 
-.atlas-fallback--labs .atlas-fallback__labs {
-  transform: translate(-50%, -50%) scale(1.06);
+.atlas-fallback--opening .atlas-fallback__layer--labs,
+.atlas-fallback--opening .atlas-fallback__layer--program,
+.atlas-fallback--opening .atlas-fallback__layer--network {
+  opacity: 0.16;
 }
 
-.atlas-fallback--labs .atlas-fallback__program,
-.atlas-fallback--labs .atlas-fallback__network {
-  opacity: 0.48;
+.atlas-fallback--labs .atlas-fallback__monolith {
+  transform: translate3d(0, 4%, 0) rotateX(8deg) rotateY(-17deg) scale(1.02);
 }
 
-.atlas-fallback--program .atlas-fallback__program {
-  transform: translate(-50%, -50%) scale(1.05);
+.atlas-fallback--labs .atlas-fallback__shell--left-door {
+  transform: translate3d(-14%, 0, 1.4rem) rotateY(16deg);
 }
 
-.atlas-fallback--program .atlas-fallback__labs,
-.atlas-fallback--program .atlas-fallback__network {
-  opacity: 0.46;
+.atlas-fallback--labs .atlas-fallback__shell--right-door {
+  transform: translate3d(14%, 0, 1.4rem) rotateY(-16deg);
 }
 
-.atlas-fallback--network .atlas-fallback__network {
-  transform: translate(-50%, -50%) scale(1.07);
+.atlas-fallback--labs .atlas-fallback__layer--labs {
+  opacity: 0.96;
+  transform: translateZ(1.35rem) scale(1.03);
 }
 
-.atlas-fallback--network .atlas-fallback__labs,
-.atlas-fallback--network .atlas-fallback__program {
-  opacity: 0.46;
+.atlas-fallback--labs .atlas-fallback__layer--program,
+.atlas-fallback--labs .atlas-fallback__layer--network {
+  opacity: 0.28;
+}
+
+.atlas-fallback--program .atlas-fallback__monolith {
+  transform: translate3d(0, 6%, 0) rotateX(10deg) rotateY(-15deg) scale(1.035);
+}
+
+.atlas-fallback--program .atlas-fallback__shell--left-door {
+  transform: translate3d(-22%, 0, 1.5rem) rotateY(25deg);
+}
+
+.atlas-fallback--program .atlas-fallback__shell--right-door {
+  transform: translate3d(22%, 0, 1.5rem) rotateY(-25deg);
+}
+
+.atlas-fallback--program .atlas-fallback__glass--primary {
+  opacity: 0.56;
+  transform: translateZ(-0.8rem) scale(0.98);
+}
+
+.atlas-fallback--program .atlas-fallback__layer--labs {
+  opacity: 0.36;
+}
+
+.atlas-fallback--program .atlas-fallback__layer--program {
+  opacity: 1;
+  transform: translateZ(2.1rem) scale(1.05);
+}
+
+.atlas-fallback--program .atlas-fallback__layer--network {
+  opacity: 0.26;
+}
+
+.atlas-fallback--network .atlas-fallback__monolith {
+  transform: translate3d(0, 2%, 0) rotateX(7deg) rotateY(-13deg) scale(1.03);
+}
+
+.atlas-fallback--network .atlas-fallback__shell--left-door {
+  transform: translate3d(-10%, 0, 1.3rem) rotateY(10deg);
+}
+
+.atlas-fallback--network .atlas-fallback__shell--right-door {
+  transform: translate3d(10%, 0, 1.3rem) rotateY(-10deg);
+}
+
+.atlas-fallback--network .atlas-fallback__halo {
+  opacity: 0.96;
+  transform: translate3d(0, -4%, -6rem) scale(1.02);
+}
+
+.atlas-fallback--network .atlas-fallback__layer--labs,
+.atlas-fallback--network .atlas-fallback__layer--program {
+  opacity: 0.3;
+}
+
+.atlas-fallback--network .atlas-fallback__layer--network {
+  opacity: 0.98;
+  transform: translateZ(3rem) scale(1.06);
+}
+
+.atlas-fallback--closing .atlas-fallback__monolith {
+  transform: translate3d(0, 0, 0) rotateX(7deg) rotateY(-14deg) scale(0.99);
 }
 
 .atlas-fallback--closing .atlas-fallback__halo {
-  opacity: 0.42;
+  opacity: 0.58;
+  transform: translate3d(0, 1%, -6rem) scale(0.94);
 }
 
-.atlas-fallback--closing .atlas-fallback__labs,
-.atlas-fallback--closing .atlas-fallback__program,
-.atlas-fallback--closing .atlas-fallback__network {
-  opacity: 0.4;
+.atlas-fallback--closing .atlas-fallback__shell--left-door {
+  transform: translate3d(-7%, 0, 1.2rem) rotateY(8deg);
+}
+
+.atlas-fallback--closing .atlas-fallback__shell--right-door {
+  transform: translate3d(7%, 0, 1.2rem) rotateY(-8deg);
+}
+
+.atlas-fallback--closing .atlas-fallback__layer--labs,
+.atlas-fallback--closing .atlas-fallback__layer--program,
+.atlas-fallback--closing .atlas-fallback__layer--network {
+  opacity: 0.45;
 }
 
 .story-main {
@@ -920,6 +1145,16 @@ button {
     display: none;
   }
 
+  .atlas-fallback__monolith {
+    width: min(36vw, 17rem);
+    height: min(54vh, 29rem);
+  }
+
+  .atlas-fallback__halo {
+    width: min(60vw, 33rem);
+    height: min(54vh, 33rem);
+  }
+
   .story-section__inner--opening {
     grid-template-columns: 1fr;
     gap: 1.5rem;
@@ -953,6 +1188,17 @@ button {
 
   .atlas-scene__hud {
     top: 6.1rem;
+  }
+
+  .atlas-fallback__monolith {
+    width: min(48vw, 15rem);
+    height: min(44vh, 23rem);
+    transform: translate3d(0, 1%, 0) rotateX(7deg) rotateY(-14deg);
+  }
+
+  .atlas-fallback__halo {
+    width: min(78vw, 27rem);
+    height: min(42vh, 24rem);
   }
 
   .story-section {
