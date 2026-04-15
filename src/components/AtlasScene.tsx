@@ -42,82 +42,89 @@ const VIEWPORT_CONFIG: Record<
   mobile: {
     dpr: [1, 1.25],
     overviewScale: 0.94,
-    narrativeScale: 0.88,
-    cameraOffset: [0.22, 0.18, 0.68],
-    rootOffset: [0.14, -0.06, 0]
+    narrativeScale: 0.9,
+    cameraOffset: [0.2, 0.14, 0.62],
+    rootOffset: [0.18, -0.04, 0]
   },
   tablet: {
     dpr: [1, 1.5],
     overviewScale: 1,
     narrativeScale: 0.96,
-    cameraOffset: [0.16, 0.08, 0.32],
+    cameraOffset: [0.12, 0.08, 0.32],
     rootOffset: [0.08, -0.02, 0]
   },
   desktop: {
     dpr: [1, 1.75],
     overviewScale: 1.08,
-    narrativeScale: 1.04,
+    narrativeScale: 1.02,
     cameraOffset: [0.04, 0.02, 0],
     rootOffset: [0, 0, 0]
   }
 };
 
 const COLORS = {
-  structure: new THREE.Color("#74848b"),
-  structureSoft: new THREE.Color("#55646b"),
-  spine: new THREE.Color("#90a3a8"),
-  panel: new THREE.Color("#25333b"),
-  glass: new THREE.Color("#425761"),
-  labs: new THREE.Color("#76cca3"),
-  program: new THREE.Color("#8eb7ff"),
-  network: new THREE.Color("#d6e98e"),
-  muted: new THREE.Color("#64737a"),
-  backdrop: new THREE.Color("#17313a")
+  spine: new THREE.Color("#a8b5ba"),
+  structure: new THREE.Color("#73828b"),
+  frame: new THREE.Color("#516069"),
+  panel: new THREE.Color("#27353d"),
+  surface: new THREE.Color("#314048"),
+  route: new THREE.Color("#8d9ba2"),
+  labs: new THREE.Color("#79cca9"),
+  program: new THREE.Color("#8fb4ff"),
+  network: new THREE.Color("#d9e68c"),
+  backdrop: new THREE.Color("#24343e"),
+  shadow: new THREE.Color("#12202a")
 } as const;
 
-const SPINE_MODULES = [-1.84, -1.16, -0.48, 0.22, 0.92, 1.62];
-const LAB_BAY_X = [-0.8, 0, 0.8];
-const NETWORK_NODE_X = [-2.1, -0.8, 0.6, 2];
 const ROUTES: RouteDefinition[] = [
   {
     focus: "labs",
     points: [
-      [0.18, 1.22, 0.26],
-      [-0.6, 1.22, 0.28],
-      [-1.48, 1.22, 0.36],
-      [-2.82, 1.16, 0.42]
+      [0.18, 1.24, 0.08],
+      [-0.48, 1.42, 0.12],
+      [-1.28, 1.62, 0.16],
+      [-2.34, 1.72, 0.18]
     ]
   },
   {
     focus: "labs",
     points: [
-      [0.16, 0.26, 0.16],
-      [0.88, 0.26, 0.24],
-      [1.68, 0.26, 0.34],
-      [2.86, 0.18, 0.44]
+      [0.22, 0.12, 0.04],
+      [0.86, 0.26, 0.08],
+      [1.56, 0.38, 0.1],
+      [2.34, 0.52, 0.12]
     ]
   },
   {
     focus: "program",
-    closed: true,
     points: [
-      [-1.68, -1.74, 0.12],
-      [1.62, -1.74, 0.16],
-      [2.1, -1.18, 0.22],
-      [1.52, -0.58, 0.2],
-      [-1.42, -0.58, 0.12],
-      [-1.92, -1.18, 0.08]
+      [0.16, -1.04, 0.04],
+      [0.1, -1.46, 0.06],
+      [0.02, -1.94, 0.08],
+      [0.08, -2.36, 0.1]
     ]
   },
   {
     focus: "network",
     points: [
-      [-2.18, 2.34, 0.24],
-      [-0.88, 2.54, 0.32],
-      [0.54, 2.62, 0.26],
-      [2.18, 2.42, 0.18]
+      [0.16, 1.88, 0.08],
+      [0.46, 2.18, 0.1],
+      [0.98, 2.48, 0.14],
+      [1.68, 2.74, 0.18]
     ]
   }
+];
+
+const PROGRAM_LOOP_POINTS: Vec3[] = [
+  [-1.84, 0.24, 0.08],
+  [-1.84, -0.46, 0.08],
+  [-1.4, -0.92, 0.08],
+  [1.22, -0.92, 0.08],
+  [1.74, -0.42, 0.08],
+  [1.74, 0.26, 0.08],
+  [1.22, 0.72, 0.08],
+  [-1.36, 0.72, 0.08],
+  [-1.84, 0.24, 0.08]
 ];
 
 function dampScalar(
@@ -167,7 +174,7 @@ function mixColor(base: THREE.Color, accent: THREE.Color, amount: number) {
   return colorToCss(base.clone().lerp(accent, THREE.MathUtils.clamp(amount, 0, 1)));
 }
 
-function getLayerStrength(
+function getLayerWeight(
   activeStage: SceneStageId,
   focus: MapFocus | undefined,
   layer: MapFocus
@@ -175,11 +182,19 @@ function getLayerStrength(
   const preset = scenePresets[activeStage];
   const base = preset.layers[layer];
 
-  if (activeStage !== "labs" || !focus || focus === layer) {
+  if (activeStage !== "labs" || !focus || focus === "labs") {
     return base;
   }
 
-  return layer === focus ? Math.min(1, base + 0.16) : base;
+  if (layer === focus) {
+    return Math.min(1, base + 0.18);
+  }
+
+  if (layer === "labs") {
+    return base;
+  }
+
+  return Math.max(0, base - 0.06);
 }
 
 function useViewportTier() {
@@ -221,8 +236,7 @@ function useWebGLSupport() {
   useEffect(() => {
     try {
       const canvas = document.createElement("canvas");
-      const context =
-        canvas.getContext("webgl2") ?? canvas.getContext("webgl");
+      const context = canvas.getContext("webgl2") ?? canvas.getContext("webgl");
       setHasWebGL(Boolean(context));
     } catch {
       setHasWebGL(false);
@@ -234,7 +248,6 @@ function useWebGLSupport() {
 
 function SceneDirector({
   activeStage,
-  stageProgress,
   tier,
   variant,
   reducedMotion,
@@ -242,7 +255,6 @@ function SceneDirector({
   motionProfile
 }: {
   activeStage: SceneStageId;
-  stageProgress: number;
   tier: ViewportTier;
   variant: SceneVariant;
   reducedMotion: boolean;
@@ -256,9 +268,7 @@ function SceneDirector({
   useFrame((state, delta) => {
     const preset = scenePresets[activeStage];
     const config = VIEWPORT_CONFIG[tier];
-    const reveal = reducedMotion
-      ? 0.22
-      : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
+    const time = state.clock.elapsedTime;
     const driftScale =
       paused || reducedMotion
         ? 0
@@ -266,46 +276,33 @@ function SceneDirector({
           ? 1
           : motionProfile === "steady"
             ? 0.45
-            : 0.3;
-    const time = state.clock.elapsedTime;
+            : 0.28;
 
-    const desiredPosition = vec3(preset.camera.position)
-      .add(vec3(config.cameraOffset))
-      .add(
-        new THREE.Vector3(
-          preset.camera.travel[0] * reveal,
-          preset.camera.travel[1] * reveal,
-          preset.camera.travel[2] * reveal
-        )
-      );
-
-    const desiredTarget = vec3(preset.camera.target).add(
-      new THREE.Vector3(
-        preset.camera.targetTravel[0] * reveal,
-        preset.camera.targetTravel[1] * reveal,
-        preset.camera.targetTravel[2] * reveal
-      )
+    const desiredPosition = vec3(preset.camera.position).add(
+      vec3(config.cameraOffset)
     );
+    const desiredTarget = vec3(preset.camera.target);
 
     if (variant === "overview") {
-      desiredPosition.x += tier === "desktop" ? 0.48 : 0.22;
-      desiredPosition.y += tier === "mobile" ? 0.1 : 0.22;
-      desiredPosition.z += tier === "desktop" ? 0.24 : 0.12;
-      desiredTarget.x += 0.18;
+      desiredPosition.x += tier === "desktop" ? 0.68 : 0.24;
+      desiredPosition.y += tier === "desktop" ? 0.16 : 0.08;
+      desiredPosition.z -= tier === "desktop" ? 0.34 : 0.12;
+      desiredTarget.x += 0.34;
+      desiredTarget.y += 0.08;
     }
 
-    desiredPosition.x += Math.sin(time * 0.32) * preset.motion.drift * driftScale;
-    desiredPosition.y += Math.cos(time * 0.28) * preset.motion.float * driftScale;
-    desiredTarget.x += Math.sin(time * 0.26) * preset.motion.drift * 0.28 * driftScale;
+    desiredPosition.x += Math.sin(time * 0.22) * preset.motion.drift * 0.42 * driftScale;
+    desiredPosition.y += Math.cos(time * 0.18) * preset.motion.drift * 0.26 * driftScale;
+    desiredTarget.x += Math.sin(time * 0.2) * preset.motion.drift * 0.08 * driftScale;
 
-    dampVector(perspectiveCamera.position, desiredPosition, 4.4, delta);
-    dampVector(lookTarget.current, desiredTarget, 4.4, delta);
+    dampVector(perspectiveCamera.position, desiredPosition, 4.8, delta);
+    dampVector(lookTarget.current, desiredTarget, 4.8, delta);
 
     perspectiveCamera.lookAt(lookTarget.current);
     perspectiveCamera.fov = dampScalar(
       perspectiveCamera.fov,
       preset.camera.fov + (variant === "overview" ? -0.8 : 0),
-      4.4,
+      4.8,
       delta
     );
     perspectiveCamera.updateProjectionMatrix();
@@ -315,31 +312,24 @@ function SceneDirector({
 }
 
 function SceneLighting({
-  activeStage,
-  reducedMotion,
-  stageProgress
+  activeStage
 }: {
   activeStage: SceneStageId;
-  reducedMotion: boolean;
-  stageProgress: number;
 }) {
   const ambientRef = useRef<THREE.AmbientLight>(null);
   const keyRef = useRef<THREE.DirectionalLight>(null);
   const fillRef = useRef<THREE.PointLight>(null);
   const rimRef = useRef<THREE.PointLight>(null);
-  const hazeRef = useRef<THREE.PointLight>(null);
+  const accentRef = useRef<THREE.PointLight>(null);
 
-  useFrame((state, delta) => {
+  useFrame((_, delta) => {
     const preset = scenePresets[activeStage];
-    const reveal = reducedMotion
-      ? 0.18
-      : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
 
     if (ambientRef.current) {
       ambientRef.current.intensity = dampScalar(
         ambientRef.current.intensity,
-        preset.lighting.ambient + reveal * 0.08,
-        5.8,
+        preset.lighting.ambient,
+        5.6,
         delta
       );
     }
@@ -347,102 +337,94 @@ function SceneLighting({
     if (keyRef.current) {
       keyRef.current.intensity = dampScalar(
         keyRef.current.intensity,
-        preset.lighting.key + reveal * 0.1,
-        5.8,
+        preset.lighting.key,
+        5.6,
         delta
       );
-      keyRef.current.position.set(5.2, 5.8, 8.6);
+      keyRef.current.position.set(4.8, 5.4, 8.6);
     }
 
     if (fillRef.current) {
       fillRef.current.intensity = dampScalar(
         fillRef.current.intensity,
         preset.lighting.fill,
-        5.8,
+        5.6,
         delta
       );
-      fillRef.current.position.set(-6.6, -1.2, 7.4);
+      fillRef.current.position.set(-6.4, -1.6, 7.2);
     }
 
     if (rimRef.current) {
       rimRef.current.intensity = dampScalar(
         rimRef.current.intensity,
         preset.lighting.rim,
-        5.8,
+        5.6,
         delta
       );
-      rimRef.current.position.set(5.8, 3.2, -3.8);
+      rimRef.current.position.set(5.4, 2.4, -2.6);
     }
 
-    if (hazeRef.current) {
-      hazeRef.current.intensity = dampScalar(
-        hazeRef.current.intensity,
-        preset.lighting.haze,
-        5.8,
+    if (accentRef.current) {
+      accentRef.current.intensity = dampScalar(
+        accentRef.current.intensity,
+        preset.lighting.accent,
+        5.6,
         delta
       );
-      hazeRef.current.position.set(0, 1.8, 4.4);
+      accentRef.current.position.set(-1.4, 3.8, 4.6);
     }
   });
 
   return (
     <>
-      <ambientLight ref={ambientRef} color="#dbe6e3" intensity={0.96} />
-      <directionalLight
-        ref={keyRef}
-        color="#f3f7ff"
-        intensity={1.18}
-        castShadow={false}
-      />
-      <pointLight ref={fillRef} color="#7aa59a" intensity={0.72} distance={18} />
-      <pointLight ref={rimRef} color="#cfdcf3" intensity={0.72} distance={18} />
-      <pointLight ref={hazeRef} color="#9bd4bc" intensity={0.4} distance={16} />
+      <ambientLight ref={ambientRef} color="#f0f3ef" intensity={1.04} />
+      <directionalLight ref={keyRef} color="#f5f7fc" intensity={1.18} />
+      <pointLight ref={fillRef} color="#8fb8aa" intensity={0.72} distance={18} />
+      <pointLight ref={rimRef} color="#bfd3ff" intensity={0.42} distance={16} />
+      <pointLight ref={accentRef} color="#d8e68c" intensity={0.28} distance={14} />
     </>
   );
 }
 
-function Backfield({
+function BackdropField({
   activeStage
 }: {
   activeStage: SceneStageId;
 }) {
   const preset = scenePresets[activeStage];
-  const labStrength = preset.layers.labs;
-  const programStrength = preset.layers.program;
-  const networkStrength = preset.layers.network;
 
   return (
-    <group position={[0, 0.25, -2.4]}>
+    <group position={[0, 0.12, -2.4]}>
       <mesh>
         <planeGeometry args={[18, 14]} />
         <meshBasicMaterial
-          color={mixColor(COLORS.backdrop, COLORS.structure, 0.12)}
+          color={mixColor(COLORS.shadow, COLORS.backdrop, 0.52)}
           transparent
-          opacity={0.14 + preset.atmosphere.background * 0.05}
+          opacity={0.12 + preset.atmosphere.background * 0.05}
         />
       </mesh>
-      <mesh position={[-2.4, 0.8, 0.08]}>
-        <circleGeometry args={[2.1, 40]} />
+      <mesh position={[-2.45, 1.02, 0.08]} rotation={[0, 0, -0.14]}>
+        <planeGeometry args={[5.8, 2.2]} />
         <meshBasicMaterial
           color={colorToCss(COLORS.labs)}
           transparent
-          opacity={0.03 + labStrength * 0.05}
+          opacity={0.03 + preset.layers.labs * 0.04}
         />
       </mesh>
-      <mesh position={[1.3, -1.48, 0.08]}>
-        <circleGeometry args={[1.85, 40]} />
+      <mesh position={[0.62, -1.96, 0.08]} rotation={[0, 0, 0.06]}>
+        <planeGeometry args={[5.2, 2.05]} />
         <meshBasicMaterial
           color={colorToCss(COLORS.program)}
           transparent
-          opacity={0.02 + programStrength * 0.06}
+          opacity={0.026 + preset.layers.program * 0.05}
         />
       </mesh>
-      <mesh position={[1.8, 2.16, 0.06]}>
-        <circleGeometry args={[1.5, 40]} />
+      <mesh position={[1.32, 2.42, 0.08]} rotation={[0, 0, 0.03]}>
+        <planeGeometry args={[4.8, 1.82]} />
         <meshBasicMaterial
           color={colorToCss(COLORS.network)}
           transparent
-          opacity={0.018 + networkStrength * 0.05}
+          opacity={0.022 + preset.layers.network * 0.04}
         />
       </mesh>
     </group>
@@ -451,10 +433,12 @@ function Backfield({
 
 function SignalPulses({
   activeStage,
+  focus,
   reducedMotion,
   paused
 }: {
   activeStage: SceneStageId;
+  focus: MapFocus | undefined;
   reducedMotion: boolean;
   paused: boolean;
 }) {
@@ -462,7 +446,10 @@ function SignalPulses({
   const routes = useMemo(
     () =>
       ROUTES.map((route) => ({
-        curve: new THREE.CatmullRomCurve3(route.points.map((point) => vec3(point)), route.closed),
+        curve: new THREE.CatmullRomCurve3(
+          route.points.map((point) => vec3(point)),
+          route.closed ?? false
+        ),
         focus: route.focus
       })),
     []
@@ -473,14 +460,15 @@ function SignalPulses({
   useFrame((state) => {
     const time = state.clock.elapsedTime;
     const preset = scenePresets[activeStage];
-    const speedBase = reducedMotion || paused ? 0 : 0.045 + preset.motion.pulse * 0.06;
+    const speedBase =
+      reducedMotion || paused ? 0 : 0.04 + preset.motion.signal * 0.05;
 
     pulseRefs.current.forEach((mesh, index) => {
       const routeMeta = routes[index % routes.length];
-      const strength = getLayerStrength(activeStage, undefined, routeMeta.focus);
+      const strength = getLayerWeight(activeStage, focus, routeMeta.focus);
       const progress = reducedMotion
         ? 0.5
-        : (time * (speedBase + strength * 0.035) + index * 0.19) % 1;
+        : (time * (speedBase + strength * 0.035) + index * 0.22) % 1;
       const point = routeMeta.curve.getPointAt(progress);
       const tangent = routeMeta.curve.getTangentAt(progress).normalize();
       const quat = new THREE.Quaternion().setFromUnitVectors(
@@ -492,9 +480,9 @@ function SignalPulses({
       mesh.quaternion.copy(quat);
       mesh.visible = strength > 0.16;
       mesh.scale.set(
-        0.12 + strength * 0.12,
-        0.035 + strength * 0.012,
-        0.035 + strength * 0.012
+        0.08 + strength * 0.1,
+        0.028 + strength * 0.008,
+        0.028 + strength * 0.008
       );
     });
   });
@@ -523,9 +511,9 @@ function SignalPulses({
               <meshStandardMaterial
                 color={colorToCss(color)}
                 emissive={colorToCss(color)}
-                emissiveIntensity={0.8}
-                roughness={0.28}
-                metalness={0.08}
+                emissiveIntensity={0.46}
+                roughness={0.62}
+                metalness={0.02}
               />
             </mesh>
           );
@@ -535,7 +523,124 @@ function SignalPulses({
   );
 }
 
-function OperationsMap({
+function LabDeck({
+  position,
+  rotation,
+  strength,
+  mirror,
+  deckColor,
+  frameColor,
+  moduleColor,
+  routeColor
+}: {
+  position: Vec3;
+  rotation: Vec3;
+  strength: number;
+  mirror?: boolean;
+  deckColor: string;
+  frameColor: string;
+  moduleColor: string;
+  routeColor: string;
+}) {
+  return (
+    <group position={position} rotation={rotation}>
+      <RoundedBox args={[2.48, 0.16, 1.26]} radius={0.08}>
+        <meshStandardMaterial
+          color={deckColor}
+          roughness={0.92}
+          metalness={0.03}
+          transparent
+          opacity={0.32 + strength * 0.6}
+        />
+      </RoundedBox>
+
+      <RoundedBox args={[2.06, 0.06, 0.94]} position={[0, 0.14, 0]} radius={0.03}>
+        <meshStandardMaterial
+          color={moduleColor}
+          roughness={0.9}
+          metalness={0.02}
+          transparent
+          opacity={0.16 + strength * 0.32}
+        />
+      </RoundedBox>
+
+      <RoundedBox
+        args={[2.18, 0.05, 0.08]}
+        position={[0, 0.2, mirror ? 0.42 : -0.42]}
+        radius={0.02}
+      >
+        <meshStandardMaterial
+          color={routeColor}
+          roughness={0.74}
+          metalness={0.02}
+          emissive={routeColor}
+          emissiveIntensity={0.06 + strength * 0.12}
+          transparent
+          opacity={0.18 + strength * 0.44}
+        />
+      </RoundedBox>
+
+      <RoundedBox
+        args={[2.18, 0.05, 0.08]}
+        position={[0, 0.2, mirror ? -0.42 : 0.42]}
+        radius={0.02}
+      >
+        <meshStandardMaterial
+          color={frameColor}
+          roughness={0.86}
+          metalness={0.02}
+          transparent
+          opacity={0.16 + strength * 0.38}
+        />
+      </RoundedBox>
+
+      {[-0.82, 0, 0.82].map((x) => (
+        <RoundedBox
+          key={`${position[0]}-${x}`}
+          args={[0.44, 0.28, 0.24]}
+          position={[x, 0.26, 0]}
+          radius={0.05}
+        >
+          <meshStandardMaterial
+            color={moduleColor}
+            roughness={0.88}
+            metalness={0.02}
+            transparent
+            opacity={0.24 + strength * 0.42}
+          />
+        </RoundedBox>
+      ))}
+
+      <RoundedBox
+        args={[0.72, 0.12, 0.26]}
+        position={[mirror ? 1.16 : -1.16, -0.12, 0.18]}
+        radius={0.04}
+      >
+        <meshStandardMaterial
+          color={frameColor}
+          roughness={0.88}
+          metalness={0.02}
+          transparent
+          opacity={0.18 + strength * 0.4}
+        />
+      </RoundedBox>
+
+      <Line
+        points={[
+          [-1.04, 0.22, 0.28],
+          [0, 0.22, 0.28],
+          [1.04, 0.22, 0.28]
+        ]}
+        color={routeColor}
+        lineWidth={1}
+        transparent
+        opacity={0.18 + strength * 0.42}
+      />
+    </group>
+  );
+}
+
+function OperationsDiagram({
   activeStage,
   focus,
   stageProgress,
@@ -558,60 +663,77 @@ function OperationsMap({
   const labsRef = useRef<THREE.Group>(null);
   const programRef = useRef<THREE.Group>(null);
   const networkRef = useRef<THREE.Group>(null);
-  const routesRef = useRef<THREE.Group>(null);
+  const connectorsRef = useRef<THREE.Group>(null);
 
   const preset = scenePresets[activeStage];
   const viewport = VIEWPORT_CONFIG[tier];
   const reveal = reducedMotion
-    ? 0.18
+    ? 0.22
     : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
-  const stageLabStrength = getLayerStrength(activeStage, focus, "labs");
-  const stageProgramStrength = getLayerStrength(activeStage, focus, "program");
-  const stageNetworkStrength = getLayerStrength(activeStage, focus, "network");
+
+  const labsWeight = getLayerWeight(activeStage, focus, "labs");
+  const programWeight = getLayerWeight(activeStage, focus, "program");
+  const networkWeight = getLayerWeight(activeStage, focus, "network");
+  const connectorsWeight = preset.layers.connectors;
+
   const sceneScale =
     preset.root.scale *
     (variant === "overview" ? viewport.overviewScale : viewport.narrativeScale);
   const sceneOffset = vec3(preset.root.position).add(vec3(viewport.rootOffset));
 
-  const labDeckOffset = 2.34 * preset.structure.labSpread;
-  const labDepth = 0.24 + preset.structure.labDepth;
-  const programY = -1.9 + preset.structure.programRise;
-  const networkY = 2.12 + preset.structure.networkLift;
-  const networkSpan = 0.86 + preset.structure.networkSpan * 0.28;
+  const leftLabPosition = useMemo<Vec3>(
+    () => [
+      -2.44 * preset.diagram.labSpread,
+      1.3 + preset.diagram.labLift,
+      0.3 + preset.diagram.labDepth
+    ],
+    [preset]
+  );
+  const rightLabPosition = useMemo<Vec3>(
+    () => [
+      2.46 * preset.diagram.labSpread,
+      0.36 + preset.diagram.labLift * 0.54,
+      -0.22 - preset.diagram.labDepth * 0.84
+    ],
+    [preset]
+  );
 
-  const structureColor = mixColor(
-    COLORS.structureSoft,
-    COLORS.spine,
-    0.18 + preset.layers.spine * 0.22
-  );
-  const spineColor = mixColor(COLORS.structure, COLORS.labs, 0.12 + preset.layers.spine * 0.12);
-  const labColor = mixColor(COLORS.structureSoft, COLORS.labs, 0.14 + stageLabStrength * 0.42);
-  const labFrameColor = mixColor(COLORS.spine, COLORS.labs, 0.18 + stageLabStrength * 0.46);
+  const spineColor = mixColor(COLORS.structure, COLORS.spine, 0.22 + preset.layers.spine * 0.24);
+  const frameColor = mixColor(COLORS.frame, COLORS.structure, 0.3 + connectorsWeight * 0.2);
+  const deckColor = mixColor(COLORS.surface, COLORS.spine, 0.14);
+  const labColor = mixColor(COLORS.surface, COLORS.labs, 0.18 + labsWeight * 0.38);
   const programColor = mixColor(
-    COLORS.structureSoft,
+    COLORS.surface,
     COLORS.program,
-    0.18 + stageProgramStrength * 0.48
+    0.2 + programWeight * 0.42
   );
-  const programGlass = mixColor(COLORS.panel, COLORS.program, 0.16 + stageProgramStrength * 0.28);
   const networkColor = mixColor(
-    COLORS.structureSoft,
+    COLORS.surface,
     COLORS.network,
-    0.16 + stageNetworkStrength * 0.48
+    0.2 + networkWeight * 0.42
   );
-  const routeLabs = mixColor(COLORS.muted, COLORS.labs, 0.18 + stageLabStrength * 0.54);
-  const routeProgram = mixColor(COLORS.muted, COLORS.program, 0.18 + stageProgramStrength * 0.54);
-  const routeNetwork = mixColor(COLORS.muted, COLORS.network, 0.18 + stageNetworkStrength * 0.54);
+  const routeLabs = mixColor(COLORS.route, COLORS.labs, 0.24 + labsWeight * 0.54);
+  const routeProgram = mixColor(
+    COLORS.route,
+    COLORS.program,
+    0.24 + programWeight * 0.58
+  );
+  const routeNetwork = mixColor(
+    COLORS.route,
+    COLORS.network,
+    0.24 + networkWeight * 0.58
+  );
 
   useFrame((state, delta) => {
+    const time = state.clock.elapsedTime;
     const driftScale =
       paused || reducedMotion
         ? 0
         : motionProfile === "immersive"
           ? 1
           : motionProfile === "steady"
-            ? 0.45
-            : 0.3;
-    const time = state.clock.elapsedTime;
+            ? 0.4
+            : 0.24;
 
     if (rootRef.current) {
       const targetPosition = sceneOffset.clone();
@@ -621,454 +743,357 @@ function OperationsMap({
         preset.root.rotation[2]
       );
 
-      targetPosition.x += Math.sin(time * 0.28) * preset.motion.drift * 0.16 * driftScale;
-      targetPosition.y += Math.cos(time * 0.22) * preset.motion.float * 0.18 * driftScale;
-      targetRotation.z += Math.sin(time * 0.26) * preset.motion.drift * 0.04 * driftScale;
+      targetPosition.x += Math.sin(time * 0.2) * preset.motion.drift * 0.18 * driftScale;
+      targetPosition.y += Math.cos(time * 0.16) * preset.motion.drift * 0.12 * driftScale;
+      targetRotation.z += Math.sin(time * 0.18) * preset.motion.drift * 0.03 * driftScale;
 
       dampVector(rootRef.current.position, targetPosition, 5.2, delta);
       dampEuler(rootRef.current.rotation, targetRotation, 5.2, delta);
 
-      const nextScale = dampScalar(
-        rootRef.current.scale.x,
-        sceneScale,
-        5.2,
-        delta
-      );
+      const nextScale = dampScalar(rootRef.current.scale.x, sceneScale, 5.2, delta);
       rootRef.current.scale.setScalar(nextScale);
     }
 
     if (labsRef.current) {
-      const targetRotation = new THREE.Euler(
-        0.04,
-        -0.04 - reveal * 0.03,
-        0.02
-      );
-
+      const targetPosition = new THREE.Vector3(0, preset.diagram.labLift * 0.06, 0);
+      const targetRotation = new THREE.Euler(0.02, -0.03 - reveal * 0.02, 0.01);
+      dampVector(labsRef.current.position, targetPosition, 5.2, delta);
       dampEuler(labsRef.current.rotation, targetRotation, 5.2, delta);
     }
 
     if (programRef.current) {
-      const targetRotation = new THREE.Euler(
-        0.06 + reveal * 0.02,
-        0.04,
-        -0.04
-      );
-
+      const targetPosition = new THREE.Vector3(0, preset.diagram.programLift, 0);
+      const targetRotation = new THREE.Euler(0.04, 0.02, -0.02);
+      dampVector(programRef.current.position, targetPosition, 5.2, delta);
       dampEuler(programRef.current.rotation, targetRotation, 5.2, delta);
+      const nextX = dampScalar(
+        programRef.current.scale.x,
+        preset.diagram.programScale,
+        5.2,
+        delta
+      );
+      programRef.current.scale.set(nextX, 1, nextX);
     }
 
     if (networkRef.current) {
-      const targetRotation = new THREE.Euler(
-        -0.02 + preset.structure.networkTilt * 0.12,
-        0.06,
-        preset.structure.networkTilt * 0.08
-      );
-
+      const targetPosition = new THREE.Vector3(0, preset.diagram.networkLift, 0.04);
+      const targetRotation = new THREE.Euler(0.01, 0.02, 0.01);
+      dampVector(networkRef.current.position, targetPosition, 5.2, delta);
       dampEuler(networkRef.current.rotation, targetRotation, 5.2, delta);
+      const nextX = dampScalar(
+        networkRef.current.scale.x,
+        preset.diagram.networkSpread,
+        5.2,
+        delta
+      );
+      networkRef.current.scale.set(nextX, 1, 1);
     }
 
-    if (routesRef.current) {
-      const targetRotation = new THREE.Euler(0.02, 0.02, 0);
-      dampEuler(routesRef.current.rotation, targetRotation, 5.2, delta);
+    if (connectorsRef.current) {
+      const targetRotation = new THREE.Euler(0, 0, preset.diagram.connectorLean * 0.18);
+      dampEuler(connectorsRef.current.rotation, targetRotation, 5.2, delta);
     }
   });
 
   return (
     <group ref={rootRef}>
-      <Backfield activeStage={activeStage} />
+      <BackdropField activeStage={activeStage} />
 
-      <group position={[0, preset.structure.spineLift, 0]}>
-        <RoundedBox args={[0.64, 5.5, 0.38]} radius={0.08} smoothness={4}>
+      <group position={[0.12, 0.06, 0]}>
+        <RoundedBox args={[0.62, 5.2, 0.18]} radius={0.08}>
+          <meshStandardMaterial color={spineColor} roughness={0.94} metalness={0.03} />
+        </RoundedBox>
+
+        <RoundedBox args={[0.18, 5.6, 0.12]} position={[-0.48, 0, 0.08]} radius={0.04}>
           <meshStandardMaterial
-            color={spineColor}
-            roughness={0.88}
-            metalness={0.12}
+            color={frameColor}
+            roughness={0.92}
+            metalness={0.02}
+            transparent
+            opacity={0.24 + preset.layers.spine * 0.28}
           />
         </RoundedBox>
 
-        <RoundedBox args={[0.18, 5.96, 0.18]} position={[-0.54, 0, 0.12]} radius={0.04}>
+        <RoundedBox args={[0.18, 5.6, 0.12]} position={[0.48, 0, 0.08]} radius={0.04}>
           <meshStandardMaterial
-            color={structureColor}
-            roughness={0.9}
-            metalness={0.1}
-          />
-        </RoundedBox>
-        <RoundedBox args={[0.18, 5.96, 0.18]} position={[0.54, 0, 0.12]} radius={0.04}>
-          <meshStandardMaterial
-            color={structureColor}
-            roughness={0.9}
-            metalness={0.1}
+            color={frameColor}
+            roughness={0.92}
+            metalness={0.02}
+            transparent
+            opacity={0.24 + preset.layers.spine * 0.28}
           />
         </RoundedBox>
 
-        <Line
-          points={[
-            [-0.74, 2.66, 0.22],
-            [0.74, 2.66, 0.22],
-            [0.74, -2.66, 0.22],
-            [-0.74, -2.66, 0.22],
-            [-0.74, 2.66, 0.22]
-          ]}
-          color={mixColor(COLORS.muted, COLORS.spine, 0.22 + preset.layers.spine * 0.2)}
-          lineWidth={0.9}
-          transparent
-          opacity={0.16 + preset.layers.spine * 0.22}
-        />
+        {[
+          { y: 1.5, width: 1.38 },
+          { y: 0.28, width: 1.22 },
+          { y: -1.6, width: 1.04 },
+          { y: 2.34, width: 0.84 }
+        ].map((hub) => (
+          <RoundedBox
+            key={hub.y}
+            args={[hub.width, 0.1, 0.12]}
+            position={[0, hub.y, 0.14]}
+            radius={0.03}
+          >
+            <meshStandardMaterial
+              color={frameColor}
+              roughness={0.9}
+              metalness={0.02}
+              transparent
+              opacity={0.18 + preset.layers.spine * 0.3}
+            />
+          </RoundedBox>
+        ))}
 
-        {SPINE_MODULES.map((y) => (
-          <group key={y}>
-            <RoundedBox
-              args={[1.36, 0.16, 0.12]}
-              position={[0, y, 0.2]}
-              radius={0.03}
-            >
+        {[-1.46, -0.42, 0.78].map((y) => (
+          <group key={y} position={[0.9, y, 0.12]}>
+            <RoundedBox args={[0.56, 0.22, 0.16]} radius={0.03}>
               <meshStandardMaterial
-                color={structureColor}
-                roughness={0.88}
-                metalness={0.12}
+                color={frameColor}
+                roughness={0.9}
+                metalness={0.02}
+                transparent
+                opacity={0.16 + connectorsWeight * 0.3}
               />
             </RoundedBox>
-            <RoundedBox
-              args={[0.88, 0.42, 0.22]}
-              position={[0, y + 0.06, 0.04]}
-              radius={0.05}
-            >
-              <meshPhysicalMaterial
-                color={mixColor(COLORS.panel, COLORS.structure, 0.16)}
-                roughness={0.4}
-                metalness={0.08}
-                transmission={0.18}
+            <RoundedBox args={[0.22, 0.1, 0.1]} position={[0.34, 0, 0.08]} radius={0.02}>
+              <meshStandardMaterial
+                color={spineColor}
+                roughness={0.88}
+                metalness={0.02}
                 transparent
-                opacity={0.84}
+                opacity={0.14 + connectorsWeight * 0.3}
               />
             </RoundedBox>
           </group>
         ))}
       </group>
 
+      <group ref={connectorsRef}>
+        <Line
+          points={[
+            [0.18, 1.24, 0.08],
+            [-0.42, 1.38, 0.12],
+            [-1.2, 1.56, 0.16],
+            [-2.16, 1.66, 0.18]
+          ]}
+          color={routeLabs}
+          lineWidth={1.4}
+          transparent
+          opacity={0.16 + connectorsWeight * 0.42}
+        />
+        <Line
+          points={[
+            [0.18, 0.14, 0.08],
+            [0.8, 0.28, 0.1],
+            [1.46, 0.4, 0.12],
+            [2.16, 0.52, 0.14]
+          ]}
+          color={routeLabs}
+          lineWidth={1.4}
+          transparent
+          opacity={0.16 + connectorsWeight * 0.42}
+        />
+        <Line
+          points={[
+            [0.14, -1.12, 0.06],
+            [0.1, -1.5, 0.08],
+            [0.02, -1.9, 0.08],
+            [0.08, -2.2, 0.1]
+          ]}
+          color={routeProgram}
+          lineWidth={1.4}
+          transparent
+          opacity={0.16 + connectorsWeight * 0.42}
+        />
+        <Line
+          points={[
+            [0.16, 1.84, 0.08],
+            [0.38, 2.12, 0.1],
+            [0.92, 2.42, 0.14],
+            [1.56, 2.72, 0.18]
+          ]}
+          color={routeNetwork}
+          lineWidth={1.4}
+          transparent
+          opacity={0.16 + connectorsWeight * 0.42}
+        />
+      </group>
+
       <group ref={labsRef}>
-        <group position={[-labDeckOffset, 1.12, 0.34 + labDepth]} rotation={[0.03, 0.22, -0.04]}>
-          <RoundedBox args={[2.7, 0.2, 1.26]} radius={0.07}>
-            <meshStandardMaterial
-              color={labColor}
-              roughness={0.84}
-              metalness={0.12}
-              transparent
-              opacity={0.32 + stageLabStrength * 0.62}
-            />
-          </RoundedBox>
-          <RoundedBox args={[2.4, 0.08, 0.18]} position={[0, 0.18, 0.46]} radius={0.02}>
-            <meshStandardMaterial
-              color={routeLabs}
-              roughness={0.44}
-              metalness={0.08}
-              emissive={routeLabs}
-              emissiveIntensity={0.08 + stageLabStrength * 0.16}
-            />
-          </RoundedBox>
-          {LAB_BAY_X.map((x) => (
-            <RoundedBox
-              key={`left-${x}`}
-              args={[0.42, 0.28, 0.3]}
-              position={[x, 0.24, -0.1]}
-              radius={0.05}
-            >
-              <meshPhysicalMaterial
-                color={mixColor(COLORS.panel, COLORS.labs, 0.14 + stageLabStrength * 0.12)}
-                roughness={0.34}
-                metalness={0.08}
-                transmission={0.22}
-                transparent
-                opacity={0.72}
-              />
-            </RoundedBox>
-          ))}
-          <RoundedBox args={[2.18, 0.1, 0.12]} position={[0, -0.18, -0.46]} radius={0.02}>
-            <meshStandardMaterial
-              color={labFrameColor}
-              roughness={0.8}
-              metalness={0.1}
-              transparent
-              opacity={0.22 + stageLabStrength * 0.44}
-            />
-          </RoundedBox>
-        </group>
+        <LabDeck
+          position={leftLabPosition}
+          rotation={[0.02, 0.08, 0]}
+          strength={labsWeight}
+          deckColor={deckColor}
+          frameColor={labColor}
+          moduleColor={mixColor(COLORS.panel, COLORS.labs, 0.16 + labsWeight * 0.18)}
+          routeColor={routeLabs}
+        />
 
-        <group position={[labDeckOffset, 0.08, -0.2 - labDepth]} rotation={[-0.02, -0.2, 0.05]}>
-          <RoundedBox args={[2.78, 0.2, 1.18]} radius={0.07}>
-            <meshStandardMaterial
-              color={labColor}
-              roughness={0.84}
-              metalness={0.12}
-              transparent
-              opacity={0.3 + stageLabStrength * 0.64}
-            />
-          </RoundedBox>
-          <RoundedBox args={[2.36, 0.08, 0.18]} position={[0, 0.18, -0.42]} radius={0.02}>
-            <meshStandardMaterial
-              color={routeLabs}
-              roughness={0.44}
-              metalness={0.08}
-              emissive={routeLabs}
-              emissiveIntensity={0.08 + stageLabStrength * 0.16}
-            />
-          </RoundedBox>
-          {LAB_BAY_X.map((x) => (
-            <RoundedBox
-              key={`right-${x}`}
-              args={[0.46, 0.3, 0.32]}
-              position={[x, 0.24, 0.08]}
-              radius={0.05}
-            >
-              <meshPhysicalMaterial
-                color={mixColor(COLORS.panel, COLORS.labs, 0.14 + stageLabStrength * 0.12)}
-                roughness={0.34}
-                metalness={0.08}
-                transmission={0.22}
-                transparent
-                opacity={0.72}
-              />
-            </RoundedBox>
-          ))}
-          <RoundedBox args={[2.26, 0.1, 0.12]} position={[0, -0.18, 0.44]} radius={0.02}>
-            <meshStandardMaterial
-              color={labFrameColor}
-              roughness={0.8}
-              metalness={0.1}
-              transparent
-              opacity={0.22 + stageLabStrength * 0.44}
-            />
-          </RoundedBox>
-        </group>
+        <LabDeck
+          position={rightLabPosition}
+          rotation={[-0.01, -0.08, 0.02]}
+          strength={labsWeight}
+          mirror
+          deckColor={deckColor}
+          frameColor={labColor}
+          moduleColor={mixColor(COLORS.panel, COLORS.labs, 0.16 + labsWeight * 0.18)}
+          routeColor={routeLabs}
+        />
       </group>
 
-      <group ref={programRef} position={[0.28, programY, 0.1]}>
-        <RoundedBox args={[3.64, 0.1, 0.12]} position={[0, 0.66, 0]} radius={0.03}>
+      <group ref={programRef} position={[0.08, -2.02, 0.08]}>
+        <RoundedBox args={[2.4, 0.1, 0.46]} position={[0, -0.1, -0.02]} radius={0.08}>
           <meshStandardMaterial
-            color={routeProgram}
-            roughness={0.5}
-            metalness={0.08}
-            emissive={routeProgram}
-            emissiveIntensity={0.06 + stageProgramStrength * 0.14}
+            color={mixColor(COLORS.panel, COLORS.program, 0.12 + programWeight * 0.2)}
+            roughness={0.9}
+            metalness={0.02}
             transparent
-            opacity={0.22 + stageProgramStrength * 0.48}
-          />
-        </RoundedBox>
-        <RoundedBox args={[3.64, 0.1, 0.12]} position={[0, -0.66, 0]} radius={0.03}>
-          <meshStandardMaterial
-            color={routeProgram}
-            roughness={0.5}
-            metalness={0.08}
-            emissive={routeProgram}
-            emissiveIntensity={0.06 + stageProgramStrength * 0.14}
-            transparent
-            opacity={0.22 + stageProgramStrength * 0.48}
-          />
-        </RoundedBox>
-        <RoundedBox args={[0.12, 1.44, 0.12]} position={[-1.82, 0, 0]} radius={0.03}>
-          <meshStandardMaterial
-            color={routeProgram}
-            roughness={0.5}
-            metalness={0.08}
-            emissive={routeProgram}
-            emissiveIntensity={0.06 + stageProgramStrength * 0.14}
-            transparent
-            opacity={0.22 + stageProgramStrength * 0.48}
-          />
-        </RoundedBox>
-        <RoundedBox args={[0.12, 1.44, 0.12]} position={[1.82, 0, 0]} radius={0.03}>
-          <meshStandardMaterial
-            color={routeProgram}
-            roughness={0.5}
-            metalness={0.08}
-            emissive={routeProgram}
-            emissiveIntensity={0.06 + stageProgramStrength * 0.14}
-            transparent
-            opacity={0.22 + stageProgramStrength * 0.48}
+            opacity={0.14 + programWeight * 0.28}
           />
         </RoundedBox>
 
-        <RoundedBox
-          args={[2.74, 1.02, 0.18]}
-          position={[0, 0, -0.08]}
-          radius={0.14}
-          smoothness={3}
-        >
-          <meshPhysicalMaterial
-            color={programGlass}
-            roughness={0.22}
-            metalness={0.06}
-            transmission={0.32}
-            transparent
-            opacity={0.26 + stageProgramStrength * 0.42}
-          />
-        </RoundedBox>
+        <Line
+          points={PROGRAM_LOOP_POINTS}
+          color={routeProgram}
+          lineWidth={1.5}
+          transparent
+          opacity={0.2 + programWeight * 0.52}
+        />
 
-        {[-1.04, -0.2, 0.64, 1.42].map((x) => (
-          <RoundedBox
-            key={`gate-${x}`}
-            args={[0.18, 0.74, 0.18]}
-            position={[x, 0.22, 0.14]}
-            radius={0.04}
-          >
-            <meshStandardMaterial
-              color={programColor}
-              roughness={0.78}
-              metalness={0.08}
-              transparent
-              opacity={0.26 + stageProgramStrength * 0.54}
-            />
-          </RoundedBox>
+        {[-1.38, -0.48, 0.46, 1.34].map((x) => (
+          <group key={x} position={[x, 0, 0.1]}>
+            <RoundedBox args={[0.1, 0.72, 0.12]} position={[-0.08, 0.02, 0]} radius={0.03}>
+              <meshStandardMaterial
+                color={programColor}
+                roughness={0.86}
+                metalness={0.02}
+                transparent
+                opacity={0.18 + programWeight * 0.52}
+              />
+            </RoundedBox>
+            <RoundedBox args={[0.1, 0.72, 0.12]} position={[0.08, 0.02, 0]} radius={0.03}>
+              <meshStandardMaterial
+                color={programColor}
+                roughness={0.86}
+                metalness={0.02}
+                transparent
+                opacity={0.18 + programWeight * 0.52}
+              />
+            </RoundedBox>
+            <RoundedBox args={[0.34, 0.08, 0.12]} position={[0, 0.34, 0]} radius={0.03}>
+              <meshStandardMaterial
+                color={routeProgram}
+                roughness={0.72}
+                metalness={0.02}
+                emissive={routeProgram}
+                emissiveIntensity={0.06 + programWeight * 0.12}
+                transparent
+                opacity={0.18 + programWeight * 0.42}
+              />
+            </RoundedBox>
+          </group>
         ))}
 
-        {[-1.34, 1.34].map((x) => (
+        {[-1.44, -0.52, 0.38, 1.28].map((x) => (
           <RoundedBox
-            key={`program-bay-${x}`}
-            args={[0.7, 0.22, 0.3]}
-            position={[x, -0.92, 0.1]}
-            radius={0.05}
+            key={`marker-${x}`}
+            args={[0.26, 0.08, 0.12]}
+            position={[x, -0.78, 0.08]}
+            radius={0.03}
           >
             <meshStandardMaterial
               color={programColor}
-              roughness={0.82}
-              metalness={0.08}
+              roughness={0.86}
+              metalness={0.02}
               transparent
-              opacity={0.24 + stageProgramStrength * 0.52}
+              opacity={0.18 + programWeight * 0.38}
             />
           </RoundedBox>
         ))}
       </group>
 
-      <group
-        ref={networkRef}
-        position={[0.22, networkY, 0.18]}
-        scale={[networkSpan, 1, 1]}
-      >
-        <RoundedBox args={[4.86, 0.12, 0.12]} position={[0, 0, 0]} radius={0.03}>
+      <group ref={networkRef} position={[0.18, 2.16, 0.12]}>
+        <RoundedBox args={[4.32, 0.12, 0.12]} radius={0.03}>
           <meshStandardMaterial
             color={routeNetwork}
-            roughness={0.46}
-            metalness={0.08}
+            roughness={0.74}
+            metalness={0.02}
             emissive={routeNetwork}
-            emissiveIntensity={0.08 + stageNetworkStrength * 0.18}
+            emissiveIntensity={0.06 + networkWeight * 0.14}
             transparent
-            opacity={0.22 + stageNetworkStrength * 0.56}
+            opacity={0.18 + networkWeight * 0.5}
           />
         </RoundedBox>
 
-        {[-1.66, -0.42, 0.88, 2].map((x, index) => (
+        <RoundedBox args={[3.14, 0.08, 0.12]} position={[0.22, 0.84, 0.1]} radius={0.03}>
+          <meshStandardMaterial
+            color={networkColor}
+            roughness={0.86}
+            metalness={0.02}
+            transparent
+            opacity={0.16 + networkWeight * 0.44}
+          />
+        </RoundedBox>
+
+        {[-1.5, -0.42, 0.68, 1.82].map((x, index) => (
           <RoundedBox
             key={`bridge-${x}`}
-            args={[0.12, 0.8 + index * 0.08, 0.12]}
-            position={[x, 0.42 + index * 0.06, 0]}
+            args={[0.1, 0.88 + index * 0.08, 0.1]}
+            position={[x, 0.42 + index * 0.08, 0]}
             radius={0.03}
           >
             <meshStandardMaterial
               color={networkColor}
-              roughness={0.8}
-              metalness={0.1}
+              roughness={0.86}
+              metalness={0.02}
               transparent
-              opacity={0.22 + stageNetworkStrength * 0.58}
+              opacity={0.16 + networkWeight * 0.48}
             />
           </RoundedBox>
         ))}
 
-        <RoundedBox args={[3.48, 0.1, 0.12]} position={[0.2, 0.92, 0.18]} radius={0.03}>
-          <meshStandardMaterial
-            color={networkColor}
-            roughness={0.8}
-            metalness={0.1}
-            transparent
-            opacity={0.2 + stageNetworkStrength * 0.5}
-          />
-        </RoundedBox>
-
-        {NETWORK_NODE_X.map((x, index) => (
-          <RoundedBox
-            key={`node-${x}`}
-            args={[0.48, 0.26, 0.24]}
-            position={[x, 0.9 + (index % 2) * 0.18, 0.18]}
-            radius={0.06}
-          >
-            <meshPhysicalMaterial
-              color={mixColor(COLORS.panel, COLORS.network, 0.16 + stageNetworkStrength * 0.16)}
-              roughness={0.28}
-              metalness={0.06}
-              transmission={0.24}
-              transparent
-              opacity={0.32 + stageNetworkStrength * 0.4}
-            />
-          </RoundedBox>
+        {[-1.7, -0.68, 0.42, 1.46].map((x) => (
+          <group key={`cluster-${x}`} position={[x, 0.88, 0.1]}>
+            {[-0.18, 0, 0.18].map((offset) => (
+              <RoundedBox
+                key={`${x}-${offset}`}
+                args={[0.16, 0.16, 0.12]}
+                position={[offset, 0, 0]}
+                radius={0.03}
+              >
+                <meshStandardMaterial
+                  color={mixColor(COLORS.panel, COLORS.network, 0.14 + networkWeight * 0.18)}
+                  roughness={0.84}
+                  metalness={0.02}
+                  transparent
+                  opacity={0.2 + networkWeight * 0.4}
+                />
+              </RoundedBox>
+            ))}
+          </group>
         ))}
 
         <Line
           points={[
-            [-2.06, 0.06, 0],
-            [-1.02, 0.9, 0.18],
-            [0.18, 1.12, 0.2],
-            [1.28, 0.94, 0.18],
-            [2.08, 0.18, 0]
+            [-1.82, 0.04, 0],
+            [-1.02, 0.74, 0.08],
+            [0.18, 1.08, 0.12],
+            [1.12, 0.82, 0.08],
+            [1.86, 0.08, 0]
           ]}
           color={routeNetwork}
-          lineWidth={1.2}
+          lineWidth={1.15}
           transparent
-          opacity={0.18 + stageNetworkStrength * 0.46}
-        />
-      </group>
-
-      <group ref={routesRef}>
-        <Line
-          points={[
-            [0.16, 1.18, 0.18],
-            [-0.48, 1.18, 0.26],
-            [-1.2, 1.18, 0.36],
-            [-1.96, 1.16, 0.42]
-          ]}
-          color={routeLabs}
-          lineWidth={1.2}
-          transparent
-          opacity={0.14 + stageLabStrength * 0.48}
-        />
-        <Line
-          points={[
-            [0.16, 0.22, 0.14],
-            [0.66, 0.22, 0.22],
-            [1.34, 0.2, 0.34],
-            [2.08, 0.16, 0.42]
-          ]}
-          color={routeLabs}
-          lineWidth={1.2}
-          transparent
-          opacity={0.14 + stageLabStrength * 0.48}
-        />
-        <Line
-          points={[
-            [0.04, -0.68, 0.06],
-            [0.12, -1.08, 0.08],
-            [0.22, -1.48, 0.1],
-            [0.3, -1.9, 0.1]
-          ]}
-          color={routeProgram}
-          lineWidth={1.2}
-          transparent
-          opacity={0.12 + stageProgramStrength * 0.52}
-        />
-        <Line
-          points={[
-            [0.08, 1.76, 0.08],
-            [0.12, 2.06, 0.1],
-            [0.2, 2.34, 0.12],
-            [0.26, 2.56, 0.16]
-          ]}
-          color={routeNetwork}
-          lineWidth={1.2}
-          transparent
-          opacity={0.12 + stageNetworkStrength * 0.52}
+          opacity={0.18 + networkWeight * 0.42}
         />
       </group>
 
       <SignalPulses
         activeStage={activeStage}
+        focus={focus}
         reducedMotion={reducedMotion}
         paused={paused}
       />
@@ -1138,25 +1163,20 @@ function SceneContent({
         attach="fog"
         args={[
           preset.atmosphere.fogColor,
-          preset.atmosphere.fogNear + (variant === "overview" ? 1.5 : 0),
+          preset.atmosphere.fogNear + (variant === "overview" ? 1.2 : 0),
           preset.atmosphere.fogFar
         ]}
       />
-      <SceneLighting
-        activeStage={activeStage}
-        reducedMotion={reducedMotion}
-        stageProgress={stageProgress}
-      />
+      <SceneLighting activeStage={activeStage} />
       <SceneDirector
         activeStage={activeStage}
-        stageProgress={stageProgress}
         tier={tier}
         variant={variant}
         reducedMotion={reducedMotion}
         paused={paused}
         motionProfile={motionProfile}
       />
-      <OperationsMap
+      <OperationsDiagram
         activeStage={activeStage}
         focus={focus}
         stageProgress={stageProgress}

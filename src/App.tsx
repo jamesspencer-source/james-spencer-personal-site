@@ -156,7 +156,7 @@ function App() {
         return siteContent.sceneLegend.systems[activeSystemStage];
       case "background":
       case "contact":
-        return siteContent.sceneLegend.overview;
+        return siteContent.sceneLegend.closing;
       case "overview":
       default:
         return siteContent.sceneLegend.overview;
@@ -166,17 +166,17 @@ function App() {
   const activeSceneProgress = useMemo(() => {
     switch (activeSection) {
       case "scope":
-        return 0.46;
+        return 0.34;
       case "roles":
-        return 0.54;
+        return 0.42;
       case "system":
-        return Math.min(0.74, 0.42 + systemProgress * 0.28);
+        return Math.min(0.84, 0.48 + systemProgress * 0.28);
       case "background":
       case "contact":
-        return 0.88;
+        return 0.86;
       case "overview":
       default:
-        return 0.22;
+        return 0.2;
     }
   }, [activeSection, systemProgress]);
 
@@ -240,7 +240,7 @@ function App() {
       },
       {
         threshold: 0,
-        rootMargin: "-49% 0px -49% 0px"
+        rootMargin: "-46% 0px -46% 0px"
       }
     );
 
@@ -285,8 +285,8 @@ function App() {
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
-          start: "top 45%",
-          end: "bottom 45%",
+          start: "top 52%",
+          end: "bottom 48%",
           onEnter: () => setActiveSection(section.id as SectionId),
           onEnterBack: () => setActiveSection(section.id as SectionId)
         });
@@ -317,8 +317,8 @@ function App() {
 
           ScrollTrigger.create({
             trigger: step,
-            start: "top 62%",
-            end: "bottom 38%",
+            start: "top 60%",
+            end: "bottom 40%",
             onEnter: () => setActiveSystemStage(stageId),
             onEnterBack: () => setActiveSystemStage(stageId),
             onUpdate: (self) => {
@@ -570,11 +570,7 @@ function App() {
                     >
                       <AtlasScene
                         activeStage={activeSceneStage}
-                        focus={
-                          activeSection === "roles"
-                            ? activeRole?.sceneFocus
-                            : undefined
-                        }
+                        focus={activeSection === "roles" ? activeRole?.sceneFocus : undefined}
                         reducedMotion={prefersReducedMotion}
                         stageProgress={activeSceneProgress}
                         motionProfile={sceneMotionProfile}

@@ -265,10 +265,10 @@ export const siteContent = {
   },
   sceneLegend: {
     overview: {
-      kicker: "Systems Map",
-      title: "Three operating surfaces, one shared system",
+      kicker: "Operations Diagram",
+      title: "Three operating surfaces in one shared system",
       summary:
-        "The map compresses James's current work into linked layers rather than a literal building: shared laboratory infrastructure, a recurring summer program, and professional leadership beyond one local operation.",
+        "The diagram compresses James's current work into linked operating layers rather than a literal facility: shared laboratory infrastructure, a recurring summer program, and professional leadership beyond one local operation.",
       items: [
         {
           label: "Shared lab backbone",
@@ -292,9 +292,9 @@ export const siteContent = {
     } as SceneLegendBlock,
     scope: {
       kicker: "Current Read",
-      title: "The laboratory backbone is active first",
+      title: "The diagram stays anchored to shared lab infrastructure",
       summary:
-        "The map stays anchored on the shared lab system in this section because that operating surface holds together the broader remit around it.",
+        "The diagram stays anchored on the shared lab system in this section because that operating surface holds together the broader remit around it.",
       items: [
         {
           label: "Shared utilities",
@@ -312,7 +312,7 @@ export const siteContent = {
     } as SceneLegendBlock,
     roles: {
       kicker: "Current Roles",
-      title: "The scene stays lab-led while the role detail changes",
+      title: "The diagram stays lab-led while the role detail changes",
       summary:
         "Laboratory operations remain the primary visual state here. Program and network roles are shown as extensions of the same operating system rather than separate worlds.",
       items: [
@@ -391,12 +391,26 @@ export const siteContent = {
           }
         ]
       } as SceneLegendBlock
+    },
+    closing: {
+      kicker: "Core Narrative",
+      title: "The diagram settles before the closing sections",
+      summary:
+        "The mapped operating system releases before the quieter background and contact sections so the page can close as a professional profile rather than a continuous visual performance.",
+      items: [
+        {
+          label: "Primary operating profile established",
+          detail:
+            "The core narrative has already covered laboratories, program delivery, and network leadership before the closing sections begin.",
+          tone: "neutral"
+        }
+      ]
     }
   },
   systemsView: {
     heading: "Systems View",
     intro:
-      "The systems map is not a literal facility. It condenses the work beneath the visible role into linked structures for shared laboratory infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
+      "The operations diagram is not a literal facility. It condenses the work beneath the visible role into linked structures for shared laboratory infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
     stages: [
       {
         id: "labs",
