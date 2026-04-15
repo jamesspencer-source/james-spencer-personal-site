@@ -33,8 +33,8 @@ type SectionId =
 const navItems: Array<{ id: SectionId; label: string }> = [
   { id: "overview", label: "Overview" },
   { id: "scope", label: "Current Scope" },
-  { id: "roles", label: "Leadership Roles" },
-  { id: "system", label: "Operating System" },
+  { id: "roles", label: "Current Roles" },
+  { id: "system", label: "Systems View" },
   { id: "background", label: "Background" },
   { id: "contact", label: "Contact" }
 ];
@@ -438,7 +438,7 @@ function App() {
             </div>
 
             <div className="roles-layout">
-              <div className="role-tabs js-reveal" role="tablist" aria-label="Leadership roles">
+              <div className="role-tabs js-reveal" role="tablist" aria-label="Current roles">
                 {siteContent.roles.entries.map((entry) => (
                   <button
                     key={entry.id}

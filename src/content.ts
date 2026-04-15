@@ -78,7 +78,7 @@ export const siteContent = {
     title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
     summary: [
-      "James M. Spencer manages operations for two Howard Hughes Medical Institute (HHMI) Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals.",
+      "James M. Spencer manages operations for two Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals.",
       "His remit includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, operational continuity, and the day-to-day execution that keeps scientific work moving."
     ],
     proof: [
@@ -95,16 +95,10 @@ export const siteContent = {
         tone: "program"
       },
       {
-        headline: "Professional network leadership beyond the individual lab",
+        headline: "Lab manager network leadership",
         detail:
-          "As chair of the Lab Management Network of Professionals, he helps shape programming and convenings for lab managers across Howard Hughes Medical Institute laboratories.",
+          "As chair of the Lab Management Network of Professionals, he helps shape programming and convenings for laboratory managers across Howard Hughes Medical Institute laboratories.",
         tone: "network"
-      },
-      {
-        headline: "Operational value through continuity and cost stewardship",
-        detail:
-          "Vendor stewardship, onboarding, planning discipline, and steady execution help research groups extend resources and avoid preventable friction.",
-        tone: "neutral"
       }
     ] as HeroProofItem[],
     links: [
@@ -124,7 +118,7 @@ export const siteContent = {
     intro:
       "James leads laboratory and program operations in environments where research depends on reliable coordination across people, space, vendors, equipment, schedules, and scientific work.",
     context:
-      "Current work sits within the Department of Microbiology at Harvard Medical School, Howard Hughes Medical Institute-supported laboratories, the Community Phages summer program, and the Lab Management Network of Professionals.",
+      "Current work sits within the Department of Microbiology at Harvard Medical School, Howard Hughes Medical Institute laboratories, the Community Phages summer program, and the Lab Management Network of Professionals.",
     domains: [
       {
         title: "Laboratory operations",
@@ -147,7 +141,7 @@ export const siteContent = {
       {
         title: "Professional community leadership",
         detail:
-          "Board leadership, programming, and convenings for a peer network of lab managers across HHMI-supported laboratories.",
+          "Board leadership, programming, and convenings for a peer network of laboratory managers across Howard Hughes Medical Institute laboratories.",
         tone: "network"
       }
     ] as ScopeDomain[],
@@ -155,7 +149,7 @@ export const siteContent = {
       {
         title: "Expanded from one laboratory to two without splitting the operating model",
         detail:
-          "A second HHMI Investigator laboratory was added in August 2025 while keeping shared facilities, equipment, and regulated space coordinated under one system."
+          "A second Howard Hughes Medical Institute Investigator laboratory was added in August 2025 while keeping shared facilities, equipment, and regulated space coordinated under one system."
       },
       {
         title: "Community Phages delivered end to end each year",
@@ -163,41 +157,36 @@ export const siteContent = {
           "The annual eight-week internship program runs on repeatable planning, setup, daily logistics, student support, and closeout."
       },
       {
-        title: "LMNOP leadership extends the work beyond a single institution",
+        title: "Lab manager network leadership extends the work beyond a single institution",
         detail:
           "Regional programming and national convenings support the broader lab manager community and its institute partners."
-      },
-      {
-        title: "Operational value comes through cost stewardship and continuity",
-        detail:
-          "Vendor management, onboarding, planning discipline, and steady execution help research groups extend resources and avoid preventable friction."
       }
     ] as ResultItem[]
   },
   roles: {
-    heading: "Leadership Roles",
+    heading: "Current Roles",
     intro:
       "Current responsibilities break across laboratory operations, scientific program delivery, and professional community leadership.",
     entries: [
       {
         id: "laboratories",
-        navLabel: "Laboratory Operations",
-        title: "Laboratory Manager",
+        navLabel: "Laboratories",
+        title: "Laboratory manager",
         organization:
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "Leads shared operations for two HHMI Investigator laboratories within the Department of Microbiology at Harvard Medical School.",
+          "Leads shared operations for two Howard Hughes Medical Institute Investigator laboratories within the Department of Microbiology at Harvard Medical School.",
         bullets: [
           "Directs budgets, purchasing, vendor relationships, facilities coordination, and equipment planning across a shared research footprint spanning two buildings.",
           "Handles hiring logistics, onboarding, candidate visits, regulated laboratory-space coordination, and day-to-day continuity for two active research laboratories.",
-          "Supports operational planning, resource stewardship, and continuity so research can move without preventable delays."
+          "Keeps the operating model stable so research groups can move without preventable delays."
         ],
         evidence: [
           {
             label: "Operating context",
             value:
-              "Two HHMI Investigator laboratories with one shared biosafety level 2 laboratory footprint."
+              "Two Howard Hughes Medical Institute Investigator laboratories with one shared biosafety level 2 laboratory footprint."
           },
           {
             label: "Current remit",
@@ -208,7 +197,7 @@ export const siteContent = {
       },
       {
         id: "community-phages",
-        navLabel: "Community Phages Program",
+        navLabel: "Community Phages",
         title: "Program Operations Lead",
         organization:
           "Community Phages, Department of Microbiology, Harvard Medical School",
@@ -239,16 +228,16 @@ export const siteContent = {
       },
       {
         id: "network-leadership",
-        navLabel: "Lab Manager Network",
-        title: "Chair, Advisory Board",
+        navLabel: "Network",
+        title: "Chair, advisory board",
         organization:
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "Chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development organization for Howard Hughes Medical Institute lab managers.",
+          "Chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development organization for laboratory managers at Howard Hughes Medical Institute laboratories.",
         bullets: [
           "Sets board priorities and helps shape regional and national programming for a network of laboratory managers across the institute.",
-          "Supports recurring peer infrastructure through monthly programming, board coordination, and ongoing community support.",
+          "Supports recurring programming, board coordination, and ongoing community support.",
           "Extends the work from individual laboratory operations into professional community leadership."
         ],
         evidence: [
@@ -267,7 +256,7 @@ export const siteContent = {
     ] as RoleEntry[]
   },
   operatingSystem: {
-    heading: "Operating System",
+    heading: "Systems View",
     intro:
       "The monolith visualizes three connected layers of the work: research infrastructure, program delivery, and professional network leadership.",
     entries: [
@@ -278,7 +267,7 @@ export const siteContent = {
         summary:
           "Within the monolith, the laboratory layer stands for the infrastructure that keeps research moving: facilities, equipment, vendor coordination, staffing logistics, and regulated-space management across two laboratories.",
         evidence: [
-          "Two HHMI Investigator laboratories coordinated through one shared operating model.",
+          "Two Howard Hughes Medical Institute Investigator laboratories coordinated through one shared operating model.",
           "Budgets, vendors, equipment, facilities, and staffing logistics kept in sync."
         ]
       },
@@ -298,7 +287,7 @@ export const siteContent = {
         kicker: "Network layer",
         title: "Professional community leadership",
         summary:
-          "The network layer extends beyond a single laboratory. It stands for board leadership, recurring programming, peer infrastructure, and convenings that connect laboratory managers across institutions.",
+          "The network layer extends beyond a single laboratory. It stands for board leadership, recurring programming, and convenings that connect laboratory managers across institutions.",
         evidence: [
           "James chairs the Lab Management Network of Professionals.",
           "Regional and national convenings bring laboratory managers and institute partners into the same professional space."
@@ -355,6 +344,6 @@ export const siteContent = {
   },
   footer: {
     disclaimer:
-      "This website is maintained by James M. Spencer in a personal capacity. It is not an official website of Harvard Medical School, HHMI, or any affiliated laboratory or program, and nothing here should be understood as speaking on behalf of those institutions."
+      "This website is maintained by James M. Spencer in a personal capacity. It is not an official website of Harvard Medical School, Howard Hughes Medical Institute, or any affiliated laboratory or program, and nothing here should be understood as speaking on behalf of those institutions."
   }
 };
