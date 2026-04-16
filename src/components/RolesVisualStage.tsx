@@ -44,9 +44,10 @@ const WORLD_LAND = feature(
 ) as unknown as Feature<Geometry>;
 
 const chapterStops: Record<RoleChapter["id"], number> = {
-  labs: 0,
-  program: 0.46,
-  network: 0.84
+  overview: 0,
+  labs: 0.24,
+  program: 0.54,
+  network: 0.82
 };
 
 const programStations = [
@@ -82,11 +83,11 @@ function fadeBetween(
 }
 
 function buildProgramDash(progress: number) {
-  return 1 - smoothstep(0.34, 0.58, progress);
+  return 1 - smoothstep(0.54, 0.7, progress);
 }
 
 function buildGlobeDash(progress: number) {
-  return 1 - smoothstep(0.76, 0.94, progress);
+  return 1 - smoothstep(0.84, 1, progress);
 }
 
 function projectHostCity(
@@ -146,14 +147,16 @@ function RolesVisualStage({
 }: RolesVisualStageProps) {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const labsVisibility = fadeBetween(progress, 0, 0.08, 0.28, 0.46);
-  const programVisibility = fadeBetween(progress, 0.28, 0.46, 0.64, 0.82);
-  const globeVisibility = fadeBetween(progress, 0.7, 0.86, 1.02, 1.12);
+  const overviewVisibility = fadeBetween(progress, 0, 0.08, 0.2, 0.34);
+  const labsVisibility = fadeBetween(progress, 0.2, 0.34, 0.48, 0.62);
+  const programVisibility = fadeBetween(progress, 0.48, 0.62, 0.74, 0.88);
+  const globeVisibility = fadeBetween(progress, 0.74, 0.88, 1.02, 1.12);
 
-  const labsCompress = smoothstep(0.28, 0.46, progress);
-  const programEnter = smoothstep(0.28, 0.46, progress);
-  const programExit = smoothstep(0.64, 0.82, progress);
-  const globeEnter = smoothstep(0.7, 0.9, progress);
+  const overviewCompress = smoothstep(0.18, 0.34, progress);
+  const labsCompress = smoothstep(0.48, 0.62, progress);
+  const programEnter = smoothstep(0.48, 0.62, progress);
+  const programExit = smoothstep(0.74, 0.88, progress);
+  const globeEnter = smoothstep(0.76, 0.94, progress);
 
   const globeProjection = useMemo(() => {
     return geoOrthographic()
@@ -163,7 +166,19 @@ function RolesVisualStage({
       .rotate([mix(118, 99, globeEnter), mix(-18, -33, globeEnter)]);
   }, [globeEnter]);
 
+  const overviewGlobeProjection = useMemo(() => {
+    return geoOrthographic()
+      .translate([124, 158])
+      .scale(68)
+      .clipAngle(90)
+      .rotate([104, -26]);
+  }, []);
+
   const globePath = useMemo(() => geoPath(globeProjection), [globeProjection]);
+  const overviewGlobePath = useMemo(
+    () => geoPath(overviewGlobeProjection),
+    [overviewGlobeProjection]
+  );
   const graticule = useMemo(() => geoGraticule().step([15, 15])(), []);
 
   const networkVisual = useMemo(() => {
@@ -214,6 +229,126 @@ function RolesVisualStage({
     <div className={`roles-scene roles-scene--${activeChapterId}`}>
       <div className="roles-scene__backdrop" />
       <div className="roles-scene__glow" />
+
+      <div
+        className="roles-scene__layer roles-scene__layer--overview"
+        style={{
+          opacity: overviewVisibility,
+          transform: `translate3d(${mix(0, -40, overviewCompress)}px, ${mix(0, -18, overviewCompress)}px, 0) scale(${mix(1, 0.92, overviewCompress)})`
+        }}
+      >
+        <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
+          <defs>
+            <linearGradient id="overview-card" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(245, 249, 247, 0.13)" />
+              <stop offset="100%" stopColor="rgba(245, 249, 247, 0.04)" />
+            </linearGradient>
+            <linearGradient id="overview-mini-track" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#9ecab3" />
+              <stop offset="100%" stopColor="#4b675c" />
+            </linearGradient>
+          </defs>
+
+          <g className="scene-overview__cards">
+            <g className="scene-overview__card" transform="translate(70 168)">
+              <rect className="scene-overview__card-frame" width="248" height="290" rx="28" />
+              <text className="scene-overview__index" x="30" y="38">
+                01
+              </text>
+              <text className="scene-overview__title" x="30" y="68">
+                Laboratory
+              </text>
+              <text className="scene-overview__title" x="30" y="94">
+                operations
+              </text>
+
+              <g transform="translate(34 122)">
+                <polygon className="scene-overview__mini-building" points="8,28 68,28 88,42 28,42" />
+                <polygon className="scene-overview__mini-building-side" points="8,28 28,42 28,144 8,130" />
+                <polygon className="scene-overview__mini-building-front" points="28,42 88,42 88,158 28,144" />
+
+                <polygon className="scene-overview__mini-building" points="136,44 196,44 216,58 156,58" />
+                <polygon className="scene-overview__mini-building-side" points="136,44 156,58 156,142 136,130" />
+                <polygon className="scene-overview__mini-building-front" points="156,58 216,58 216,154 156,142" />
+
+                <rect className="scene-overview__mini-bridge" x="88" y="92" width="68" height="14" rx="7" />
+                <rect className="scene-overview__mini-bridge" x="88" y="114" width="68" height="14" rx="7" />
+              </g>
+
+              <text className="scene-overview__caption" x="30" y="248">
+                Two research labs
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
+                One shared operating backbone
+              </text>
+            </g>
+
+            <g className="scene-overview__card" transform="translate(356 168)">
+              <rect className="scene-overview__card-frame" width="248" height="290" rx="28" />
+              <text className="scene-overview__index" x="30" y="38">
+                02
+              </text>
+              <text className="scene-overview__title" x="30" y="68">
+                Community
+              </text>
+              <text className="scene-overview__title" x="30" y="94">
+                Phages
+              </text>
+
+              <g transform="translate(28 112)">
+                <path
+                  className="scene-overview__mini-cycle"
+                  d="M 38 98 C 38 54, 74 24, 124 24 C 178 24, 214 60, 214 108 C 214 154, 176 188, 122 188 C 72 188, 38 156, 38 110"
+                />
+                <circle className="scene-overview__mini-node" cx="124" cy="24" r="8" />
+                <circle className="scene-overview__mini-node" cx="214" cy="108" r="8" />
+                <circle className="scene-overview__mini-node" cx="122" cy="188" r="8" />
+                <circle className="scene-overview__mini-node" cx="38" cy="110" r="8" />
+                <circle className="scene-overview__mini-node scene-overview__mini-node--soft" cx="72" cy="52" r="6" />
+                <circle className="scene-overview__mini-node scene-overview__mini-node--soft" cx="186" cy="62" r="6" />
+              </g>
+
+              <text className="scene-overview__caption" x="30" y="248">
+                Annual program delivery
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
+                One repeatable operating cycle
+              </text>
+            </g>
+
+            <g className="scene-overview__card" transform="translate(642 168)">
+              <rect className="scene-overview__card-frame" width="248" height="290" rx="28" />
+              <text className="scene-overview__index" x="30" y="38">
+                03
+              </text>
+              <text className="scene-overview__title" x="30" y="68">
+                Network
+              </text>
+              <text className="scene-overview__title" x="30" y="94">
+                leadership
+              </text>
+
+              <g transform="translate(0 -2)">
+                <circle className="scene-overview__mini-globe-aura" cx="124" cy="158" r="88" />
+                <circle className="scene-overview__mini-globe" cx="124" cy="158" r="72" />
+                <path className="scene-overview__mini-graticule" d={overviewGlobePath(graticule) ?? ""} />
+                <path className="scene-overview__mini-land" d={overviewGlobePath(LOWER_48_LAND) ?? ""} />
+                <path className="scene-overview__mini-route" d="M 92 146 C 112 118, 146 116, 164 138" />
+                <circle className="scene-overview__mini-pin" cx="96" cy="150" r="5" />
+                <circle className="scene-overview__mini-pin" cx="136" cy="126" r="5" />
+                <circle className="scene-overview__mini-pin" cx="160" cy="160" r="5" />
+              </g>
+
+              <text className="scene-overview__caption" x="30" y="248">
+                Regional and national convenings
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
+                Professional community leadership
+              </text>
+            </g>
+          </g>
+        </svg>
+      </div>
 
       <div
         className="roles-scene__layer roles-scene__layer--labs"

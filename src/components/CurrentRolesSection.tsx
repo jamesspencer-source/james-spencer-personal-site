@@ -30,15 +30,19 @@ function fadeBetween(
 }
 
 function getActiveChapterId(progress: number): RoleChapter["id"] {
-  if (progress >= chapterStops.network - 0.02) {
+  if (progress >= chapterStops.network - 0.03) {
     return "network";
   }
 
-  if (progress >= chapterStops.program - 0.02) {
+  if (progress >= chapterStops.program - 0.03) {
     return "program";
   }
 
-  return "labs";
+  if (progress >= chapterStops.labs - 0.02) {
+    return "labs";
+  }
+
+  return "overview";
 }
 
 function RoleCopy({
@@ -129,14 +133,15 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const rafRef = useRef<number | null>(null);
   const progressValueRef = useRef(0);
   const [progress, setProgress] = useState(0);
-  const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>("labs");
+  const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>("overview");
 
   const chapters = siteContent.rolesSection.chapters;
 
   const chapterVisibility = useMemo(
     () => ({
-      labs: fadeBetween(progress, 0, 0.08, 0.3, 0.46),
-      program: fadeBetween(progress, 0.28, 0.46, 0.66, 0.82),
+      overview: fadeBetween(progress, 0, 0.06, 0.18, 0.32),
+      labs: fadeBetween(progress, 0.18, 0.32, 0.46, 0.62),
+      program: fadeBetween(progress, 0.46, 0.62, 0.74, 0.88),
       network: fadeBetween(progress, 0.7, 0.86, 1.02, 1.12)
     }),
     [progress]
@@ -179,19 +184,19 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       onUpdate: () => updateProgress(progressState.value)
     });
 
-      scrollTriggerRef.current = ScrollTrigger.create({
-        trigger: sectionRef.current,
-        animation: masterTimeline,
-        pin: viewportRef.current,
-        start: () => `top top+=${headerHeight}`,
-        end: () =>
-          `+=${Math.round(
-            window.innerHeight * (window.innerWidth < 900 ? 2.95 : 3.55)
-          )}`,
-        scrub: 0.38,
-        anticipatePin: 1,
-        invalidateOnRefresh: true
-      });
+    scrollTriggerRef.current = ScrollTrigger.create({
+      trigger: sectionRef.current,
+      animation: masterTimeline,
+      pin: viewportRef.current,
+      start: () => `top top+=${headerHeight}`,
+      end: () =>
+        `+=${Math.round(
+          window.innerHeight * (window.innerWidth < 900 ? 3.4 : 4.3)
+        )}`,
+      scrub: 0.38,
+      anticipatePin: 1,
+      invalidateOnRefresh: true
+    });
 
     return () => {
       if (rafRef.current !== null) {

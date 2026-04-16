@@ -33,13 +33,14 @@ export type HostCity = {
 };
 
 export type RoleVisual =
+  | { kind: "roles-overview" }
   | { kind: "labs-schematic" }
   | { kind: "program-cycle" }
   | { kind: "network-globe"; hostCities: HostCity[] };
 
 export type RoleChapter = {
-  id: "labs" | "program" | "network";
-  sceneId: "labs" | "program" | "network";
+  id: "overview" | "labs" | "program" | "network";
+  sceneId: "overview" | "labs" | "program" | "network";
   navLabel: string;
   title: string;
   organization: string;
@@ -167,6 +168,36 @@ export const siteContent = {
     intro:
       "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers.",
     chapters: [
+      {
+        id: "overview",
+        sceneId: "overview",
+        navLabel: "Overview",
+        title: "Current responsibilities",
+        organization:
+          "Harvard Medical School, Howard Hughes Medical Institute, and the Lab Management Network of Professionals",
+        dates: "Current",
+        summary:
+          "James's current work has three main parts: leading day-to-day laboratory operations, running the Community Phages summer internship program, and chairing a professional network for laboratory managers. The throughline across all three is operational execution.",
+        responsibilities: [
+          "Laboratory operations remain the primary role, covering staffing, budgets, equipment, facilities, vendor relationships, and regulated research space across two active laboratories.",
+          "Program delivery and network leadership extend that same operating base into an annual student internship program and recurring regional and national convenings for lab managers."
+        ],
+        evidence: [
+          {
+            label: "Current scope",
+            value:
+              "Two research laboratories, one annual summer program, and recurring regional and national professional meetings."
+          },
+          {
+            label: "Shared throughline",
+            value:
+              "Planning, staffing, logistics, facilities, and continuity across each operating surface."
+          }
+        ],
+        visual: {
+          kind: "roles-overview"
+        }
+      },
       {
         id: "labs",
         sceneId: "labs",
