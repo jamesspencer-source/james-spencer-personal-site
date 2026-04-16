@@ -295,24 +295,24 @@ export const siteContent = {
       {
         title: "Research Assistant",
         organization:
-          "Peter Chien laboratory, University of Massachusetts Amherst",
+          "Peter Chien laboratory, Department of Biochemistry and Molecular Biology, University of Massachusetts Amherst",
         dates: "2015 - 2018",
         summary:
-          "Worked on bacterial stress-response questions in Caulobacter crescentus and built a foundation in experimental design, documentation, and day-to-day laboratory practice."
+          "Worked on bacterial stress-response questions in Caulobacter crescentus, supporting experiments, documentation, strain and reagent organization, and day-to-day laboratory practice in an academic biochemistry and molecular biology setting."
       },
       {
         title: "Area Governor",
         organization: "University of Massachusetts Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
-          "Served in an annually elected role overseeing a residential area of roughly 6,000 students, recruiting and supporting a 14-person student leadership board, coordinating cross-institutional partners, and planning large-scale events and initiatives for a broader campus community of thousands."
+          "Served in an annually elected role overseeing a residential area of roughly 6,000 students, recruiting and supporting a 14-person student leadership board, engaging cross-institutional partners, and planning large-scale events and initiatives for the broader campus community."
       },
       {
         title: "Resident Assistant",
         organization: "University of Massachusetts Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
-          "Supported residents day to day, was selected as a peer trainer for new staff, and handled on-call response within a large residential system."
+          "Supported residents day to day through advising, programming, conflict mediation, policy response, and on-call duty, and was selected as a peer trainer for new residential-life staff."
       }
     ] as BackgroundEntry[],
     education: {
