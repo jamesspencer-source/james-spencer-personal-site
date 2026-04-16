@@ -502,11 +502,12 @@ function RolesVisualStage({
 
           <g className="scene-labs__floors">
             {Array.from({ length: 9 }).map((_, index) => {
-              const y = 208 + index * 32;
+              const himY = 214 + index * 34;
+              const veritasY = 210 + index * 34;
               return (
-                <g key={y}>
-                  <path className="scene-labs__floor-line" d={`M 300 ${y} L 416 ${y}`} />
-                  <path className="scene-labs__floor-line" d={`M 590 ${y + 18} L 800 ${y + 18}`} />
+                <g key={index}>
+                  <path className="scene-labs__floor-line" d={`M 300 ${himY} L 416 ${himY}`} />
+                  <path className="scene-labs__floor-line" d={`M 590 ${veritasY} L 800 ${veritasY}`} />
                 </g>
               );
             })}
@@ -537,10 +538,10 @@ function RolesVisualStage({
           </g>
 
           <g className="scene-labs__highlight-bands">
-            <polygon points="294,246 420,246 420,258 294,258" />
-            <polygon points="246,214 294,246 294,258 246,226" />
-            <polygon points="578,308 804,308 804,320 578,320" />
-            <polygon points="500,258 578,308 578,320 500,270" />
+            <polygon points="294,214 420,214 420,226 294,226" />
+            <polygon points="246,182 294,214 294,226 246,194" />
+            <polygon points="578,250 804,250 804,262 578,262" />
+            <polygon points="500,200 578,250 578,262 500,212" />
           </g>
 
           <g className="scene-labs__bridges">
@@ -548,8 +549,8 @@ function RolesVisualStage({
           </g>
 
           <g className="scene-labs__floor-markers">
-            <text x="442" y="255">10</text>
-            <text x="666" y="319">09</text>
+            <text x="442" y="223">10</text>
+            <text x="666" y="261">09</text>
           </g>
 
           <g
@@ -557,7 +558,7 @@ function RolesVisualStage({
             style={{ opacity: mix(0.6, 1, 1 - labsCompress) }}
           >
             <path
-              d="M 424 252 L 560 316"
+              d="M 424 220 L 560 256"
               pathLength={1}
               style={{
                 strokeDasharray: 1,
@@ -565,7 +566,7 @@ function RolesVisualStage({
               }}
             />
             <path
-              d="M 430 258 L 572 322"
+              d="M 430 226 L 572 262"
               pathLength={1}
               style={{
                 strokeDasharray: 1,
