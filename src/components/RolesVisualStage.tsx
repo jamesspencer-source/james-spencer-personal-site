@@ -324,6 +324,16 @@ function RolesVisualStage({
     [globeProjection, networkVisual]
   );
 
+  const overviewProjectedCities = useMemo(
+    () =>
+      (networkVisual?.hostCities ?? [])
+        .map((city) => projectHostCity(city, overviewGlobeProjection))
+        .filter(
+          (city): city is HostCity & { x: number; y: number } => city !== null
+        ),
+    [networkVisual, overviewGlobeProjection]
+  );
+
   const routePaths = useMemo(() => {
     const cities = networkVisual?.hostCities ?? [];
     if (cities.length < 2) {
@@ -359,6 +369,41 @@ function RolesVisualStage({
       ];
     });
   }, [globePath, networkVisual]);
+
+  const overviewRoutePaths = useMemo(() => {
+    const cities = networkVisual?.hostCities ?? [];
+    if (cities.length < 2) {
+      return [];
+    }
+
+    const cityByLabel = new Map(
+      cities.map((city, index) => [city.label, { city, index }])
+    );
+
+    return globeRouteConnections.flatMap(([from, to]) => {
+      const start = cityByLabel.get(from);
+      const end = cityByLabel.get(to);
+
+      if (!start || !end) {
+        return [];
+      }
+
+      const arc = {
+        type: "LineString",
+        coordinates: [
+          [start.city.longitude, start.city.latitude],
+          [end.city.longitude, end.city.latitude]
+        ]
+      } as LineString;
+
+      return [
+        {
+          key: `overview-${from}-${to}`,
+          d: overviewGlobePath(arc) ?? ""
+        }
+      ];
+    });
+  }, [networkVisual, overviewGlobePath]);
 
   const globeFocusLabel = hoveredCity;
 
@@ -487,10 +532,18 @@ function RolesVisualStage({
                 <circle className="scene-overview__mini-globe" cx="124" cy="158" r="76" />
                 <path className="scene-overview__mini-graticule" d={overviewGlobePath(graticule) ?? ""} />
                 <path className="scene-overview__mini-land" d={overviewGlobePath(LOWER_48_LAND) ?? ""} />
-                <path className="scene-overview__mini-route" d="M 92 146 C 112 118, 146 116, 164 138" />
-                <circle className="scene-overview__mini-pin" cx="96" cy="150" r="5" />
-                <circle className="scene-overview__mini-pin" cx="136" cy="126" r="5" />
-                <circle className="scene-overview__mini-pin" cx="160" cy="160" r="5" />
+                {overviewRoutePaths.map((route) => (
+                  <path key={route.key} className="scene-overview__mini-route" d={route.d} />
+                ))}
+                {overviewProjectedCities.map((city) => (
+                  <circle
+                    key={`overview-pin-${city.label}`}
+                    className="scene-overview__mini-pin"
+                    cx={city.x}
+                    cy={city.y}
+                    r="4.5"
+                  />
+                ))}
               </g>
 
               <text className="scene-overview__caption" x="30" y="282">
