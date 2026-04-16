@@ -265,10 +265,10 @@ export const siteContent = {
   },
   sceneLegend: {
     overview: {
-      kicker: "Operations Diagram",
-      title: "Three operating surfaces in one shared system",
+      kicker: "Systems Map",
+      title: "A cross-section of the operating system behind the visible role",
       summary:
-        "The diagram compresses James's current work into linked operating layers rather than a literal facility: shared laboratory infrastructure, a recurring summer program, and professional leadership beyond one local operation.",
+        "The scene reads as a research campus cross-section rather than a literal building: shared laboratory infrastructure, a recurring summer program, and professional leadership beyond one local operation.",
       items: [
         {
           label: "Shared lab backbone",
@@ -292,9 +292,9 @@ export const siteContent = {
     } as SceneLegendBlock,
     scope: {
       kicker: "Current Read",
-      title: "The diagram stays anchored to shared lab infrastructure",
+      title: "The cross-section stays anchored to shared lab infrastructure",
       summary:
-        "The diagram stays anchored on the shared lab system in this section because that operating surface holds together the broader remit around it.",
+        "The cross-section stays anchored on the shared lab system in this section because that operating surface holds together the broader remit around it.",
       items: [
         {
           label: "Shared utilities",
@@ -312,7 +312,7 @@ export const siteContent = {
     } as SceneLegendBlock,
     roles: {
       kicker: "Current Roles",
-      title: "The diagram stays lab-led while the role detail changes",
+      title: "The cross-section stays lab-led while the role detail changes",
       summary:
         "Laboratory operations remain the primary visual state here. Program and network roles are shown as extensions of the same operating system rather than separate worlds.",
       items: [
@@ -333,9 +333,9 @@ export const siteContent = {
     systems: {
       labs: {
         kicker: "Systems View",
-        title: "Shared lab infrastructure comes first",
+        title: "Shared lab infrastructure forms the upper operating backbone",
         summary:
-          "Parallel decks, service bays, and the central spine stand in for the infrastructure researchers depend on every day.",
+          "Two lab zones, shared utilities, and the central spine stand in for the infrastructure researchers depend on every day.",
         items: [
           {
             label: "Two active labs",
@@ -353,7 +353,7 @@ export const siteContent = {
       } as SceneLegendBlock,
       program: {
         kicker: "Systems View",
-        title: "A recurring program reads as a managed cycle",
+        title: "A recurring program reads as a lower operating loop",
         summary:
           "The lower loop stands for preparation, setup, student support, daily execution, and closeout across each annual run of Community Phages.",
         items: [
@@ -373,7 +373,7 @@ export const siteContent = {
       } as SceneLegendBlock,
       network: {
         kicker: "Systems View",
-        title: "Network leadership extends beyond one laboratory",
+        title: "Network leadership rises above the local operating footprint",
         summary:
           "The upper bridge structure represents board work, convenings, and the professional ties that connect lab managers across institutions.",
         items: [
@@ -394,7 +394,7 @@ export const siteContent = {
     },
     closing: {
       kicker: "Core Narrative",
-      title: "The diagram settles before the closing sections",
+      title: "The cross-section settles before the closing sections",
       summary:
         "The mapped operating system releases before the quieter background and contact sections so the page can close as a professional profile rather than a continuous visual performance.",
       items: [
@@ -410,7 +410,7 @@ export const siteContent = {
   systemsView: {
     heading: "Systems View",
     intro:
-      "The operations diagram is not a literal facility. It condenses the work beneath the visible role into linked structures for shared laboratory infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
+      "The campus cross-section is not a literal facility. It condenses the work beneath the visible role into linked structures for shared laboratory infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
     stages: [
       {
         id: "labs",

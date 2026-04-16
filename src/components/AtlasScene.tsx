@@ -1,15 +1,24 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Line, RoundedBox } from "@react-three/drei";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { Line, useGLTF } from "@react-three/drei";
+import {
+  Suspense,
+  memo,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import * as THREE from "three";
 import {
   scenePresets,
+  signalRoutes,
   type MapFocus,
+  type SceneLayer,
   type SceneStageId,
-  type Vec3
+  type Vec3,
+  type ViewportTier
 } from "../campusScenePresets";
 
-type ViewportTier = "mobile" | "tablet" | "desktop";
 type SceneVariant = "overview" | "narrative";
 type MotionProfile = "teaser" | "steady" | "immersive";
 
@@ -23,116 +32,55 @@ export type AtlasSceneProps = {
   motionProfile?: MotionProfile;
 };
 
-type RouteDefinition = {
-  points: Vec3[];
-  focus: MapFocus;
-  closed?: boolean;
+type ViewportConfig = {
+  dpr: [number, number];
+  overviewScale: number;
+  narrativeScale: number;
+  cameraOffset: Vec3;
+  rootOffset: Vec3;
 };
 
-const VIEWPORT_CONFIG: Record<
-  ViewportTier,
-  {
-    dpr: [number, number];
-    overviewScale: number;
-    narrativeScale: number;
-    cameraOffset: Vec3;
-    rootOffset: Vec3;
-  }
-> = {
+type LayerCollections = Record<SceneLayer, THREE.Object3D[]>;
+
+type RoutePulseRecord = {
+  curve: THREE.CatmullRomCurve3;
+  refs: Array<THREE.Mesh | null>;
+};
+
+const CROSS_SECTION_URL = `${import.meta.env.BASE_URL}assets/3d/cross-section/cross-section.glb`;
+
+const VIEWPORT_CONFIG: Record<ViewportTier, ViewportConfig> = {
   mobile: {
     dpr: [1, 1.25],
-    overviewScale: 0.94,
-    narrativeScale: 0.9,
-    cameraOffset: [0.2, 0.14, 0.62],
-    rootOffset: [0.18, -0.04, 0]
+    overviewScale: 0.96,
+    narrativeScale: 0.92,
+    cameraOffset: [0.06, 0.08, 0.32],
+    rootOffset: [0.12, -0.04, 0]
   },
   tablet: {
     dpr: [1, 1.5],
     overviewScale: 1,
-    narrativeScale: 0.96,
-    cameraOffset: [0.12, 0.08, 0.32],
-    rootOffset: [0.08, -0.02, 0]
+    narrativeScale: 0.97,
+    cameraOffset: [0.02, 0.04, 0.18],
+    rootOffset: [0.05, -0.02, 0]
   },
   desktop: {
-    dpr: [1, 1.75],
+    dpr: [1, 1.8],
     overviewScale: 1.08,
     narrativeScale: 1.02,
-    cameraOffset: [0.04, 0.02, 0],
+    cameraOffset: [0, 0.02, 0],
     rootOffset: [0, 0, 0]
   }
 };
 
-const COLORS = {
-  spine: new THREE.Color("#a8b5ba"),
-  structure: new THREE.Color("#73828b"),
-  frame: new THREE.Color("#516069"),
-  panel: new THREE.Color("#27353d"),
-  surface: new THREE.Color("#314048"),
-  route: new THREE.Color("#8d9ba2"),
-  labs: new THREE.Color("#79cca9"),
-  program: new THREE.Color("#8fb4ff"),
-  network: new THREE.Color("#d9e68c"),
-  backdrop: new THREE.Color("#24343e"),
-  shadow: new THREE.Color("#12202a")
-} as const;
+const LAYER_COLORS: Record<SceneLayer, string> = {
+  spine: "#cad6d2",
+  labs: "#8fd0b4",
+  program: "#9ebee9",
+  network: "#d4dfab"
+};
 
-const ROUTES: RouteDefinition[] = [
-  {
-    focus: "labs",
-    points: [
-      [0.18, 1.24, 0.08],
-      [-0.48, 1.42, 0.12],
-      [-1.28, 1.62, 0.16],
-      [-2.34, 1.72, 0.18]
-    ]
-  },
-  {
-    focus: "labs",
-    points: [
-      [0.22, 0.12, 0.04],
-      [0.86, 0.26, 0.08],
-      [1.56, 0.38, 0.1],
-      [2.34, 0.52, 0.12]
-    ]
-  },
-  {
-    focus: "program",
-    points: [
-      [0.16, -1.04, 0.04],
-      [0.1, -1.46, 0.06],
-      [0.02, -1.94, 0.08],
-      [0.08, -2.36, 0.1]
-    ]
-  },
-  {
-    focus: "network",
-    points: [
-      [0.16, 1.88, 0.08],
-      [0.46, 2.18, 0.1],
-      [0.98, 2.48, 0.14],
-      [1.68, 2.74, 0.18]
-    ]
-  }
-];
-
-const PROGRAM_LOOP_POINTS: Vec3[] = [
-  [-1.84, 0.24, 0.08],
-  [-1.84, -0.46, 0.08],
-  [-1.4, -0.92, 0.08],
-  [1.22, -0.92, 0.08],
-  [1.74, -0.42, 0.08],
-  [1.74, 0.26, 0.08],
-  [1.22, 0.72, 0.08],
-  [-1.36, 0.72, 0.08],
-  [-1.84, 0.24, 0.08]
-];
-
-function dampScalar(
-  current: number,
-  target: number,
-  lambda: number,
-  delta: number
-) {
+function dampScalar(current: number, target: number, lambda: number, delta: number) {
   return THREE.MathUtils.damp(current, target, lambda, delta);
 }
 
@@ -166,35 +114,26 @@ function vec3(values: Vec3) {
   return new THREE.Vector3(values[0], values[1], values[2]);
 }
 
-function colorToCss(color: THREE.Color) {
-  return `#${color.getHexString()}`;
+function withOffset(values: Vec3, offset: Vec3) {
+  return [
+    values[0] + offset[0],
+    values[1] + offset[1],
+    values[2] + offset[2]
+  ] satisfies Vec3;
 }
 
-function mixColor(base: THREE.Color, accent: THREE.Color, amount: number) {
-  return colorToCss(base.clone().lerp(accent, THREE.MathUtils.clamp(amount, 0, 1)));
-}
+function layerWeight(activeStage: SceneStageId, focus: MapFocus | undefined, layer: SceneLayer) {
+  const base = scenePresets[activeStage].layers[layer];
 
-function getLayerWeight(
-  activeStage: SceneStageId,
-  focus: MapFocus | undefined,
-  layer: MapFocus
-) {
-  const preset = scenePresets[activeStage];
-  const base = preset.layers[layer];
-
-  if (activeStage !== "labs" || !focus || focus === "labs") {
+  if (layer === "spine" || activeStage !== "labs" || !focus || focus === "labs") {
     return base;
   }
 
   if (layer === focus) {
-    return Math.min(1, base + 0.18);
+    return Math.min(1, base + 0.12);
   }
 
-  if (layer === "labs") {
-    return base;
-  }
-
-  return Math.max(0, base - 0.06);
+  return Math.max(0.18, base - 0.06);
 }
 
 function useViewportTier() {
@@ -202,12 +141,15 @@ function useViewportTier() {
     if (typeof window === "undefined") {
       return "desktop";
     }
+
     if (window.innerWidth < 720) {
       return "mobile";
     }
+
     if (window.innerWidth < 1180) {
       return "tablet";
     }
+
     return "desktop";
   });
 
@@ -246,69 +188,194 @@ function useWebGLSupport() {
   return hasWebGL;
 }
 
+function registerMaterial(node: THREE.Object3D) {
+  const mesh = node as THREE.Mesh;
+  if (!mesh.isMesh) {
+    return;
+  }
+
+  const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+  const nextMaterials = materials.map((material) => {
+    const clone = material.clone() as THREE.Material;
+    clone.transparent = true;
+    clone.depthWrite = true;
+
+    if (
+      clone instanceof THREE.MeshStandardMaterial ||
+      clone instanceof THREE.MeshPhysicalMaterial
+    ) {
+      clone.emissive = new THREE.Color("#10181d");
+      clone.emissiveIntensity = 0;
+    }
+
+    return clone;
+  });
+
+  mesh.material = Array.isArray(mesh.material) ? nextMaterials : nextMaterials[0];
+}
+
+function forEachMaterial(
+  material: THREE.Material | THREE.Material[],
+  callback: (value: THREE.Material) => void
+) {
+  const materials = Array.isArray(material) ? material : [material];
+  materials.forEach(callback);
+}
+
 function SceneDirector({
   activeStage,
-  tier,
-  variant,
   reducedMotion,
   paused,
-  motionProfile
+  rootRef,
+  tier,
+  variant,
+  motionProfile,
+  stageProgress
 }: {
   activeStage: SceneStageId;
-  tier: ViewportTier;
-  variant: SceneVariant;
   reducedMotion: boolean;
   paused: boolean;
+  rootRef: React.RefObject<THREE.Group | null>;
+  tier: ViewportTier;
+  variant: SceneVariant;
   motionProfile: MotionProfile;
+  stageProgress: number;
 }) {
-  const { camera } = useThree();
-  const perspectiveCamera = camera as THREE.PerspectiveCamera;
-  const lookTarget = useRef(new THREE.Vector3());
+  const { camera, gl, pointer, scene } = useThree();
 
   useFrame((state, delta) => {
+    const perspectiveCamera = camera as THREE.PerspectiveCamera;
     const preset = scenePresets[activeStage];
-    const config = VIEWPORT_CONFIG[tier];
-    const time = state.clock.elapsedTime;
-    const driftScale =
-      paused || reducedMotion
+    const viewport = VIEWPORT_CONFIG[tier];
+    const targetCamera = preset.camera[tier];
+    const tierScale =
+      variant === "overview" ? viewport.overviewScale : viewport.narrativeScale;
+    const motionFactor =
+      reducedMotion || paused
         ? 0
         : motionProfile === "immersive"
           ? 1
-          : motionProfile === "steady"
-            ? 0.45
-            : 0.28;
+          : motionProfile === "teaser"
+            ? 0.6
+            : 0.35;
 
-    const desiredPosition = vec3(preset.camera.position).add(
-      vec3(config.cameraOffset)
+    const desiredCamera = vec3(
+      withOffset(targetCamera.position, viewport.cameraOffset)
     );
-    const desiredTarget = vec3(preset.camera.target);
+    const lookTarget = vec3(targetCamera.target);
 
-    if (variant === "overview") {
-      desiredPosition.x += tier === "desktop" ? 0.68 : 0.24;
-      desiredPosition.y += tier === "desktop" ? 0.16 : 0.08;
-      desiredPosition.z -= tier === "desktop" ? 0.34 : 0.12;
-      desiredTarget.x += 0.34;
-      desiredTarget.y += 0.08;
-    }
-
-    desiredPosition.x += Math.sin(time * 0.22) * preset.motion.drift * 0.42 * driftScale;
-    desiredPosition.y += Math.cos(time * 0.18) * preset.motion.drift * 0.26 * driftScale;
-    desiredTarget.x += Math.sin(time * 0.2) * preset.motion.drift * 0.08 * driftScale;
-
-    dampVector(perspectiveCamera.position, desiredPosition, 4.8, delta);
-    dampVector(lookTarget.current, desiredTarget, 4.8, delta);
-
-    perspectiveCamera.lookAt(lookTarget.current);
     perspectiveCamera.fov = dampScalar(
       perspectiveCamera.fov,
-      preset.camera.fov + (variant === "overview" ? -0.8 : 0),
-      4.8,
+      targetCamera.fov,
+      5,
       delta
     );
     perspectiveCamera.updateProjectionMatrix();
+    dampVector(perspectiveCamera.position, desiredCamera, 5, delta);
+    perspectiveCamera.lookAt(lookTarget);
+
+    gl.toneMappingExposure = dampScalar(
+      gl.toneMappingExposure,
+      preset.atmosphere.backgroundStrength,
+      4,
+      delta
+    );
+
+    if (!(scene.fog instanceof THREE.Fog)) {
+      scene.fog = new THREE.Fog(preset.atmosphere.fogColor, 14, 28);
+    }
+
+    scene.fog.color.lerp(new THREE.Color(preset.atmosphere.fogColor), 0.12);
+    scene.fog.near = dampScalar(scene.fog.near, preset.atmosphere.fogNear, 5, delta);
+    scene.fog.far = dampScalar(scene.fog.far, preset.atmosphere.fogFar, 5, delta);
+
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+
+    const basePosition = vec3(
+      withOffset(preset.root.position, viewport.rootOffset)
+    );
+    const drift = preset.motion.drift * motionFactor;
+    const pulse = reducedMotion ? 0 : Math.sin(state.clock.elapsedTime * 0.42) * drift;
+    const parallax = preset.motion.parallax * motionFactor;
+    const progressBias = activeStage === "program" || activeStage === "network"
+      ? (stageProgress - 0.5) * 0.08
+      : 0;
+
+    const targetPosition = basePosition.clone().add(
+      new THREE.Vector3(pointer.x * parallax * 0.65, pulse + progressBias, 0)
+    );
+    const targetRotation = new THREE.Euler(
+      preset.root.rotation[0] + pointer.y * parallax * 0.32,
+      preset.root.rotation[1] + pointer.x * parallax * 0.42,
+      preset.root.rotation[2]
+    );
+
+    dampVector(root.position, targetPosition, 5, delta);
+    dampEuler(root.rotation, targetRotation, 5, delta);
+
+    const desiredScale = preset.root.scale * tierScale;
+    const scale = dampScalar(root.scale.x, desiredScale, 5, delta);
+    root.scale.setScalar(scale);
   });
 
   return null;
+}
+
+function BackgroundField({
+  activeStage
+}: {
+  activeStage: SceneStageId;
+}) {
+  const haloRef = useRef<THREE.Mesh>(null);
+  const veilRef = useRef<THREE.Mesh>(null);
+
+  useFrame((_, delta) => {
+    const preset = scenePresets[activeStage];
+    const fieldColor = new THREE.Color(preset.atmosphere.fieldColor);
+    const glowColor = new THREE.Color(preset.atmosphere.glowColor);
+
+    [haloRef.current, veilRef.current].forEach((mesh) => {
+      if (!mesh) {
+        return;
+      }
+
+      const material = mesh.material as THREE.MeshBasicMaterial;
+      const targetColor = mesh === haloRef.current ? glowColor : fieldColor;
+      material.color.lerp(targetColor, 0.12);
+      material.opacity = dampScalar(
+        material.opacity,
+        mesh === haloRef.current ? 0.24 : 0.34,
+        4,
+        delta
+      );
+    });
+  });
+
+  return (
+    <group position={[0, 0.2, -3.8]}>
+      <mesh ref={veilRef}>
+        <planeGeometry args={[18, 12]} />
+        <meshBasicMaterial
+          color="#314652"
+          transparent
+          opacity={0.3}
+          depthWrite={false}
+        />
+      </mesh>
+      <mesh ref={haloRef} position={[0.2, 0.1, 0.02]}>
+        <circleGeometry args={[4.4, 48]} />
+        <meshBasicMaterial
+          color="#90a8b0"
+          transparent
+          opacity={0.22}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
 }
 
 function SceneLighting({
@@ -318,9 +385,8 @@ function SceneLighting({
 }) {
   const ambientRef = useRef<THREE.AmbientLight>(null);
   const keyRef = useRef<THREE.DirectionalLight>(null);
-  const fillRef = useRef<THREE.PointLight>(null);
+  const fillRef = useRef<THREE.DirectionalLight>(null);
   const rimRef = useRef<THREE.PointLight>(null);
-  const accentRef = useRef<THREE.PointLight>(null);
 
   useFrame((_, delta) => {
     const preset = scenePresets[activeStage];
@@ -329,7 +395,7 @@ function SceneLighting({
       ambientRef.current.intensity = dampScalar(
         ambientRef.current.intensity,
         preset.lighting.ambient,
-        5.6,
+        4,
         delta
       );
     }
@@ -338,766 +404,368 @@ function SceneLighting({
       keyRef.current.intensity = dampScalar(
         keyRef.current.intensity,
         preset.lighting.key,
-        5.6,
+        4,
         delta
       );
-      keyRef.current.position.set(4.8, 5.4, 8.6);
+      keyRef.current.color.lerp(
+        new THREE.Color("#f0f6f3"),
+        0.08
+      );
     }
 
     if (fillRef.current) {
       fillRef.current.intensity = dampScalar(
         fillRef.current.intensity,
         preset.lighting.fill,
-        5.6,
+        4,
         delta
       );
-      fillRef.current.position.set(-6.4, -1.6, 7.2);
+      fillRef.current.color.lerp(
+        new THREE.Color(preset.atmosphere.fieldColor),
+        0.1
+      );
     }
 
     if (rimRef.current) {
       rimRef.current.intensity = dampScalar(
         rimRef.current.intensity,
         preset.lighting.rim,
-        5.6,
+        4,
         delta
       );
-      rimRef.current.position.set(5.4, 2.4, -2.6);
-    }
-
-    if (accentRef.current) {
-      accentRef.current.intensity = dampScalar(
-        accentRef.current.intensity,
-        preset.lighting.accent,
-        5.6,
-        delta
+      rimRef.current.color.lerp(
+        new THREE.Color(preset.atmosphere.glowColor),
+        0.1
       );
-      accentRef.current.position.set(-1.4, 3.8, 4.6);
     }
   });
 
   return (
     <>
-      <ambientLight ref={ambientRef} color="#f0f3ef" intensity={1.04} />
-      <directionalLight ref={keyRef} color="#f5f7fc" intensity={1.18} />
-      <pointLight ref={fillRef} color="#8fb8aa" intensity={0.72} distance={18} />
-      <pointLight ref={rimRef} color="#bfd3ff" intensity={0.42} distance={16} />
-      <pointLight ref={accentRef} color="#d8e68c" intensity={0.28} distance={14} />
+      <ambientLight ref={ambientRef} intensity={1.12} />
+      <directionalLight
+        ref={keyRef}
+        position={[4.8, 6.2, 6.6]}
+        intensity={1.28}
+        color="#f3f7f5"
+      />
+      <directionalLight
+        ref={fillRef}
+        position={[-5.4, 3.2, 4.8]}
+        intensity={0.78}
+        color="#6f8893"
+      />
+      <pointLight
+        ref={rimRef}
+        position={[0.8, 2.6, 5.4]}
+        intensity={0.84}
+        distance={18}
+        color="#aac2c8"
+      />
     </>
   );
 }
 
-function BackdropField({
-  activeStage
-}: {
-  activeStage: SceneStageId;
-}) {
-  const preset = scenePresets[activeStage];
-
-  return (
-    <group position={[0, 0.12, -2.4]}>
-      <mesh>
-        <planeGeometry args={[18, 14]} />
-        <meshBasicMaterial
-          color={mixColor(COLORS.shadow, COLORS.backdrop, 0.52)}
-          transparent
-          opacity={0.12 + preset.atmosphere.background * 0.05}
-        />
-      </mesh>
-      <mesh position={[-2.45, 1.02, 0.08]} rotation={[0, 0, -0.14]}>
-        <planeGeometry args={[5.8, 2.2]} />
-        <meshBasicMaterial
-          color={colorToCss(COLORS.labs)}
-          transparent
-          opacity={0.03 + preset.layers.labs * 0.04}
-        />
-      </mesh>
-      <mesh position={[0.62, -1.96, 0.08]} rotation={[0, 0, 0.06]}>
-        <planeGeometry args={[5.2, 2.05]} />
-        <meshBasicMaterial
-          color={colorToCss(COLORS.program)}
-          transparent
-          opacity={0.026 + preset.layers.program * 0.05}
-        />
-      </mesh>
-      <mesh position={[1.32, 2.42, 0.08]} rotation={[0, 0, 0.03]}>
-        <planeGeometry args={[4.8, 1.82]} />
-        <meshBasicMaterial
-          color={colorToCss(COLORS.network)}
-          transparent
-          opacity={0.022 + preset.layers.network * 0.04}
-        />
-      </mesh>
-    </group>
-  );
-}
-
-function SignalPulses({
+function CrossSectionAsset({
   activeStage,
   focus,
   reducedMotion,
-  paused
+  rootRef
 }: {
   activeStage: SceneStageId;
-  focus: MapFocus | undefined;
+  focus?: MapFocus;
   reducedMotion: boolean;
-  paused: boolean;
+  rootRef: React.RefObject<THREE.Group | null>;
 }) {
-  const pulseRefs = useRef<THREE.Mesh[]>([]);
-  const routes = useMemo(
-    () =>
-      ROUTES.map((route) => ({
-        curve: new THREE.CatmullRomCurve3(
-          route.points.map((point) => vec3(point)),
-          route.closed ?? false
-        ),
-        focus: route.focus
-      })),
-    []
-  );
+  const gltf = useGLTF(CROSS_SECTION_URL);
+  const assetScene = useMemo(() => {
+    const clone = gltf.scene.clone(true);
+    clone.traverse((node) => registerMaterial(node));
+    return clone;
+  }, [gltf.scene]);
 
-  pulseRefs.current = [];
+  const layers = useMemo<LayerCollections>(() => {
+    const spine = assetScene.getObjectByName("OperationsSpine");
+    const labWest = assetScene.getObjectByName("LabDeckWest");
+    const labEast = assetScene.getObjectByName("LabDeckEast");
+    const program = assetScene.getObjectByName("ProgramLoop");
+    const network = assetScene.getObjectByName("NetworkLayer");
 
-  useFrame((state) => {
-    const time = state.clock.elapsedTime;
+    return {
+      spine: spine ? [spine] : [],
+      labs: [labWest, labEast].filter(Boolean) as THREE.Object3D[],
+      program: program ? [program] : [],
+      network: network ? [network] : []
+    };
+  }, [assetScene]);
+
+  useEffect(() => {
+    Object.values(layers).flat().forEach((node) => {
+      node.userData.basePosition = node.position.clone();
+      node.userData.baseRotation = node.rotation.clone();
+    });
+  }, [layers]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) {
+      return undefined;
+    }
+
+    root.add(assetScene);
+    return () => {
+      root.remove(assetScene);
+    };
+  }, [assetScene, rootRef]);
+
+  useFrame((_, delta) => {
     const preset = scenePresets[activeStage];
-    const speedBase =
-      reducedMotion || paused ? 0 : 0.04 + preset.motion.signal * 0.05;
 
-    pulseRefs.current.forEach((mesh, index) => {
-      const routeMeta = routes[index % routes.length];
-      const strength = getLayerWeight(activeStage, focus, routeMeta.focus);
-      const progress = reducedMotion
-        ? 0.5
-        : (time * (speedBase + strength * 0.035) + index * 0.22) % 1;
-      const point = routeMeta.curve.getPointAt(progress);
-      const tangent = routeMeta.curve.getTangentAt(progress).normalize();
-      const quat = new THREE.Quaternion().setFromUnitVectors(
-        new THREE.Vector3(1, 0, 0),
-        tangent
-      );
+    const applyLayer = (layer: SceneLayer) => {
+      const nodes = layers[layer];
+      if (!nodes.length) {
+        return;
+      }
 
-      mesh.position.copy(point);
-      mesh.quaternion.copy(quat);
-      mesh.visible = strength > 0.16;
-      mesh.scale.set(
-        0.08 + strength * 0.1,
-        0.028 + strength * 0.008,
-        0.028 + strength * 0.008
-      );
+      const targetWeight = layerWeight(activeStage, focus, layer);
+
+      nodes.forEach((node, index) => {
+        const basePosition = node.userData.basePosition as THREE.Vector3;
+        const baseRotation = node.userData.baseRotation as THREE.Euler;
+
+        const offset = new THREE.Vector3();
+        if (layer === "labs") {
+          offset.x += Math.sign(basePosition.x || (index === 0 ? -1 : 1)) * preset.emphasis.cutDepth * 0.24;
+          offset.y += preset.emphasis.labsLift;
+        }
+
+        if (layer === "program") {
+          offset.y += preset.emphasis.programLift;
+          offset.z -= preset.emphasis.cutDepth * 0.08;
+        }
+
+        if (layer === "network") {
+          offset.y += preset.emphasis.networkLift;
+          offset.z += preset.emphasis.cutDepth * 0.05;
+        }
+
+        if (layer === "spine") {
+          offset.z += preset.emphasis.cutDepth * 0.03;
+        }
+
+        const targetPosition = basePosition.clone().add(offset);
+        dampVector(node.position, targetPosition, 5, delta);
+        dampEuler(node.rotation, baseRotation, 5, delta);
+
+        node.visible = targetWeight > 0.03;
+
+        node.traverse((child) => {
+          const mesh = child as THREE.Mesh;
+          if (!mesh.isMesh) {
+            return;
+          }
+
+          forEachMaterial(mesh.material, (material) => {
+            if (!("opacity" in material)) {
+              return;
+            }
+
+            material.transparent = true;
+            material.depthWrite = targetWeight > 0.62;
+            material.opacity = dampScalar(
+              material.opacity,
+              0.14 + targetWeight * 0.9,
+              6,
+              delta
+            );
+
+            if (
+              material instanceof THREE.MeshStandardMaterial ||
+              material instanceof THREE.MeshPhysicalMaterial
+            ) {
+              const emissive = new THREE.Color(LAYER_COLORS[layer]);
+              material.emissive.lerp(emissive.multiplyScalar(0.06), 0.08);
+              material.emissiveIntensity = dampScalar(
+                material.emissiveIntensity,
+                reducedMotion ? 0.02 : targetWeight * 0.16,
+                5,
+                delta
+              );
+            }
+          });
+        });
+      });
+    };
+
+    applyLayer("spine");
+    applyLayer("labs");
+    applyLayer("program");
+    applyLayer("network");
+  });
+
+  return null;
+}
+
+function SignalTraffic({
+  activeStage,
+  focus,
+  reducedMotion,
+  rootRef
+}: {
+  activeStage: SceneStageId;
+  focus?: MapFocus;
+  reducedMotion: boolean;
+  rootRef: React.RefObject<THREE.Group | null>;
+}) {
+  const preset = scenePresets[activeStage];
+  const routeRecords = useMemo<RoutePulseRecord[]>(() => {
+    return signalRoutes.map((route) => ({
+      curve: new THREE.CatmullRomCurve3(route.points.map((point) => vec3(point))),
+      refs: []
+    }));
+  }, []);
+
+  useFrame((state, delta) => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+
+    routeRecords.forEach((record, index) => {
+      const route = signalRoutes[index];
+      const baseWeight = route.focus === activeStage
+        ? 1
+        : activeStage === "opening"
+          ? 0.56
+          : activeStage === "closing"
+            ? 0.34
+            : route.focus === "labs" && activeStage === "labs"
+              ? 1
+              : 0.22;
+      const focusLift =
+        activeStage === "labs" && focus && focus === route.focus ? 0.1 : 0;
+      const activity = reducedMotion
+        ? 0
+        : (baseWeight + focusLift) * preset.motion.signal;
+
+      record.refs.forEach((meshRef, pulseIndex) => {
+        if (!meshRef) {
+          return;
+        }
+
+        meshRef.visible = baseWeight > 0.1;
+
+        const time = state.clock.elapsedTime * (0.08 + activity * 0.18);
+        const progress = (time + pulseIndex * 0.28) % 1;
+        const point = record.curve.getPointAt(progress);
+        const tangent = record.curve.getTangentAt(progress);
+
+        meshRef.position.copy(point);
+        meshRef.lookAt(point.clone().add(tangent));
+
+        const material = meshRef.material as THREE.MeshStandardMaterial;
+        material.opacity = dampScalar(
+          material.opacity,
+          0.18 + baseWeight * 0.62,
+          6,
+          delta
+        );
+      });
     });
   });
 
   return (
     <group>
-      {ROUTES.flatMap((route, routeIndex) =>
-        [0, 1].map((offset) => {
-          const color =
-            route.focus === "labs"
-              ? COLORS.labs
-              : route.focus === "program"
-                ? COLORS.program
-                : COLORS.network;
+      {signalRoutes.map((route, routeIndex) => {
+        const routeColor = LAYER_COLORS[route.focus];
+        const stageWeight = route.focus === activeStage
+          ? 0.92
+          : activeStage === "opening"
+            ? 0.54
+            : activeStage === "closing"
+              ? 0.32
+              : 0.18;
 
-          return (
-            <mesh
-              key={`${route.focus}-${offset}`}
-              ref={(node) => {
-                if (node) {
-                  pulseRefs.current[routeIndex * 2 + offset] = node;
-                }
-              }}
-            >
-              <boxGeometry args={[1, 1, 1]} />
-              <meshStandardMaterial
-                color={colorToCss(color)}
-                emissive={colorToCss(color)}
-                emissiveIntensity={0.46}
-                roughness={0.62}
-                metalness={0.02}
-              />
-            </mesh>
-          );
-        })
-      )}
+        return (
+          <group key={route.id}>
+            <Line
+              points={route.points}
+              color={routeColor}
+              lineWidth={1.35}
+              transparent
+              opacity={stageWeight}
+            />
+
+            {[0, 1].map((pulseIndex) => (
+              <mesh
+                key={`${route.id}-${pulseIndex}`}
+                ref={(value) => {
+                  routeRecords[routeIndex].refs[pulseIndex] = value;
+                }}
+              >
+                <boxGeometry args={[0.12, 0.05, 0.05]} />
+                <meshStandardMaterial
+                  color={routeColor}
+                  emissive={routeColor}
+                  emissiveIntensity={0.38}
+                  transparent
+                  opacity={0.5}
+                />
+              </mesh>
+            ))}
+          </group>
+        );
+      })}
     </group>
   );
 }
 
-function LabDeck({
-  position,
-  rotation,
-  strength,
-  mirror,
-  deckColor,
-  frameColor,
-  moduleColor,
-  routeColor
-}: {
-  position: Vec3;
-  rotation: Vec3;
-  strength: number;
-  mirror?: boolean;
-  deckColor: string;
-  frameColor: string;
-  moduleColor: string;
-  routeColor: string;
-}) {
-  return (
-    <group position={position} rotation={rotation}>
-      <RoundedBox args={[2.48, 0.16, 1.26]} radius={0.08}>
-        <meshStandardMaterial
-          color={deckColor}
-          roughness={0.92}
-          metalness={0.03}
-          transparent
-          opacity={0.32 + strength * 0.6}
-        />
-      </RoundedBox>
-
-      <RoundedBox args={[2.06, 0.06, 0.94]} position={[0, 0.14, 0]} radius={0.03}>
-        <meshStandardMaterial
-          color={moduleColor}
-          roughness={0.9}
-          metalness={0.02}
-          transparent
-          opacity={0.16 + strength * 0.32}
-        />
-      </RoundedBox>
-
-      <RoundedBox
-        args={[2.18, 0.05, 0.08]}
-        position={[0, 0.2, mirror ? 0.42 : -0.42]}
-        radius={0.02}
-      >
-        <meshStandardMaterial
-          color={routeColor}
-          roughness={0.74}
-          metalness={0.02}
-          emissive={routeColor}
-          emissiveIntensity={0.06 + strength * 0.12}
-          transparent
-          opacity={0.18 + strength * 0.44}
-        />
-      </RoundedBox>
-
-      <RoundedBox
-        args={[2.18, 0.05, 0.08]}
-        position={[0, 0.2, mirror ? -0.42 : 0.42]}
-        radius={0.02}
-      >
-        <meshStandardMaterial
-          color={frameColor}
-          roughness={0.86}
-          metalness={0.02}
-          transparent
-          opacity={0.16 + strength * 0.38}
-        />
-      </RoundedBox>
-
-      {[-0.82, 0, 0.82].map((x) => (
-        <RoundedBox
-          key={`${position[0]}-${x}`}
-          args={[0.44, 0.28, 0.24]}
-          position={[x, 0.26, 0]}
-          radius={0.05}
-        >
-          <meshStandardMaterial
-            color={moduleColor}
-            roughness={0.88}
-            metalness={0.02}
-            transparent
-            opacity={0.24 + strength * 0.42}
-          />
-        </RoundedBox>
-      ))}
-
-      <RoundedBox
-        args={[0.72, 0.12, 0.26]}
-        position={[mirror ? 1.16 : -1.16, -0.12, 0.18]}
-        radius={0.04}
-      >
-        <meshStandardMaterial
-          color={frameColor}
-          roughness={0.88}
-          metalness={0.02}
-          transparent
-          opacity={0.18 + strength * 0.4}
-        />
-      </RoundedBox>
-
-      <Line
-        points={[
-          [-1.04, 0.22, 0.28],
-          [0, 0.22, 0.28],
-          [1.04, 0.22, 0.28]
-        ]}
-        color={routeColor}
-        lineWidth={1}
-        transparent
-        opacity={0.18 + strength * 0.42}
-      />
-    </group>
-  );
-}
-
-function OperationsDiagram({
+function SceneContent({
   activeStage,
   focus,
+  reducedMotion,
   stageProgress,
   tier,
   variant,
-  reducedMotion,
   paused,
   motionProfile
-}: {
-  activeStage: SceneStageId;
-  focus: MapFocus | undefined;
-  stageProgress: number;
-  tier: ViewportTier;
-  variant: SceneVariant;
-  reducedMotion: boolean;
-  paused: boolean;
-  motionProfile: MotionProfile;
-}) {
+}: Required<
+  Pick<
+    AtlasSceneProps,
+    "activeStage" | "reducedMotion" | "stageProgress" | "variant" | "paused" | "motionProfile"
+  >
+> & { focus?: MapFocus; tier: ViewportTier }) {
   const rootRef = useRef<THREE.Group>(null);
-  const labsRef = useRef<THREE.Group>(null);
-  const programRef = useRef<THREE.Group>(null);
-  const networkRef = useRef<THREE.Group>(null);
-  const connectorsRef = useRef<THREE.Group>(null);
-
-  const preset = scenePresets[activeStage];
-  const viewport = VIEWPORT_CONFIG[tier];
-  const reveal = reducedMotion
-    ? 0.22
-    : THREE.MathUtils.smoothstep(stageProgress, 0, 1);
-
-  const labsWeight = getLayerWeight(activeStage, focus, "labs");
-  const programWeight = getLayerWeight(activeStage, focus, "program");
-  const networkWeight = getLayerWeight(activeStage, focus, "network");
-  const connectorsWeight = preset.layers.connectors;
-
-  const sceneScale =
-    preset.root.scale *
-    (variant === "overview" ? viewport.overviewScale : viewport.narrativeScale);
-  const sceneOffset = vec3(preset.root.position).add(vec3(viewport.rootOffset));
-
-  const leftLabPosition = useMemo<Vec3>(
-    () => [
-      -2.44 * preset.diagram.labSpread,
-      1.3 + preset.diagram.labLift,
-      0.3 + preset.diagram.labDepth
-    ],
-    [preset]
-  );
-  const rightLabPosition = useMemo<Vec3>(
-    () => [
-      2.46 * preset.diagram.labSpread,
-      0.36 + preset.diagram.labLift * 0.54,
-      -0.22 - preset.diagram.labDepth * 0.84
-    ],
-    [preset]
-  );
-
-  const spineColor = mixColor(COLORS.structure, COLORS.spine, 0.22 + preset.layers.spine * 0.24);
-  const frameColor = mixColor(COLORS.frame, COLORS.structure, 0.3 + connectorsWeight * 0.2);
-  const deckColor = mixColor(COLORS.surface, COLORS.spine, 0.14);
-  const labColor = mixColor(COLORS.surface, COLORS.labs, 0.18 + labsWeight * 0.38);
-  const programColor = mixColor(
-    COLORS.surface,
-    COLORS.program,
-    0.2 + programWeight * 0.42
-  );
-  const networkColor = mixColor(
-    COLORS.surface,
-    COLORS.network,
-    0.2 + networkWeight * 0.42
-  );
-  const routeLabs = mixColor(COLORS.route, COLORS.labs, 0.24 + labsWeight * 0.54);
-  const routeProgram = mixColor(
-    COLORS.route,
-    COLORS.program,
-    0.24 + programWeight * 0.58
-  );
-  const routeNetwork = mixColor(
-    COLORS.route,
-    COLORS.network,
-    0.24 + networkWeight * 0.58
-  );
-
-  useFrame((state, delta) => {
-    const time = state.clock.elapsedTime;
-    const driftScale =
-      paused || reducedMotion
-        ? 0
-        : motionProfile === "immersive"
-          ? 1
-          : motionProfile === "steady"
-            ? 0.4
-            : 0.24;
-
-    if (rootRef.current) {
-      const targetPosition = sceneOffset.clone();
-      const targetRotation = new THREE.Euler(
-        preset.root.rotation[0],
-        preset.root.rotation[1],
-        preset.root.rotation[2]
-      );
-
-      targetPosition.x += Math.sin(time * 0.2) * preset.motion.drift * 0.18 * driftScale;
-      targetPosition.y += Math.cos(time * 0.16) * preset.motion.drift * 0.12 * driftScale;
-      targetRotation.z += Math.sin(time * 0.18) * preset.motion.drift * 0.03 * driftScale;
-
-      dampVector(rootRef.current.position, targetPosition, 5.2, delta);
-      dampEuler(rootRef.current.rotation, targetRotation, 5.2, delta);
-
-      const nextScale = dampScalar(rootRef.current.scale.x, sceneScale, 5.2, delta);
-      rootRef.current.scale.setScalar(nextScale);
-    }
-
-    if (labsRef.current) {
-      const targetPosition = new THREE.Vector3(0, preset.diagram.labLift * 0.06, 0);
-      const targetRotation = new THREE.Euler(0.02, -0.03 - reveal * 0.02, 0.01);
-      dampVector(labsRef.current.position, targetPosition, 5.2, delta);
-      dampEuler(labsRef.current.rotation, targetRotation, 5.2, delta);
-    }
-
-    if (programRef.current) {
-      const targetPosition = new THREE.Vector3(0, preset.diagram.programLift, 0);
-      const targetRotation = new THREE.Euler(0.04, 0.02, -0.02);
-      dampVector(programRef.current.position, targetPosition, 5.2, delta);
-      dampEuler(programRef.current.rotation, targetRotation, 5.2, delta);
-      const nextX = dampScalar(
-        programRef.current.scale.x,
-        preset.diagram.programScale,
-        5.2,
-        delta
-      );
-      programRef.current.scale.set(nextX, 1, nextX);
-    }
-
-    if (networkRef.current) {
-      const targetPosition = new THREE.Vector3(0, preset.diagram.networkLift, 0.04);
-      const targetRotation = new THREE.Euler(0.01, 0.02, 0.01);
-      dampVector(networkRef.current.position, targetPosition, 5.2, delta);
-      dampEuler(networkRef.current.rotation, targetRotation, 5.2, delta);
-      const nextX = dampScalar(
-        networkRef.current.scale.x,
-        preset.diagram.networkSpread,
-        5.2,
-        delta
-      );
-      networkRef.current.scale.set(nextX, 1, 1);
-    }
-
-    if (connectorsRef.current) {
-      const targetRotation = new THREE.Euler(0, 0, preset.diagram.connectorLean * 0.18);
-      dampEuler(connectorsRef.current.rotation, targetRotation, 5.2, delta);
-    }
-  });
 
   return (
-    <group ref={rootRef}>
-      <BackdropField activeStage={activeStage} />
-
-      <group position={[0.12, 0.06, 0]}>
-        <RoundedBox args={[0.62, 5.2, 0.18]} radius={0.08}>
-          <meshStandardMaterial color={spineColor} roughness={0.94} metalness={0.03} />
-        </RoundedBox>
-
-        <RoundedBox args={[0.18, 5.6, 0.12]} position={[-0.48, 0, 0.08]} radius={0.04}>
-          <meshStandardMaterial
-            color={frameColor}
-            roughness={0.92}
-            metalness={0.02}
-            transparent
-            opacity={0.24 + preset.layers.spine * 0.28}
-          />
-        </RoundedBox>
-
-        <RoundedBox args={[0.18, 5.6, 0.12]} position={[0.48, 0, 0.08]} radius={0.04}>
-          <meshStandardMaterial
-            color={frameColor}
-            roughness={0.92}
-            metalness={0.02}
-            transparent
-            opacity={0.24 + preset.layers.spine * 0.28}
-          />
-        </RoundedBox>
-
-        {[
-          { y: 1.5, width: 1.38 },
-          { y: 0.28, width: 1.22 },
-          { y: -1.6, width: 1.04 },
-          { y: 2.34, width: 0.84 }
-        ].map((hub) => (
-          <RoundedBox
-            key={hub.y}
-            args={[hub.width, 0.1, 0.12]}
-            position={[0, hub.y, 0.14]}
-            radius={0.03}
-          >
-            <meshStandardMaterial
-              color={frameColor}
-              roughness={0.9}
-              metalness={0.02}
-              transparent
-              opacity={0.18 + preset.layers.spine * 0.3}
-            />
-          </RoundedBox>
-        ))}
-
-        {[-1.46, -0.42, 0.78].map((y) => (
-          <group key={y} position={[0.9, y, 0.12]}>
-            <RoundedBox args={[0.56, 0.22, 0.16]} radius={0.03}>
-              <meshStandardMaterial
-                color={frameColor}
-                roughness={0.9}
-                metalness={0.02}
-                transparent
-                opacity={0.16 + connectorsWeight * 0.3}
-              />
-            </RoundedBox>
-            <RoundedBox args={[0.22, 0.1, 0.1]} position={[0.34, 0, 0.08]} radius={0.02}>
-              <meshStandardMaterial
-                color={spineColor}
-                roughness={0.88}
-                metalness={0.02}
-                transparent
-                opacity={0.14 + connectorsWeight * 0.3}
-              />
-            </RoundedBox>
-          </group>
-        ))}
-      </group>
-
-      <group ref={connectorsRef}>
-        <Line
-          points={[
-            [0.18, 1.24, 0.08],
-            [-0.42, 1.38, 0.12],
-            [-1.2, 1.56, 0.16],
-            [-2.16, 1.66, 0.18]
-          ]}
-          color={routeLabs}
-          lineWidth={1.4}
-          transparent
-          opacity={0.16 + connectorsWeight * 0.42}
+    <>
+      <BackgroundField activeStage={activeStage} />
+      <SceneLighting activeStage={activeStage} />
+      <group ref={rootRef}>
+        <CrossSectionAsset
+          activeStage={activeStage}
+          focus={focus}
+          reducedMotion={reducedMotion}
+          rootRef={rootRef}
         />
-        <Line
-          points={[
-            [0.18, 0.14, 0.08],
-            [0.8, 0.28, 0.1],
-            [1.46, 0.4, 0.12],
-            [2.16, 0.52, 0.14]
-          ]}
-          color={routeLabs}
-          lineWidth={1.4}
-          transparent
-          opacity={0.16 + connectorsWeight * 0.42}
-        />
-        <Line
-          points={[
-            [0.14, -1.12, 0.06],
-            [0.1, -1.5, 0.08],
-            [0.02, -1.9, 0.08],
-            [0.08, -2.2, 0.1]
-          ]}
-          color={routeProgram}
-          lineWidth={1.4}
-          transparent
-          opacity={0.16 + connectorsWeight * 0.42}
-        />
-        <Line
-          points={[
-            [0.16, 1.84, 0.08],
-            [0.38, 2.12, 0.1],
-            [0.92, 2.42, 0.14],
-            [1.56, 2.72, 0.18]
-          ]}
-          color={routeNetwork}
-          lineWidth={1.4}
-          transparent
-          opacity={0.16 + connectorsWeight * 0.42}
+        <SignalTraffic
+          activeStage={activeStage}
+          focus={focus}
+          reducedMotion={reducedMotion}
+          rootRef={rootRef}
         />
       </group>
-
-      <group ref={labsRef}>
-        <LabDeck
-          position={leftLabPosition}
-          rotation={[0.02, 0.08, 0]}
-          strength={labsWeight}
-          deckColor={deckColor}
-          frameColor={labColor}
-          moduleColor={mixColor(COLORS.panel, COLORS.labs, 0.16 + labsWeight * 0.18)}
-          routeColor={routeLabs}
-        />
-
-        <LabDeck
-          position={rightLabPosition}
-          rotation={[-0.01, -0.08, 0.02]}
-          strength={labsWeight}
-          mirror
-          deckColor={deckColor}
-          frameColor={labColor}
-          moduleColor={mixColor(COLORS.panel, COLORS.labs, 0.16 + labsWeight * 0.18)}
-          routeColor={routeLabs}
-        />
-      </group>
-
-      <group ref={programRef} position={[0.08, -2.02, 0.08]}>
-        <RoundedBox args={[2.4, 0.1, 0.46]} position={[0, -0.1, -0.02]} radius={0.08}>
-          <meshStandardMaterial
-            color={mixColor(COLORS.panel, COLORS.program, 0.12 + programWeight * 0.2)}
-            roughness={0.9}
-            metalness={0.02}
-            transparent
-            opacity={0.14 + programWeight * 0.28}
-          />
-        </RoundedBox>
-
-        <Line
-          points={PROGRAM_LOOP_POINTS}
-          color={routeProgram}
-          lineWidth={1.5}
-          transparent
-          opacity={0.2 + programWeight * 0.52}
-        />
-
-        {[-1.38, -0.48, 0.46, 1.34].map((x) => (
-          <group key={x} position={[x, 0, 0.1]}>
-            <RoundedBox args={[0.1, 0.72, 0.12]} position={[-0.08, 0.02, 0]} radius={0.03}>
-              <meshStandardMaterial
-                color={programColor}
-                roughness={0.86}
-                metalness={0.02}
-                transparent
-                opacity={0.18 + programWeight * 0.52}
-              />
-            </RoundedBox>
-            <RoundedBox args={[0.1, 0.72, 0.12]} position={[0.08, 0.02, 0]} radius={0.03}>
-              <meshStandardMaterial
-                color={programColor}
-                roughness={0.86}
-                metalness={0.02}
-                transparent
-                opacity={0.18 + programWeight * 0.52}
-              />
-            </RoundedBox>
-            <RoundedBox args={[0.34, 0.08, 0.12]} position={[0, 0.34, 0]} radius={0.03}>
-              <meshStandardMaterial
-                color={routeProgram}
-                roughness={0.72}
-                metalness={0.02}
-                emissive={routeProgram}
-                emissiveIntensity={0.06 + programWeight * 0.12}
-                transparent
-                opacity={0.18 + programWeight * 0.42}
-              />
-            </RoundedBox>
-          </group>
-        ))}
-
-        {[-1.44, -0.52, 0.38, 1.28].map((x) => (
-          <RoundedBox
-            key={`marker-${x}`}
-            args={[0.26, 0.08, 0.12]}
-            position={[x, -0.78, 0.08]}
-            radius={0.03}
-          >
-            <meshStandardMaterial
-              color={programColor}
-              roughness={0.86}
-              metalness={0.02}
-              transparent
-              opacity={0.18 + programWeight * 0.38}
-            />
-          </RoundedBox>
-        ))}
-      </group>
-
-      <group ref={networkRef} position={[0.18, 2.16, 0.12]}>
-        <RoundedBox args={[4.32, 0.12, 0.12]} radius={0.03}>
-          <meshStandardMaterial
-            color={routeNetwork}
-            roughness={0.74}
-            metalness={0.02}
-            emissive={routeNetwork}
-            emissiveIntensity={0.06 + networkWeight * 0.14}
-            transparent
-            opacity={0.18 + networkWeight * 0.5}
-          />
-        </RoundedBox>
-
-        <RoundedBox args={[3.14, 0.08, 0.12]} position={[0.22, 0.84, 0.1]} radius={0.03}>
-          <meshStandardMaterial
-            color={networkColor}
-            roughness={0.86}
-            metalness={0.02}
-            transparent
-            opacity={0.16 + networkWeight * 0.44}
-          />
-        </RoundedBox>
-
-        {[-1.5, -0.42, 0.68, 1.82].map((x, index) => (
-          <RoundedBox
-            key={`bridge-${x}`}
-            args={[0.1, 0.88 + index * 0.08, 0.1]}
-            position={[x, 0.42 + index * 0.08, 0]}
-            radius={0.03}
-          >
-            <meshStandardMaterial
-              color={networkColor}
-              roughness={0.86}
-              metalness={0.02}
-              transparent
-              opacity={0.16 + networkWeight * 0.48}
-            />
-          </RoundedBox>
-        ))}
-
-        {[-1.7, -0.68, 0.42, 1.46].map((x) => (
-          <group key={`cluster-${x}`} position={[x, 0.88, 0.1]}>
-            {[-0.18, 0, 0.18].map((offset) => (
-              <RoundedBox
-                key={`${x}-${offset}`}
-                args={[0.16, 0.16, 0.12]}
-                position={[offset, 0, 0]}
-                radius={0.03}
-              >
-                <meshStandardMaterial
-                  color={mixColor(COLORS.panel, COLORS.network, 0.14 + networkWeight * 0.18)}
-                  roughness={0.84}
-                  metalness={0.02}
-                  transparent
-                  opacity={0.2 + networkWeight * 0.4}
-                />
-              </RoundedBox>
-            ))}
-          </group>
-        ))}
-
-        <Line
-          points={[
-            [-1.82, 0.04, 0],
-            [-1.02, 0.74, 0.08],
-            [0.18, 1.08, 0.12],
-            [1.12, 0.82, 0.08],
-            [1.86, 0.08, 0]
-          ]}
-          color={routeNetwork}
-          lineWidth={1.15}
-          transparent
-          opacity={0.18 + networkWeight * 0.42}
-        />
-      </group>
-
-      <SignalPulses
+      <SceneDirector
         activeStage={activeStage}
-        focus={focus}
         reducedMotion={reducedMotion}
         paused={paused}
+        rootRef={rootRef}
+        tier={tier}
+        variant={variant}
+        motionProfile={motionProfile}
+        stageProgress={stageProgress}
       />
-    </group>
+    </>
   );
 }
 
@@ -1110,7 +778,9 @@ function AtlasFallback({
 }) {
   return (
     <div
-      className={`atlas-fallback atlas-fallback--${activeStage} atlas-fallback--${variant}`}
+      className={`atlas-fallback atlas-fallback--${activeStage}${
+        variant === "overview" ? " atlas-fallback--overview" : ""
+      }`}
       aria-hidden="true"
     >
       <div className="atlas-fallback__map">
@@ -1136,65 +806,11 @@ function AtlasFallback({
   );
 }
 
-function SceneContent({
-  activeStage,
-  focus,
-  reducedMotion,
-  stageProgress,
-  variant,
-  paused,
-  tier,
-  motionProfile
-}: {
-  activeStage: SceneStageId;
-  focus: MapFocus | undefined;
-  reducedMotion: boolean;
-  stageProgress: number;
-  variant: SceneVariant;
-  paused: boolean;
-  tier: ViewportTier;
-  motionProfile: MotionProfile;
-}) {
-  const preset = scenePresets[activeStage];
-
-  return (
-    <>
-      <fog
-        attach="fog"
-        args={[
-          preset.atmosphere.fogColor,
-          preset.atmosphere.fogNear + (variant === "overview" ? 1.2 : 0),
-          preset.atmosphere.fogFar
-        ]}
-      />
-      <SceneLighting activeStage={activeStage} />
-      <SceneDirector
-        activeStage={activeStage}
-        tier={tier}
-        variant={variant}
-        reducedMotion={reducedMotion}
-        paused={paused}
-        motionProfile={motionProfile}
-      />
-      <OperationsDiagram
-        activeStage={activeStage}
-        focus={focus}
-        stageProgress={stageProgress}
-        tier={tier}
-        variant={variant}
-        reducedMotion={reducedMotion}
-        paused={paused}
-        motionProfile={motionProfile}
-      />
-    </>
-  );
-}
-
 export const AtlasScene = memo(function AtlasScene({
   activeStage,
   focus,
   reducedMotion = false,
-  stageProgress = 0.5,
+  stageProgress = 0.4,
   variant = "narrative",
   paused = false,
   motionProfile = "steady"
@@ -1211,20 +827,24 @@ export const AtlasScene = memo(function AtlasScene({
       <Canvas
         className="atlas-scene__canvas"
         dpr={VIEWPORT_CONFIG[tier].dpr}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        camera={{ position: [0, 0.8, 9.8], fov: 23, near: 0.1, far: 44 }}
+        gl={{ antialias: true, alpha: true }}
+        camera={{ position: [0.6, 1, 11.2], fov: 24, near: 0.1, far: 48 }}
       >
-        <SceneContent
-          activeStage={activeStage}
-          focus={focus}
-          reducedMotion={reducedMotion}
-          stageProgress={stageProgress}
-          variant={variant}
-          paused={paused}
-          tier={tier}
-          motionProfile={motionProfile}
-        />
+        <Suspense fallback={null}>
+          <SceneContent
+            activeStage={activeStage}
+            focus={focus}
+            reducedMotion={reducedMotion}
+            stageProgress={stageProgress}
+            tier={tier}
+            variant={variant}
+            paused={paused}
+            motionProfile={motionProfile}
+          />
+        </Suspense>
       </Canvas>
     </div>
   );
 });
+
+useGLTF.preload(CROSS_SECTION_URL);

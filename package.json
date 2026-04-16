@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:cross-section": "node scripts/build-cross-section.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

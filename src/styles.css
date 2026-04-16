@@ -503,32 +503,34 @@ button {
 
 .scene-frame__placeholder {
   background:
-    radial-gradient(circle at 66% 36%, rgba(255, 255, 255, 0.05), transparent 28%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 26%);
+    radial-gradient(circle at 56% 42%, rgba(255, 255, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 68% 28%, rgba(144, 184, 255, 0.18), transparent 22%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%);
 }
 
 .scene-frame--map {
-  width: min(100%, 60rem);
-  min-height: clamp(35rem, 72vh, 56rem);
-  margin: -0.4rem -5vw 0 0;
+  width: min(100%, 62rem);
+  min-height: clamp(38rem, 76vh, 58rem);
+  margin: -0.8rem -6vw 0 0;
   background:
-    radial-gradient(circle at 62% 30%, rgba(107, 197, 155, 0.24), transparent 20rem),
-    radial-gradient(circle at 72% 18%, rgba(144, 184, 255, 0.22), transparent 22rem),
-    radial-gradient(circle at 42% 60%, rgba(255, 255, 255, 0.12), transparent 24rem);
+    radial-gradient(circle at 58% 34%, rgba(255, 255, 255, 0.22), transparent 20rem),
+    radial-gradient(circle at 72% 18%, rgba(144, 184, 255, 0.24), transparent 22rem),
+    radial-gradient(circle at 38% 56%, rgba(107, 197, 155, 0.18), transparent 24rem),
+    linear-gradient(180deg, rgba(76, 96, 106, 0.18), rgba(15, 22, 28, 0));
 }
 
 .scene-frame--map .atlas-scene,
 .scene-frame--map .scene-frame__placeholder {
-  filter: drop-shadow(0 24px 58px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(0 22px 56px rgba(0, 0, 0, 0.18));
 }
 
 .scene-frame--map-hero {
-  min-height: clamp(39rem, 78vh, 60rem);
+  min-height: clamp(42rem, 80vh, 62rem);
 }
 
 .scene-frame--map-immersive {
-  min-height: clamp(40rem, 78vh, 58rem);
-  margin-right: -6vw;
+  min-height: clamp(43rem, 80vh, 60rem);
+  margin-right: -8vw;
 }
 
 .scene-legend {
@@ -1136,10 +1138,10 @@ button {
 
 .atlas-fallback__map {
   position: relative;
-  width: min(42vw, 24rem);
-  height: min(70vh, 35rem);
+  width: min(48vw, 27rem);
+  height: min(62vh, 30rem);
   transform-style: preserve-3d;
-  transform: translate3d(0, 0, 0) rotateX(5deg) rotateY(-12deg);
+  transform: translate3d(0, 0, 0) rotateX(8deg) rotateY(-18deg);
   transition: transform 700ms ease;
 }
 
@@ -1159,22 +1161,22 @@ button {
 }
 
 .atlas-fallback__spine {
-  left: 40%;
-  top: 9%;
-  width: 18%;
-  height: 74%;
-  border-radius: 0.8rem;
+  left: 18%;
+  top: 43%;
+  width: 64%;
+  height: 0.95rem;
+  border-radius: 0.48rem;
   background:
-    linear-gradient(180deg, rgba(138, 151, 156, 0.86), rgba(74, 86, 93, 0.94)),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.06), transparent 40%);
+    linear-gradient(90deg, rgba(202, 214, 210, 0.94), rgba(109, 122, 129, 0.94)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 40%);
   border: 1px solid rgba(255, 255, 255, 0.09);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.02),
-    0 18px 36px rgba(0, 0, 0, 0.24);
+    0 18px 36px rgba(0, 0, 0, 0.18);
 }
 
 .atlas-fallback__lab {
-  width: 34%;
+  width: 28%;
   height: 0.9rem;
   border-radius: 0.35rem;
   background:
@@ -1185,21 +1187,21 @@ button {
 
 .atlas-fallback__lab--left {
   left: 8%;
-  top: 31%;
-  transform: translateZ(1.1rem) rotate(-10deg);
+  top: 25%;
+  transform: translateZ(1.1rem);
 }
 
 .atlas-fallback__lab--right {
-  right: 5%;
-  top: 44%;
-  transform: translateZ(1.2rem) rotate(-7deg);
+  right: 8%;
+  top: 25%;
+  transform: translateZ(1.2rem);
 }
 
 .atlas-fallback__program-loop {
-  left: 22%;
-  bottom: 16%;
+  left: 21%;
+  bottom: 14%;
   width: 56%;
-  height: 22%;
+  height: 18%;
   border-radius: 1.8rem;
   border: 2px solid rgba(144, 184, 255, 0.44);
   box-shadow:
@@ -1218,17 +1220,17 @@ button {
 
 .atlas-fallback__program-gate--a {
   left: 34%;
-  bottom: 22%;
+  bottom: 18%;
 }
 
 .atlas-fallback__program-gate--b {
   right: 34%;
-  bottom: 22%;
+  bottom: 18%;
 }
 
 .atlas-fallback__network-bar {
   left: 14%;
-  top: 15%;
+  top: 10%;
   width: 72%;
   height: 0.26rem;
   border-radius: 999px;
@@ -1248,17 +1250,17 @@ button {
 
 .atlas-fallback__network-node--a {
   left: 18%;
-  top: 12%;
+  top: 8%;
 }
 
 .atlas-fallback__network-node--b {
   left: 48%;
-  top: 9%;
+  top: 6%;
 }
 
 .atlas-fallback__network-node--c {
   right: 18%;
-  top: 13%;
+  top: 8%;
 }
 
 .atlas-fallback__route {
@@ -1268,32 +1270,32 @@ button {
 }
 
 .atlas-fallback__route--labs-a {
-  left: 34%;
+  left: 24%;
+  top: 34%;
+  width: 24%;
+  transform: rotate(18deg);
+}
+
+.atlas-fallback__route--labs-b {
+  left: 52%;
   top: 34%;
   width: 24%;
   transform: rotate(-18deg);
 }
 
-.atlas-fallback__route--labs-b {
-  left: 48%;
-  top: 44%;
-  width: 26%;
-  transform: rotate(20deg);
-}
-
 .atlas-fallback__route--program {
-  left: 46%;
-  top: 61%;
+  left: 49%;
+  top: 48%;
   width: 0.18rem;
-  height: 14%;
+  height: 20%;
   transform: none;
 }
 
 .atlas-fallback__route--network {
-  left: 47%;
-  top: 18%;
+  left: 49%;
+  top: 12%;
   width: 0.18rem;
-  height: 14%;
+  height: 30%;
   transform: none;
 }
 
@@ -1312,7 +1314,7 @@ button {
 }
 
 .atlas-fallback--overview .atlas-fallback__map {
-  transform: translate3d(6%, 0, 0) rotateX(8deg) rotateY(-18deg) scale(1.06);
+  transform: translate3d(6%, 0, 0) rotateX(10deg) rotateY(-20deg) scale(1.06);
 }
 
 .atlas-fallback--opening .atlas-fallback__program-loop,
@@ -1350,8 +1352,8 @@ button {
 
 @media (max-width: 1180px) {
   .atlas-fallback__map {
-    width: min(72vw, 21rem);
-    height: min(54vh, 29rem);
+    width: min(76vw, 22rem);
+    height: min(48vh, 24rem);
   }
 
   .shell {
@@ -1418,7 +1420,7 @@ button {
   .scene-frame--map-hero,
   .scene-frame--map-immersive {
     width: 100%;
-    min-height: clamp(18rem, 31vh, 24rem);
+    min-height: clamp(20rem, 34vh, 25rem);
     margin: 0;
   }
 
@@ -1439,9 +1441,9 @@ button {
 
 @media (max-width: 720px) {
   .atlas-fallback__map {
-    width: min(78vw, 17rem);
-    height: min(42vh, 22rem);
-    transform: translate3d(0, 0, 0) rotateX(6deg) rotateY(-14deg);
+    width: min(84vw, 18rem);
+    height: min(38vh, 18rem);
+    transform: translate3d(0, 0, 0) rotateX(8deg) rotateY(-16deg);
   }
 
   .site-header__inner {
@@ -1500,7 +1502,7 @@ button {
   .scene-frame--map,
   .scene-frame--map-hero,
   .scene-frame--map-immersive {
-    min-height: clamp(15rem, 25vh, 18rem);
+    min-height: clamp(16rem, 28vh, 19rem);
     margin: 0;
   }
 

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "name": "Research Campus Cross-Section",
+  "asset": "cross-section.glb",
+  "root": "CrossSectionRoot",
+  "layers": {
+    "spine": "OperationsSpine",
+    "labs": [
+      "LabDeckWest",
+      "LabDeckEast"
+    ],
+    "program": "ProgramLoop",
+    "network": "NetworkLayer"
+  },
+  "notes": [
+    "Authored base asset for the persistent cross-section scene.",
+    "Runtime adds signal routing, chapter emphasis, camera choreography, and fallback rendering."
+  ]
+}
