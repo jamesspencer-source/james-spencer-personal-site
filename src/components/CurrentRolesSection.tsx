@@ -47,10 +47,12 @@ function getActiveChapterId(progress: number): RoleChapter["id"] {
 
 function RoleCopy({
   chapter,
-  active
+  active,
+  chapterProgress = 0
 }: {
   chapter: RoleChapter;
   active: boolean;
+  chapterProgress?: number;
 }) {
   return (
     <article
@@ -60,6 +62,14 @@ function RoleCopy({
     >
       <p className="roles-story__dates">{chapter.dates}</p>
       <h3 className="roles-story__title">{chapter.title}</h3>
+      {chapter.id === "program" ? (
+        <div
+          className="roles-story__program-progress"
+          aria-hidden="true"
+        >
+          <span style={{ transform: `scaleX(${chapterProgress})` }} />
+        </div>
+      ) : null}
       <p className="roles-story__organization">{chapter.organization}</p>
       <p className="roles-story__summary">{chapter.summary}</p>
 
@@ -116,7 +126,11 @@ function ReducedMotionRoles() {
                 />
               </div>
               <div className="roles-story__card-copy">
-                <RoleCopy chapter={chapter} active />
+                <RoleCopy
+                  chapter={chapter}
+                  active
+                  chapterProgress={chapter.id === "program" ? 1 : 0}
+                />
               </div>
             </article>
           ))}
@@ -136,6 +150,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>("overview");
 
   const chapters = siteContent.rolesSection.chapters;
+  const programChapterProgress = clamp01(
+    (progress - chapterStops.program) / (chapterStops.network - chapterStops.program)
+  );
 
   const chapterVisibility = useMemo(
     () => ({
@@ -274,7 +291,13 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
                         transform: `translate3d(0, ${isActive ? 0 : 24 - opacity * 24}px, 0)`
                       }}
                     >
-                      <RoleCopy chapter={chapter} active={isActive} />
+                      <RoleCopy
+                        chapter={chapter}
+                        active={isActive}
+                        chapterProgress={
+                          chapter.id === "program" ? programChapterProgress : 0
+                        }
+                      />
                     </div>
                   );
                 })()

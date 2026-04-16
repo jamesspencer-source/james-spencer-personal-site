@@ -726,6 +726,17 @@ function RolesVisualStage({
           <g className="scene-program__core-labels">
             <text x="504" y="388">Annual operating cycle</text>
             <text x="504" y="416">Community Phages</text>
+            <g className="scene-program__header-progress">
+              <rect x="438" y="436" width="132" height="3" rx="1.5" />
+              <rect
+                className="scene-program__header-progress-fill"
+                x="438"
+                y="436"
+                width={132 * programSequenceProgress}
+                height="3"
+                rx="1.5"
+              />
+            </g>
           </g>
         </svg>
       </div>

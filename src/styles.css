@@ -944,6 +944,30 @@ button {
   text-wrap: balance;
 }
 
+.roles-story__program-progress {
+  width: min(13rem, 100%);
+  height: 3px;
+  margin: 0.72rem 0 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(208, 225, 216, 0.12);
+}
+
+.roles-story__program-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(148, 189, 168, 0.5),
+    rgba(220, 239, 229, 0.92)
+  );
+  box-shadow: 0 0 18px rgba(151, 203, 176, 0.28);
+  transform-origin: left center;
+  transition: transform 90ms linear;
+}
+
 .roles-story__organization {
   max-width: 34rem;
   margin: 0.78rem 0 0;
@@ -1408,6 +1432,15 @@ button {
   font-size: 13px;
   font-weight: 600;
   fill: rgba(193, 214, 201, 0.82);
+}
+
+.scene-program__header-progress rect:first-child {
+  fill: rgba(224, 237, 230, 0.13);
+}
+
+.scene-program__header-progress-fill {
+  fill: rgba(180, 220, 198, 0.86);
+  filter: drop-shadow(0 0 8px rgba(149, 202, 174, 0.24));
 }
 
 .scene-globe__aura {
