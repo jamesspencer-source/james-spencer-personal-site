@@ -51,17 +51,17 @@ const chapterStops: Record<RoleChapter["id"], number> = {
 };
 
 const programStations = [
-  { label: "Funding", x: 198, y: 214 },
-  { label: "Hiring", x: 428, y: 122 },
-  { label: "Lab setup", x: 658, y: 214 },
-  { label: "Biosafety", x: 682, y: 390 },
-  { label: "Delivery", x: 454, y: 590 },
-  { label: "Closeout", x: 180, y: 452 }
+  { label: "Funding", x: 142, y: 210 },
+  { label: "Hiring", x: 388, y: 108 },
+  { label: "Lab setup", x: 648, y: 210 },
+  { label: "Biosafety", x: 668, y: 386 },
+  { label: "Delivery", x: 414, y: 588 },
+  { label: "Closeout", x: 136, y: 448 }
 ];
 
 const programStationCard = {
-  width: 154,
-  height: 56
+  width: 188,
+  height: 68
 };
 
 const programConnectorPaths = [
@@ -663,6 +663,12 @@ function RolesVisualStage({
           />
 
           <path
+            className="scene-program__track-arrow"
+            d="M 740 393 L 759 426 L 724 422"
+            style={{ opacity: smoothstep(0.6, 0.72, progress) }}
+          />
+
+          <path
             className="scene-program__track scene-program__track--inner"
             d="M 330 388 C 330 304, 402 248, 504 248 C 624 248, 704 326, 704 428 C 704 528, 622 578, 504 578 C 404 578, 330 516, 330 436"
           />
@@ -746,15 +752,15 @@ function RolesVisualStage({
                   />
                   <circle
                     className="scene-program__station-dot"
-                    cx={22}
-                    cy={35}
+                    cx={25}
+                    cy={43}
                     r={mix(4, 6.5, emphasis)}
                     style={{ opacity: mix(0.54, 1, emphasis) }}
                   />
-                  <text className="scene-program__station-index" x={18} y={18}>
+                  <text className="scene-program__station-index" x={20} y={21}>
                     {String(index + 1).padStart(2, "0")}
                   </text>
-                  <text className="scene-program__station-label" x={38} y={39}>
+                  <text className="scene-program__station-label" x={46} y={47}>
                     {station.label}
                   </text>
                 </g>

@@ -1376,6 +1376,15 @@ button {
   stroke-width: 7;
 }
 
+.scene-program__track-arrow {
+  fill: none;
+  stroke: rgba(197, 228, 211, 0.84);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(156, 208, 181, 0.24));
+}
+
 .scene-program__stations polygon {
   fill: url(#program-surface);
   stroke: rgba(228, 235, 231, 0.12);
@@ -1410,13 +1419,13 @@ button {
 
 .scene-program__station-index {
   fill: rgba(167, 203, 184, 0.82);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
 .scene-program__station-label {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
 }
 
