@@ -1820,7 +1820,7 @@ button {
 .contact {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(13rem, 16rem);
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 20rem);
   gap: 1.5rem 3rem;
   max-width: 72rem;
   align-items: center;
@@ -1857,7 +1857,7 @@ button {
   position: relative;
   margin: 0;
   justify-self: end;
-  width: min(100%, 15.5rem);
+  width: min(100%, 19rem);
   padding-top: 1rem;
 }
 
@@ -1880,9 +1880,9 @@ button {
   z-index: 1;
   display: block;
   width: 100%;
-  aspect-ratio: 1;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  object-position: 50% 28%;
+  object-position: 50% 50%;
   border-radius: 6px;
   box-shadow:
     0 24px 42px rgba(20, 22, 17, 0.12),

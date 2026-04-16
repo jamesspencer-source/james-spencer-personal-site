@@ -416,8 +416,8 @@ function App() {
                 <img
                   src={siteContent.contact.portrait.src}
                   alt={siteContent.contact.portrait.alt}
-                  width={1200}
-                  height={1200}
+                  width={1400}
+                  height={1052}
                 />
               </figure>
             ) : null}
