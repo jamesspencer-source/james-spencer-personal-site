@@ -104,7 +104,10 @@ function ContactLinks({ links }: { links: ActionLink[] }) {
   return (
     <ul className="contact-list">
       {links.map((link, index) => (
-        <li key={link.label} className="contact-list__item">
+        <li
+          key={link.label}
+          className={`contact-list__item${index === 0 ? " contact-list__item--primary" : ""}`}
+        >
           <a
             className="contact-list__link"
             href={link.href}

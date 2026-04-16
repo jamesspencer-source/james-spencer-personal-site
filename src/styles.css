@@ -221,8 +221,14 @@ button {
 }
 
 .stage--contact {
-  padding-top: clamp(4.6rem, 8vw, 6rem);
-  background: linear-gradient(180deg, rgba(236, 229, 216, 0) 0%, rgba(232, 224, 211, 0.28) 100%);
+  display: grid;
+  align-items: center;
+  min-height: calc(100svh - var(--header-offset));
+  padding-top: clamp(6.4rem, 11vw, 8.4rem);
+  padding-bottom: clamp(6.8rem, 13vw, 10rem);
+  background:
+    radial-gradient(circle at 72% 24%, rgba(70, 96, 82, 0.12), transparent 22rem),
+    linear-gradient(180deg, rgba(236, 229, 216, 0) 0%, rgba(225, 217, 203, 0.42) 52%, rgba(246, 241, 232, 0.78) 100%);
 }
 
 .hero__layout {
@@ -1817,32 +1823,34 @@ button {
   grid-template-columns: minmax(0, 1fr) minmax(13rem, 16rem);
   gap: 1.5rem 3rem;
   max-width: 72rem;
-  align-items: start;
-  padding-top: 1.7rem;
+  align-items: center;
+  padding: clamp(1.6rem, 3vw, 2.4rem) 0 0;
   border-top: 1px solid var(--line-strong);
 }
 
 .contact__content {
   display: grid;
-  grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr);
-  gap: 1rem 2rem;
+  grid-template-columns: minmax(18rem, 26rem) minmax(16rem, 1fr);
+  gap: 1.2rem 2.4rem;
   align-items: start;
   min-width: 0;
 }
 
 .contact__heading {
-  max-width: 13rem;
+  max-width: 28rem;
 }
 
 .contact__heading .section-heading__title {
-  margin-bottom: 0;
-  font-size: clamp(2.25rem, 4vw, 3.3rem);
-  line-height: 0.98;
+  max-width: 12ch;
+  margin-bottom: 0.65rem;
+  font-size: clamp(2.8rem, 6vw, 5.4rem);
+  line-height: 0.9;
+  text-wrap: balance;
 }
 
 .contact__actions {
   margin-top: 0;
-  padding-top: 0.35rem;
+  padding-top: 0.4rem;
 }
 
 .contact__portrait {
@@ -1898,6 +1906,10 @@ button {
   border-top: 1px solid var(--line-strong);
 }
 
+.contact-list__item--primary {
+  border-color: rgba(70, 96, 82, 0.28);
+}
+
 .contact-list__link {
   display: grid;
   grid-template-columns: 2.8rem minmax(0, 1fr) auto;
@@ -1907,6 +1919,11 @@ button {
   color: var(--ink);
   text-decoration: none;
   transition: color 180ms ease, transform 180ms ease;
+}
+
+.contact-list__item--primary .contact-list__link {
+  align-items: center;
+  padding: 1.15rem 0;
 }
 
 .contact-list__index {
@@ -1921,6 +1938,11 @@ button {
   font-weight: 600;
   line-height: 1.04;
   text-wrap: balance;
+}
+
+.contact-list__item--primary .contact-list__label {
+  font-size: clamp(1.45rem, 3vw, 2.25rem);
+  line-height: 0.96;
 }
 
 .contact-list__meta {
@@ -2073,6 +2095,12 @@ button {
 @media (max-width: 640px) {
   .stage {
     padding: 3.5rem 0;
+  }
+
+  .stage--contact {
+    min-height: calc(100svh - var(--header-offset));
+    padding-top: 5.2rem;
+    padding-bottom: 6rem;
   }
 
   .stage--overview {

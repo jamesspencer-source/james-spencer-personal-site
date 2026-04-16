@@ -322,16 +322,17 @@ export const siteContent = {
     }
   },
   contact: {
-    label: "",
-    heading: "Contact",
-    intro: "",
+    label: "Contact",
+    heading: "Connect on LinkedIn",
+    intro:
+      "For professional conversations about research operations, scientific program leadership, or lab management, connect with James on LinkedIn.",
     portrait: {
       src: asset("assets/images/james-m-spencer-contact-headshot.jpg"),
       alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."
     } as PortraitAsset,
     links: [
       {
-        label: "LinkedIn",
+        label: "Connect on LinkedIn",
         href: "https://www.linkedin.com/in/jamesmspencer/"
       },
       {
