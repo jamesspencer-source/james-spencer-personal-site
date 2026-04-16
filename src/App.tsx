@@ -1,16 +1,16 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { siteContent, type ActionLink, type ExperienceEntry } from "./content";
+import RolesVisualStage from "./components/RolesVisualStage";
+import { siteContent, type ActionLink, type RoleChapter } from "./content";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type SectionId = "overview" | "scope" | "experience" | "background" | "contact";
+type SectionId = "overview" | "roles" | "background" | "contact";
 
 const navItems: Array<{ id: SectionId; label: string }> = [
   { id: "overview", label: "Overview" },
-  { id: "scope", label: "Current Scope" },
-  { id: "experience", label: "Experience" },
+  { id: "roles", label: "Current Roles" },
   { id: "background", label: "Background" },
   { id: "contact", label: "Contact" }
 ];
@@ -109,17 +109,17 @@ function SectionLabel({ label, className }: { label?: string; className: string 
 function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const detailRef = useRef<HTMLElement>(null);
+  const roleChapters = siteContent.rolesSection.chapters;
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
-  const [activeRole, setActiveRole] = useState(
-    siteContent.experience.entries[0].id
+  const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>(
+    roleChapters[0].id
   );
 
-  const activeEntry = useMemo<ExperienceEntry>(
+  const activeChapter = useMemo<RoleChapter>(
     () =>
-      siteContent.experience.entries.find((entry) => entry.id === activeRole) ??
-      siteContent.experience.entries[0],
-    [activeRole]
+      roleChapters.find((chapter) => chapter.id === activeChapterId) ??
+      roleChapters[0],
+    [activeChapterId, roleChapters]
   );
 
   useEffect(() => {
@@ -139,7 +139,11 @@ function App() {
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>("[data-section]")
     );
-    const observer = new IntersectionObserver(
+    const chapters = Array.from(
+      document.querySelectorAll<HTMLElement>("[data-role-chapter]")
+    );
+
+    const sectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -153,9 +157,29 @@ function App() {
       }
     );
 
-    sections.forEach((section) => observer.observe(section));
+    const chapterObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveChapterId(
+              (entry.target as HTMLElement).dataset.roleChapter as RoleChapter["id"]
+            );
+          }
+        });
+      },
+      {
+        threshold: 0.34,
+        rootMargin: "-18% 0px -44% 0px"
+      }
+    );
 
-    return () => observer.disconnect();
+    sections.forEach((section) => sectionObserver.observe(section));
+    chapters.forEach((chapter) => chapterObserver.observe(chapter));
+
+    return () => {
+      sectionObserver.disconnect();
+      chapterObserver.disconnect();
+    };
   }, [prefersReducedMotion]);
 
   useLayoutEffect(() => {
@@ -205,6 +229,29 @@ function App() {
         );
       });
 
+      gsap.utils.toArray<HTMLElement>(".js-role-chapter").forEach((chapter) => {
+        const chapterBody = chapter.querySelector(".js-role-chapter-body");
+        if (!chapterBody) {
+          return;
+        }
+
+        gsap.fromTo(
+          chapterBody,
+          { autoAlpha: 0, y: 26 },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.65,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: chapter,
+              start: "top 76%",
+              once: true
+            }
+          }
+        );
+      });
+
       gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
         ScrollTrigger.create({
           trigger: section,
@@ -215,6 +262,18 @@ function App() {
               setActiveSection(section.id as SectionId);
             }
           }
+        });
+      });
+
+      gsap.utils.toArray<HTMLElement>("[data-role-chapter]").forEach((chapter) => {
+        ScrollTrigger.create({
+          trigger: chapter,
+          start: "top 58%",
+          end: "bottom 42%",
+          onEnter: () =>
+            setActiveChapterId(chapter.dataset.roleChapter as RoleChapter["id"]),
+          onEnterBack: () =>
+            setActiveChapterId(chapter.dataset.roleChapter as RoleChapter["id"])
         });
       });
 
@@ -232,26 +291,6 @@ function App() {
 
     return () => ctx.revert();
   }, [prefersReducedMotion]);
-
-  useEffect(() => {
-    if (prefersReducedMotion || !detailRef.current) {
-      return;
-    }
-
-    const items = detailRef.current.querySelectorAll<HTMLElement>(".js-detail-item");
-    gsap.fromTo(
-      items,
-      { autoAlpha: 0, y: 12 },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.3,
-        ease: "power2.out",
-        stagger: 0.04,
-        clearProps: "opacity,transform"
-      }
-    );
-  }, [activeRole, prefersReducedMotion]);
 
   return (
     <div className="site-app" ref={rootRef}>
@@ -325,131 +364,97 @@ function App() {
           </div>
         </section>
 
-        <section id="scope" data-section="scope" className="stage stage--scope js-stage">
+        <section id="roles" data-section="roles" className="stage stage--roles js-stage">
           <div className="shell">
             <div className="section-heading js-stage-reveal">
               <SectionLabel
-                label={siteContent.scope.label}
-                className="section-heading__label"
-              />
-              <h2 className="section-heading__title">{siteContent.scope.heading}</h2>
-              <SectionIntro body={siteContent.scope.overview} />
-            </div>
-
-            <div className="scope-context js-stage-reveal" aria-label="Current context">
-              {siteContent.scope.context.map((item) => (
-                <span className="scope-context__item" key={item}>
-                  {item}
-                </span>
-              ))}
-            </div>
-
-            <div className="scope-layout">
-              <div className="scope-domains js-stage-reveal">
-                {siteContent.scope.domains.map((domain) => (
-                  <article className="scope-domains__item" key={domain.title}>
-                    <h3>{domain.title}</h3>
-                    <p>{domain.description}</p>
-                  </article>
-                ))}
-              </div>
-
-              <aside className="scope-results js-stage-reveal">
-                <p className="scope-results__label">Selected results</p>
-                <div className="scope-results__list">
-                  {siteContent.scope.results.map((result) => (
-                    <article className="scope-results__item" key={result.title}>
-                      <h3>{result.title}</h3>
-                      <p>{result.detail}</p>
-                    </article>
-                  ))}
-                </div>
-              </aside>
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="experience"
-          data-section="experience"
-          className="stage stage--experience js-stage"
-        >
-          <div className="shell">
-            <div className="section-heading js-stage-reveal">
-              <SectionLabel
-                label={siteContent.experience.label}
+                label={siteContent.rolesSection.label}
                 className="section-heading__label"
               />
               <h2 className="section-heading__title">
-                {siteContent.experience.heading}
+                {siteContent.rolesSection.heading}
               </h2>
-              <SectionIntro body={siteContent.experience.intro} />
+              <SectionIntro body={siteContent.rolesSection.intro} />
             </div>
 
-            <div className="experience-layout">
-              <div className="experience-nav js-stage-reveal">
-                {siteContent.experience.entries.map((entry, index) => (
-                  <button
-                    key={entry.id}
-                    type="button"
-                    className="experience-nav__item"
-                    data-active={activeRole === entry.id}
-                    aria-pressed={activeRole === entry.id}
-                    onClick={() => setActiveRole(entry.id)}
+            <div className="roles-shell">
+              <aside className="roles-sticky js-stage-reveal" aria-label="Role visual stage">
+                <div className="roles-sticky__inner">
+                  <nav className="roles-progress" aria-label="Role chapters">
+                    {roleChapters.map((chapter, index) => (
+                      <a
+                        key={chapter.id}
+                        className="roles-progress__item"
+                        data-active={activeChapterId === chapter.id}
+                        href={`#role-${chapter.id}`}
+                        aria-current={activeChapterId === chapter.id ? "step" : undefined}
+                      >
+                        <span className="roles-progress__index">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <span className="roles-progress__label">{chapter.navLabel}</span>
+                      </a>
+                    ))}
+                  </nav>
+
+                  <RolesVisualStage
+                    chapter={activeChapter}
+                    reducedMotion={prefersReducedMotion}
+                  />
+                </div>
+              </aside>
+
+              <div className="roles-chapters">
+                {roleChapters.map((chapter) => (
+                  <article
+                    key={chapter.id}
+                    id={`role-${chapter.id}`}
+                    data-role-chapter={chapter.id}
+                    className="role-chapter js-role-chapter"
+                    aria-labelledby={`role-${chapter.id}-title`}
                   >
-                    <span className="experience-nav__index">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                    <span className="experience-nav__text">
-                      <span className="experience-nav__label">{entry.navLabel}</span>
-                      <span className="experience-nav__dates">{entry.dates}</span>
-                    </span>
-                  </button>
+                    <div className="role-chapter__body js-role-chapter-body">
+                      <p className="role-chapter__dates">{chapter.dates}</p>
+                      <h3 id={`role-${chapter.id}-title`} className="role-chapter__title">
+                        {chapter.title}
+                      </h3>
+                      <p className="role-chapter__organization">
+                        {chapter.organization}
+                      </p>
+                      <p className="role-chapter__summary">{chapter.summary}</p>
+
+                      {chapter.link ? (
+                        <p className="role-chapter__link">
+                          <a
+                            href={chapter.link.href}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {chapter.link.label}
+                          </a>
+                        </p>
+                      ) : null}
+
+                      <div className="role-chapter__grid">
+                        <ul className="role-chapter__list">
+                          {chapter.responsibilities.map((item) => (
+                            <li key={item}>{item}</li>
+                          ))}
+                        </ul>
+
+                        <dl className="role-chapter__evidence">
+                          {chapter.evidence.map((item) => (
+                            <div key={item.label} className="role-chapter__evidence-item">
+                              <dt>{item.label}</dt>
+                              <dd>{item.value}</dd>
+                            </div>
+                          ))}
+                        </dl>
+                      </div>
+                    </div>
+                  </article>
                 ))}
               </div>
-
-              <article className="experience-detail js-stage-reveal" ref={detailRef}>
-                <p className="experience-detail__dates js-detail-item">
-                  {activeEntry.dates}
-                </p>
-                <h3 className="experience-detail__title js-detail-item">
-                  {activeEntry.title}
-                </h3>
-                <p className="experience-detail__organization js-detail-item">
-                  {activeEntry.organization}
-                </p>
-                <p className="experience-detail__summary js-detail-item">
-                  {activeEntry.summary}
-                </p>
-                {activeEntry.link ? (
-                  <p className="experience-detail__link js-detail-item">
-                    <a
-                      href={activeEntry.link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {activeEntry.link.label}
-                    </a>
-                  </p>
-                ) : null}
-
-                <div className="experience-detail__grid">
-                  <ul className="experience-detail__list js-detail-item">
-                    {activeEntry.responsibilities.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-
-                  <dl className="experience-detail__evidence js-detail-item">
-                    {activeEntry.evidence.map((item) => (
-                      <div key={item.label} className="experience-detail__evidence-item">
-                        <dt>{item.label}</dt>
-                        <dd>{item.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              </article>
             </div>
           </div>
         </section>

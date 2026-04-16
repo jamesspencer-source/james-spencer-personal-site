@@ -9,31 +9,38 @@ export type ProofItem = {
   detail: string;
 };
 
-export type DomainItem = {
-  title: string;
-  description: string;
-};
-
-export type ScopeResult = {
-  title: string;
-  detail: string;
-};
-
-export type ExperienceEvidence = {
+export type RoleEvidence = {
   label: string;
   value: string;
 };
 
-export type ExperienceEntry = {
-  id: string;
+export type HostCity = {
+  label: string;
+  state: string;
+  latitude: number;
+  longitude: number;
+  year?: string;
+  note?: string;
+  offsetX?: number;
+  offsetY?: number;
+};
+
+export type RoleVisual =
+  | { kind: "labs-schematic" }
+  | { kind: "program-cycle" }
+  | { kind: "network-globe"; hostCities: HostCity[] };
+
+export type RoleChapter = {
+  id: "labs" | "program" | "network";
   navLabel: string;
   title: string;
   organization: string;
   dates: string;
   summary: string;
   responsibilities: string[];
-  evidence: ExperienceEvidence[];
+  evidence: RoleEvidence[];
   link?: ActionLink;
+  visual: RoleVisual;
 };
 
 export type BackgroundEntry = {
@@ -50,11 +57,54 @@ export type PortraitAsset = {
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
+const hostCities: HostCity[] = [
+  {
+    label: "Bethesda",
+    state: "Maryland",
+    latitude: 38.9847,
+    longitude: -77.0947,
+    year: "2023",
+    note: "National meeting",
+    offsetX: -10,
+    offsetY: 8
+  },
+  {
+    label: "Cambridge",
+    state: "Massachusetts",
+    latitude: 42.3736,
+    longitude: -71.1097,
+    year: "2024",
+    note: "Boston regional meeting",
+    offsetX: 8,
+    offsetY: -12
+  },
+  {
+    label: "Chicago",
+    state: "Illinois",
+    latitude: 41.8781,
+    longitude: -87.6298,
+    year: "2024",
+    note: "Chicago regional meeting",
+    offsetX: 0,
+    offsetY: -14
+  },
+  {
+    label: "Chevy Chase",
+    state: "Maryland",
+    latitude: 38.9648,
+    longitude: -77.0875,
+    year: "2025",
+    note: "National meeting",
+    offsetX: 12,
+    offsetY: -10
+  }
+];
+
 export const siteContent = {
   meta: {
     title: "James M. Spencer | Laboratory Operations and Scientific Program Leader",
     description:
-      "James M. Spencer leads operations for research laboratories, scientific programs, and professional communities at Harvard Medical School."
+      "James M. Spencer leads laboratory operations, scientific program delivery, and professional community leadership at Harvard Medical School."
   },
   hero: {
     label: "",
@@ -62,30 +112,24 @@ export const siteContent = {
     title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
     summary: [
-      "James M. Spencer manages operations for two Howard Hughes Medical Institute (HHMI) Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students, and chairs the Lab Management Network of Professionals, a peer professional-development organization for laboratory managers.",
-      "His remit includes staffing, budgets, facilities, equipment, biosafety level 2 laboratory space, vendor coordination, and day-to-day execution."
+      "James M. Spencer manages operations for two Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals.",
+      "His remit includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and day-to-day execution."
     ],
     proof: [
       {
-        headline:
-          "Two Howard Hughes Medical Institute Investigator laboratories, one shared operating footprint",
+        headline: "Two research laboratories across one shared operating footprint",
         detail:
-          "Direct responsibility spans shared laboratory space in two buildings, with one operating model across facilities, equipment, and daily execution."
+          "Direct responsibility spans shared facilities, equipment, regulated space, and staff support across two buildings."
       },
       {
-        headline: "Community Phages is now in its fifth annual cycle",
+        headline: "Annual scientific-program delivery",
         detail:
-          "An eight-week summer internship program for Roxbury Community College students, planned and run from setup through closeout."
+          "Leads the operating cycle for Community Phages, an eight-week summer internship program now in its fifth year."
       },
       {
-        headline: "Chairs a lab-manager professional-development network",
+        headline: "Regional and national lab-manager convening leadership",
         detail:
-          "Leads board work and programming for the Lab Management Network of Professionals, supporting regional and national convenings."
-      },
-      {
-        headline: "Operational value comes through steady, disciplined execution",
-        detail:
-          "Cost stewardship, vendor management, onboarding, and day-to-day continuity help keep complex scientific environments running well."
+          "Chairs the Lab Management Network of Professionals and helps shape programming for regional and national meetings."
       }
     ] as ProofItem[],
     actions: [
@@ -100,67 +144,12 @@ export const siteContent = {
       }
     ] as ActionLink[]
   },
-  scope: {
-    label: "Current Scope",
-    heading: "Current responsibilities",
-    overview:
-      "His current work combines laboratory operations, staffing, financial stewardship, and program delivery. It sits at the intersection of Howard Hughes Medical Institute-supported research laboratories, Community Phages, and professional programming for lab managers.",
-    context: [
-      "Department of Microbiology, Harvard Medical School",
-      "Howard Hughes Medical Institute-supported laboratories",
-      "Community Phages summer internship program",
-      "Lab Management Network of Professionals"
-    ],
-    domains: [
-      {
-        title: "Laboratory operations",
-        description:
-          "Budgets, equipment, facilities, vendor relationships, purchasing, regulated laboratory space, and day-to-day continuity across shared research environments."
-      },
-      {
-        title: "People, hiring, and onboarding",
-        description:
-          "Candidate visits, onboarding, recruiting logistics, schedules, and practical support for scientists, trainees, and visiting participants."
-      },
-      {
-        title: "Budgets, vendors, and facilities",
-        description:
-          "Cost stewardship, service coordination, repairs, space planning, and the vendor relationships that keep laboratory operations steady."
-      },
-      {
-        title: "Scientific programs and professional community",
-        description:
-          "Annual internship-program delivery, regional meetings, national convenings, and recurring support for a lab manager peer network."
-      }
-    ] as DomainItem[],
-    results: [
-      {
-        title: "Efficiency and cost stewardship",
-        detail:
-          "Improves operating efficiency through careful planning, purchasing discipline, and vendor management."
-      },
-      {
-        title: "Expanded scope without fragmentation",
-        detail:
-          "Added a second laboratory in August 2025 while maintaining one coherent operating model across shared facilities, equipment, and regulated space."
-      },
-      {
-        title: "Community Phages delivered end to end",
-        detail:
-          "Runs the annual operating cycle for the eight-week internship program, from planning and setup through daily logistics and closeout."
-      },
-      {
-        title: "Professional network leadership",
-        detail:
-          "Chairs the Lab Management Network of Professionals and helps lead programming that brings together dozens to hundreds of participants across regional and national convenings."
-      }
-    ] as ScopeResult[]
-  },
-  experience: {
-    label: "Experience",
-    heading: "Current roles",
-    intro: "",
-    entries: [
+  rolesSection: {
+    label: "Current Roles",
+    heading: "Three current roles, one operating profile",
+    intro:
+      "James's current work combines laboratory operations, program delivery, and professional-community leadership. Together, these roles cover the systems that keep research environments, student programs, and peer networks running with continuity.",
+    chapters: [
       {
         id: "labs",
         navLabel: "Laboratory Operations",
@@ -169,52 +158,58 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "Leads shared operations for two Howard Hughes Medical Institute Investigator laboratories within the Department of Microbiology at Harvard Medical School.",
+          "As laboratory manager for the Bernhardt and Abraham laboratories, James leads the operating model for two Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role centers on continuity across people, space, budgets, equipment, vendors, and daily execution.",
         responsibilities: [
-          "Directs budgets, purchasing, vendor relationships, facilities coordination, and equipment planning across a shared research footprint spanning two buildings.",
-          "Handles hiring logistics, onboarding, candidate visits, regulated laboratory-space coordination, and day-to-day continuity for two active research laboratories."
+          "Directs budgets, purchasing, facilities coordination, vendor relationships, and equipment planning across a shared laboratory footprint in two buildings.",
+          "Handles hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for two active research laboratories."
         ],
         evidence: [
           {
-            label: "Current remit",
+            label: "Current footprint",
             value:
-              "Operational leadership across staffing, budgets, facilities, equipment, vendor coordination, and continuity."
+              "Two Howard Hughes Medical Institute Investigator laboratories working from one shared operating model."
           },
           {
-            label: "Operating context",
+            label: "Operating surface",
             value:
-              "Two HHMI Investigator laboratories with one shared biosafety level 2 laboratory footprint."
+              "Staffing, facilities, equipment, budgets, vendors, onboarding, and day-to-day continuity."
           }
-        ]
+        ],
+        visual: {
+          kind: "labs-schematic"
+        }
       },
       {
         id: "program",
-        navLabel: "Program Operations",
+        navLabel: "Community Phages",
         title: "Program Operations Lead",
         organization:
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "Leads the operating model for Community Phages, an eight-week summer internship program for Roxbury Community College students.",
+          "James leads the operating side of Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He runs the annual cycle from planning and setup through delivery, student support, and closeout.",
         responsibilities: [
-          "Builds and runs the annual program environment, including benches, supplies, safety setup, access, schedules, partner coordination, and closeout.",
-          "Owns the operational side of the program end to end, supporting students, instructors, visitors, and daily execution throughout the summer."
+          "Builds and runs the annual program environment, including supplies, bench setup, safety preparation, access, schedules, and partner coordination.",
+          "Owns the operational side of delivery end to end, supporting students, instructors, visitors, and daily logistics throughout the program."
         ],
         evidence: [
           {
-            label: "Program structure",
+            label: "Program cycle",
             value:
               "Fifth annual operating cycle for an eight-week research internship program."
           },
           {
-            label: "Delivery model",
+            label: "Delivery scope",
             value:
-              "Combines laboratory setup, logistics, student support, field activity coordination, and closeout."
+              "Planning, setup, daily execution, student support, and closeout across one repeatable annual sequence."
           }
         ],
         link: {
-          label: "Program website",
+          label: "Community Phages website",
           href: "https://phages.hms.harvard.edu/"
+        },
+        visual: {
+          kind: "program-cycle"
         }
       },
       {
@@ -225,25 +220,29 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "Chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development organization for Howard Hughes Medical Institute lab managers.",
+          "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, and recurring programming across regional and national convenings.",
         responsibilities: [
-          "Sets board priorities and helps shape regional and national programming for a network of laboratory managers across the institute.",
-          "Supports recurring peer infrastructure through monthly programming and the institute-wide Slack community."
+          "Sets board priorities and helps plan regional and national meetings for laboratory managers and institute partners.",
+          "Supports recurring programming, peer exchange, and the practical infrastructure that helps the network stay active between convenings."
         ],
         evidence: [
           {
-            label: "Programming scale",
+            label: "Leadership remit",
             value:
-              "Regional gatherings and larger national convenings for laboratory managers and institute partners."
+              "Board direction, conference planning, and recurring professional-development programming for lab managers."
           },
           {
-            label: "Leadership focus",
+            label: "Hosted convenings",
             value:
-              "Board direction, recurring programming, and professional community support."
+              "Regional and national meetings hosted in Massachusetts, Illinois, and Maryland."
           }
-        ]
+        ],
+        visual: {
+          kind: "network-globe",
+          hostCities
+        }
       }
-    ] as ExperienceEntry[]
+    ] as RoleChapter[]
   },
   background: {
     label: "Background",
@@ -258,7 +257,7 @@ export const siteContent = {
           "Peter Chien laboratory, University of Massachusetts Amherst",
         dates: "2015 - 2018",
         summary:
-          "Worked on bacterial stress-response questions in Caulobacter crescentus and developed a bench-research foundation in experimental design, documentation, and day-to-day lab execution."
+          "Worked on bacterial stress-response questions in Caulobacter crescentus and built a foundation in experimental design, documentation, and day-to-day laboratory practice."
       },
       {
         title: "Area Governor",
