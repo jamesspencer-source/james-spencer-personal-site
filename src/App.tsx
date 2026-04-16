@@ -49,6 +49,22 @@ function isExternalLink(href: string) {
   return href.startsWith("http");
 }
 
+function getContactLinkMeta(link: ActionLink) {
+  if (link.download) {
+    return "PDF";
+  }
+
+  if (link.href.includes("linkedin.com")) {
+    return "linkedin.com";
+  }
+
+  try {
+    return new URL(link.href).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
 function ActionRow({ links }: { links: ActionLink[] }) {
   return (
     <div className="action-row">
@@ -72,7 +88,7 @@ function ActionRow({ links }: { links: ActionLink[] }) {
 function ContactLinks({ links }: { links: ActionLink[] }) {
   return (
     <ul className="contact-list">
-      {links.map((link) => (
+      {links.map((link, index) => (
         <li key={link.label} className="contact-list__item">
           <a
             className="contact-list__link"
@@ -82,7 +98,9 @@ function ContactLinks({ links }: { links: ActionLink[] }) {
               : {})}
             {...(link.download ? { download: true } : {})}
           >
-            {link.label}
+            <span className="contact-list__index">{String(index + 1).padStart(2, "0")}</span>
+            <span className="contact-list__label">{link.label}</span>
+            <span className="contact-list__meta">{getContactLinkMeta(link)}</span>
           </a>
         </li>
       ))}
@@ -359,7 +377,7 @@ function App() {
         >
           <div className="shell contact">
             <div className="contact__content js-stage-reveal">
-              <div className="section-heading">
+              <div className="section-heading contact__heading">
                 <SectionLabel
                   label={siteContent.contact.label}
                   className="section-heading__label"
