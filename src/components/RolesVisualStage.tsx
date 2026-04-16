@@ -360,10 +360,10 @@ function RolesVisualStage({
                 Two research labs
               </text>
               <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="312">
-                Shared operating
+                Coordinated lab
               </text>
               <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
-                backbone
+                support
               </text>
             </g>
 

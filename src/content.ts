@@ -125,9 +125,9 @@ export const siteContent = {
     ],
     proof: [
       {
-        headline: "Two research laboratories across one shared operating footprint",
+        headline: "Two distinct research laboratories in one department",
         detail:
-          "Direct responsibility spans shared facilities, equipment, regulated space, and staff support across two buildings."
+          "Direct responsibility spans facilities, equipment, regulated space, and staff support across two buildings."
       },
       {
         headline: "Annual scientific-program delivery",
@@ -170,7 +170,7 @@ export const siteContent = {
           "James's current work has three main parts: leading day-to-day laboratory operations, running the Community Phages summer internship program, and chairing a professional network for laboratory managers. The throughline across all three is operational execution.",
         responsibilities: [
           "Laboratory operations remain the primary role, covering staffing, budgets, equipment, facilities, vendor relationships, and regulated research space across two active laboratories.",
-          "Program delivery and network leadership extend that same operating base into an annual student internship program and recurring regional and national conferences for lab managers."
+          "Program delivery and network leadership extend the same operations discipline into an annual student internship program and recurring regional and national conferences for lab managers."
         ],
         evidence: [
           {
@@ -197,16 +197,16 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "As laboratory manager for the Bernhardt and Abraham laboratories, James runs the shared operating model for two Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role covers continuity across people, space, budgets, equipment, vendor relationships, and daily execution.",
+          "As laboratory manager for the Bernhardt and Abraham laboratories, James manages operations for two distinct Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role covers continuity across people, space, budgets, equipment, vendor relationships, and daily execution.",
         responsibilities: [
           "Directs budgets, purchasing, facilities coordination, vendor relationships, and equipment planning across laboratory space in the Veritas Science Center and the building formerly known as the Harvard Institutes of Medicine.",
           "Handles hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
         ],
         evidence: [
           {
-            label: "Current footprint",
+            label: "Current scope",
             value:
-              "Two Howard Hughes Medical Institute Investigator laboratories operating from one shared management model across two buildings."
+              "Two distinct Howard Hughes Medical Institute Investigator laboratories in the same department, located across two buildings."
           },
           {
             label: "Operating surface",
