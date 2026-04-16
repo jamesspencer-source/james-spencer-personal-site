@@ -308,7 +308,7 @@ export const siteContent = {
           "Served in an annually elected role overseeing a residential area of roughly 6,000 students, recruiting and supporting a 14-person student leadership board, engaging cross-institutional partners, and planning large-scale events and initiatives for a 30,037-student campus community."
       },
       {
-        title: "Resident Assistant",
+        title: "Resident Advisor",
         organization: "University of Massachusetts Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
