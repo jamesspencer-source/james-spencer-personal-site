@@ -335,10 +335,7 @@ export const siteContent = {
     label: "",
     heading: "Contact",
     intro: "",
-    portrait: {
-      src: asset("assets/images/james-m-spencer-background-5900.jpg"),
-      alt: "James M. Spencer in a studio portrait wearing a navy shirt against a gray background."
-    },
+    portrait: null as PortraitAsset | null,
     links: [
       {
         label: "LinkedIn",
