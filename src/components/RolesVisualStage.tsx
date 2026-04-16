@@ -693,6 +693,13 @@ function RolesVisualStage({
             })}
           </g>
 
+          <g className="scene-program__gates">
+            <circle cx="504" cy="192" r="12" />
+            <circle cx="750" cy="426" r="12" />
+            <circle cx="500" cy="632" r="12" />
+            <circle cx="282" cy="430" r="12" />
+          </g>
+
           <g className="scene-program__stations">
             {programStations.map((station, index) => {
               const reveal = getSequenceReveal(
@@ -753,13 +760,6 @@ function RolesVisualStage({
                 </g>
               );
             })}
-          </g>
-
-          <g className="scene-program__gates">
-            <circle cx="504" cy="192" r="12" />
-            <circle cx="750" cy="426" r="12" />
-            <circle cx="500" cy="632" r="12" />
-            <circle cx="282" cy="430" r="12" />
           </g>
 
           <g className="scene-program__core-labels">
