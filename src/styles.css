@@ -1807,6 +1807,7 @@ button {
   font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.04em;
+  justify-self: end;
 }
 
 .contact-list__link:hover,
@@ -1998,6 +1999,12 @@ button {
 
   .contact-list__link {
     grid-template-columns: 2.4rem minmax(0, 1fr);
+  }
+
+  .contact-list__meta {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 0.2rem;
   }
 
   .roles-story__panels {
