@@ -55,7 +55,7 @@ function getContactLinkMeta(link: ActionLink) {
   }
 
   if (link.href.includes("linkedin.com")) {
-    return "linkedin.com";
+    return "Profile";
   }
 
   try {
