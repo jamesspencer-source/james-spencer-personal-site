@@ -135,15 +135,15 @@ function projectHostCity(
 function getHostRegionRadius(label: HostCity["label"]) {
   switch (label) {
     case "Boston":
-      return 26;
+      return 34;
     case "Washington, DC":
-      return 28;
+      return 38;
     case "San Francisco":
-      return 26;
+      return 35;
     case "New York City":
-      return 22;
+      return 32;
     default:
-      return 22;
+      return 30;
   }
 }
 
@@ -162,10 +162,39 @@ function getChronologicalReveal(sequenceProgress: number, index: number, total: 
   return smoothstep(start - 0.04, start + 0.1, sequenceProgress);
 }
 
-function getGlobeLabelTransform(city: HostCity & { x: number; y: number }) {
-  const xOffset = city.x > 600 ? -152 : 16;
-  const yOffset = city.y < 190 ? 18 : -18;
-  return `translate(${xOffset} ${yOffset})`;
+function getGlobeAnnotation(city: HostCity & { x: number; y: number }) {
+  switch (city.label) {
+    case "Washington, DC":
+      return {
+        x: -252,
+        y: 38,
+        width: 232,
+        detail: "2023 + 2025 national conferences"
+      };
+    case "Boston":
+      return {
+        x: 36,
+        y: -78,
+        width: 210,
+        detail: "2024 regional conference"
+      };
+    case "New York City":
+      return {
+        x: 42,
+        y: 40,
+        width: 212,
+        detail: "2026 regional conference"
+      };
+    case "San Francisco":
+      return {
+        x: -246,
+        y: -64,
+        width: 226,
+        detail: "2026 regional conference"
+      };
+    default:
+      return { x: 28, y: -52, width: 188, detail: "Conference host site" };
+  }
 }
 
 function getCalloutStyle(
@@ -227,10 +256,10 @@ function RolesVisualStage({
 
   const globeProjection = useMemo(() => {
     return geoOrthographic()
-      .translate([558, 350])
-      .scale(mix(234, 324, globeEnter))
+      .translate([558, 360])
+      .scale(mix(238, 500, globeEnter))
       .clipAngle(90)
-      .rotate([mix(118, 99, globeEnter), mix(-18, -33, globeEnter)]);
+      .rotate([mix(118, 97, globeEnter), mix(-18, -37, globeEnter)]);
   }, [globeEnter]);
 
   const overviewGlobeProjection = useMemo(() => {
@@ -822,8 +851,8 @@ function RolesVisualStage({
             </radialGradient>
           </defs>
 
-          <circle className="scene-globe__aura" cx="558" cy="350" r="328" />
-          <circle className="scene-globe__sphere" cx="558" cy="350" r={mix(234, 324, globeEnter)} />
+          <circle className="scene-globe__aura" cx="558" cy="360" r="424" />
+          <circle className="scene-globe__sphere" cx="558" cy="360" r={mix(238, 500, globeEnter)} />
 
           <path className="scene-globe__graticule" d={globePath(graticule) ?? ""} />
           <path className="scene-globe__world" d={globePath(WORLD_LAND) ?? ""} />
@@ -881,8 +910,8 @@ function RolesVisualStage({
                   d={route.d}
                   pathLength={1}
                   style={{
-                    opacity: reveal * 0.88,
-                    strokeWidth: mix(1.9, 3.2, reveal),
+                    opacity: reveal * 0.95,
+                    strokeWidth: mix(2.4, 4.1, reveal),
                     strokeDasharray: 1,
                     strokeDashoffset: 1 - reveal
                   }}
@@ -898,8 +927,10 @@ function RolesVisualStage({
               projectedCities.length
             );
             const active = globeFocusLabel === city.label;
-            const label = `${city.label}${city.year ? ` · ${city.year}` : ""}`;
-            const labelWidth = Math.max(142, label.length * 7.2 + 22);
+            const annotation = getGlobeAnnotation(city);
+            const labelScale = mix(0.96, active ? 1.06 : 1, active ? 1 : reveal);
+            const leaderX = annotation.x < 0 ? annotation.x + annotation.width : annotation.x;
+            const leaderY = annotation.y - 8;
             return (
               <g
                 key={`${city.label}-${city.year}`}
@@ -922,18 +953,33 @@ function RolesVisualStage({
               >
                 <circle
                   className="scene-globe__pin-aura"
-                  r={mix(14, active ? 30 : 21, active ? 1 : reveal)}
+                  r={mix(18, active ? 36 : 26, active ? 1 : reveal)}
                 />
-                <circle className="scene-globe__pin-ring" r="11" />
-                <circle className="scene-globe__pin-core" r="4.6" />
-                {active ? (
-                  <g className="scene-globe__pin-label" transform={getGlobeLabelTransform(city)}>
-                    <rect x="-6" y="-22" width={labelWidth} height="32" rx="12" />
-                    <text x="8" y="-2">
-                      {label}
-                    </text>
-                  </g>
-                ) : null}
+                <circle className="scene-globe__pin-ring" r="15" />
+                <circle className="scene-globe__pin-core" r="6.5" />
+                <line
+                  className="scene-globe__pin-label-leader"
+                  x1="0"
+                  y1="0"
+                  x2={leaderX}
+                  y2={leaderY}
+                  style={{ opacity: reveal }}
+                />
+                <g
+                  className="scene-globe__pin-label"
+                  transform={`translate(${annotation.x} ${annotation.y}) scale(${labelScale})`}
+                  style={{
+                    opacity: reveal
+                  }}
+                >
+                  <rect x="0" y="-34" width={annotation.width} height="52" rx="12" />
+                  <text className="scene-globe__pin-label-city" x="14" y="-13">
+                    {city.label}
+                  </text>
+                  <text className="scene-globe__pin-label-detail" x="14" y="4">
+                    {annotation.detail}
+                  </text>
+                </g>
               </g>
             );
           })}
@@ -945,7 +991,7 @@ function RolesVisualStage({
           >
             <rect width="430" height="82" rx="18" />
             <text x="22" y="28">Conference footprint</text>
-            <text x="22" y="52">Regional and national meeting sites appear chronologically.</text>
+            <text x="22" y="52">Regional and national conference sites appear chronologically.</text>
             <text x="22" y="69">Each location remains visible as the map progresses.</text>
           </g>
         </svg>

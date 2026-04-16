@@ -80,7 +80,7 @@ const hostCities: HostCity[] = [
     latitude: 38.9072,
     longitude: -77.0369,
     year: "2023 + 2025",
-    note: "National meetings"
+    note: "National conferences"
   },
   {
     label: "Boston",
@@ -88,7 +88,7 @@ const hostCities: HostCity[] = [
     latitude: 42.3601,
     longitude: -71.0589,
     year: "2024",
-    note: "Regional meetings, including Chicago lab managers hosted in Boston"
+    note: "Regional conferences, including Chicago lab managers hosted in Boston"
   },
   {
     label: "San Francisco",
@@ -96,7 +96,7 @@ const hostCities: HostCity[] = [
     latitude: 37.7749,
     longitude: -122.4194,
     year: "2026",
-    note: "Regional meeting"
+    note: "Regional conference"
   },
   {
     label: "New York City",
@@ -104,7 +104,7 @@ const hostCities: HostCity[] = [
     latitude: 40.7128,
     longitude: -74.006,
     year: "2026",
-    note: "Regional meeting"
+    note: "Regional conference"
   }
 ];
 
