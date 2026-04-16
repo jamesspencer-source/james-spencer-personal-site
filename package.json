@@ -6,18 +6,14 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:cross-section": "node scripts/build-cross-section.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
     "@fontsource/inter": "^5.0.23",
     "@fontsource/newsreader": "^5.0.18",
-    "@react-three/drei": "^10.7.7",
-    "@react-three/fiber": "^9.6.0",
     "gsap": "^3.13.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "three": "^0.183.2"
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.1.2",

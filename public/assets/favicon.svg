@@ -1,11 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
   <title>James M. Spencer favicon</title>
-  <rect width="64" height="64" rx="12" fill="#091012" />
-  <path d="M22 8h20l8 10v36l-8 8H22l-8-10V18Z" fill="#151d1f" stroke="#36413f" />
-  <path d="M26 18h12v30H26Z" fill="#8ea9ae" fill-opacity="0.16" stroke="#5c6b6e" stroke-opacity="0.55" />
-  <path d="M18 20h10v28H18Z" fill="#101618" stroke="#2b3334" />
-  <path d="M38 20h8v28h-8Z" fill="#101618" stroke="#2b3334" />
-  <path d="M29 22h6v22H29Z" stroke="#6bc59b" stroke-opacity="0.55" />
-  <path d="M29 28h6M29 34h6M29 40h6" stroke="#90b8ff" stroke-opacity="0.46" />
-  <path d="M22 16c3-4 17-6 22 0" stroke="#d8ea8c" stroke-opacity="0.55" fill="none" />
+  <rect width="64" height="64" rx="12" fill="#111714" />
+  <path d="M14 17h36" stroke="#86a18e" stroke-linecap="round" stroke-width="3" />
+  <path
+    d="M22 18h13c7.7 0 12 4.1 12 10.7 0 6.7-4.4 10.9-12 10.9h-6.4V46H22V18Zm6.6 5.3v11h5.6c4 0 6.2-1.8 6.2-5.5 0-3.6-2.2-5.5-6.2-5.5h-5.6Z"
+    fill="#f3eee4"
+  />
 </svg>

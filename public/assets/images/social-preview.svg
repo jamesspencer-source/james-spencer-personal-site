@@ -1,124 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
   <title id="title">James M. Spencer social preview</title>
-  <desc id="desc">Dark social preview card featuring a research operations campus graphic for James M. Spencer.</desc>
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#040708" />
-      <stop offset="100%" stop-color="#0a1011" />
-    </linearGradient>
-    <radialGradient id="glowA" cx="0.72" cy="0.26" r="0.48">
-      <stop offset="0%" stop-color="#6bc59b" stop-opacity="0.22" />
-      <stop offset="100%" stop-color="#6bc59b" stop-opacity="0" />
-    </radialGradient>
-    <radialGradient id="glowB" cx="0.8" cy="0.58" r="0.42">
-      <stop offset="0%" stop-color="#90b8ff" stop-opacity="0.2" />
-      <stop offset="100%" stop-color="#90b8ff" stop-opacity="0" />
-    </radialGradient>
-    <linearGradient id="shellFace" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#161d1f" />
-      <stop offset="100%" stop-color="#090d0f" />
-    </linearGradient>
-    <linearGradient id="doorFace" x1="0" y1="0" x2="0.9" y2="1">
-      <stop offset="0%" stop-color="#1d2527" />
-      <stop offset="100%" stop-color="#080c0d" />
-    </linearGradient>
-    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#9ab5bb" stop-opacity="0.28" />
-      <stop offset="100%" stop-color="#9ab5bb" stop-opacity="0.05" />
-    </linearGradient>
-  </defs>
-
-  <rect width="1200" height="630" fill="url(#bg)" />
-  <rect width="1200" height="630" fill="url(#glowA)" />
-  <rect width="1200" height="630" fill="url(#glowB)" />
-
-  <g stroke="rgba(242,240,232,0.08)" fill="none">
-    <path d="M0 126h1200" />
-    <path d="M0 252h1200" />
-    <path d="M0 378h1200" />
-    <path d="M0 504h1200" />
-    <path d="M160 0v630" />
-    <path d="M320 0v630" />
-    <path d="M480 0v630" />
-    <path d="M640 0v630" />
-    <path d="M800 0v630" />
-    <path d="M960 0v630" />
-    <path d="M1120 0v630" />
-  </g>
-
-  <g transform="translate(812 72)">
-    <ellipse cx="116" cy="238" rx="180" ry="220" fill="#6bc59b" fill-opacity="0.06" />
-    <ellipse cx="132" cy="248" rx="124" ry="246" fill="#90b8ff" fill-opacity="0.05" />
-
-    <g transform="translate(0 8)">
-      <path d="M76 30h118l20 28v404l-28 38H74l-20-29V59Z" fill="url(#shellFace)" stroke="rgba(242,240,232,0.12)" />
-      <path d="M74 58l-22 14v402l22-3Z" fill="#0a0f10" stroke="rgba(242,240,232,0.07)" />
-      <path d="M214 58l18 16v392l-18-4Z" fill="#111719" stroke="rgba(242,240,232,0.07)" />
-      <path d="M88 18h112l26 39-18 9H74l-16-10Z" fill="#171f21" stroke="rgba(242,240,232,0.1)" />
-
-      <path d="M111 92h74v288h-74Z" fill="url(#glass)" stroke="rgba(210,223,224,0.16)" />
-      <path d="M126 124h44v226h-44Z" fill="#8da9ae" fill-opacity="0.09" stroke="rgba(210,223,224,0.08)" />
-
-      <path d="M74 84h50v320H74Z" fill="url(#doorFace)" stroke="rgba(242,240,232,0.09)" />
-      <path d="M172 84h42v320h-42Z" fill="url(#doorFace)" stroke="rgba(242,240,232,0.09)" />
-
-      <g stroke="#6bc59b" stroke-opacity="0.38" fill="none">
-        <path d="M120 170h56" />
-        <path d="M120 202h56" />
-        <path d="M120 234h56" />
-        <path d="M132 266h44" />
-        <path d="M138 108v250" />
-        <path d="M158 124v220" />
-      </g>
-
-      <g fill="#6bc59b">
-        <rect x="118" y="284" width="14" height="42" rx="3" fill-opacity="0.84" />
-        <rect x="142" y="244" width="11" height="64" rx="3" fill-opacity="0.74" />
-        <rect x="160" y="270" width="10" height="33" rx="3" fill-opacity="0.7" />
-      </g>
-
-      <g stroke="#90b8ff" fill="none">
-        <ellipse cx="148" cy="250" rx="34" ry="54" stroke-opacity="0.28" />
-        <ellipse cx="148" cy="250" rx="20" ry="31" stroke-opacity="0.2" />
-      </g>
-      <g fill="#90b8ff">
-        <circle cx="148" cy="196" r="4" fill-opacity="0.92" />
-        <circle cx="182" cy="250" r="4" fill-opacity="0.82" />
-        <circle cx="148" cy="304" r="4" fill-opacity="0.78" />
-        <circle cx="114" cy="250" r="4" fill-opacity="0.7" />
-      </g>
-
-      <g stroke="#d8ea8c" fill="none" stroke-opacity="0.22">
-        <path d="M90 70C108 32 178 16 206 52" />
-        <path d="M102 86C124 48 174 42 194 78" />
-      </g>
-      <g fill="#d8ea8c">
-        <circle cx="102" cy="85" r="4" fill-opacity="0.84" />
-        <circle cx="128" cy="51" r="4" fill-opacity="0.76" />
-        <circle cx="152" cy="44" r="4" fill-opacity="0.74" />
-        <circle cx="180" cy="51" r="4" fill-opacity="0.76" />
-        <circle cx="196" cy="79" r="4" fill-opacity="0.84" />
-        <circle cx="149" cy="70" r="4" fill-opacity="0.68" />
-      </g>
-    </g>
-  </g>
-
-  <text x="92" y="108" fill="#99a79f" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="5">
+  <desc id="desc">Social preview card for James M. Spencer personal website.</desc>
+  <rect width="1200" height="630" fill="#f1ebdf" />
+  <rect x="88" y="88" width="1024" height="454" fill="none" stroke="rgba(21,24,20,0.16)" />
+  <path d="M88 168h1024" stroke="#456352" stroke-width="3" />
+  <text x="112" y="148" fill="#456352" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="700" letter-spacing="4">
     JAMES M. SPENCER
   </text>
-  <text x="92" y="226" fill="#f2f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="600">
-    Laboratory operations,
+  <text x="112" y="262" fill="#151814" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+    Laboratory operations and
   </text>
-  <text x="92" y="292" fill="#f2f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="600">
-    scientific programs,
+  <text x="112" y="326" fill="#151814" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+    scientific program leadership
   </text>
-  <text x="92" y="358" fill="#f2f0e8" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="600">
-    and network leadership.
+  <text x="112" y="392" fill="#151814" font-family="Georgia, 'Times New Roman', serif" font-size="62" font-weight="600">
+    in complex research settings.
   </text>
-  <text x="92" y="446" fill="#d7ddd6" font-family="Inter, Arial, sans-serif" font-size="26">
-    Two research laboratories, an annual summer program, and a national lab manager network.
+  <text x="112" y="454" fill="#5d6259" font-family="Inter, Arial, sans-serif" font-size="25">
+    Two research laboratories. Two buildings. Eight-week summer research program.
   </text>
-  <text x="92" y="496" fill="#a5afa9" font-family="Inter, Arial, sans-serif" font-size="25">
-    Boston, Massachusetts
+  <text x="112" y="500" fill="#5d6259" font-family="Inter, Arial, sans-serif" font-size="25">
+    Boston, Massachusetts.
   </text>
 </svg>

@@ -1,42 +1,16 @@
-import {
-  Suspense,
-  lazy,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  siteContent,
-  type ActionLink,
-  type OperatingStageId
-} from "./content";
+import { siteContent, type ActionLink, type ExperienceEntry } from "./content";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const AtlasScene = lazy(async () => {
-  const module = await import("./components/AtlasScene");
-  return { default: module.AtlasScene };
-});
-
-type SectionId =
-  | "overview"
-  | "scope"
-  | "roles"
-  | "system"
-  | "background"
-  | "contact";
-
-type SceneMotionProfile = "teaser" | "steady" | "immersive";
+type SectionId = "overview" | "scope" | "experience" | "background" | "contact";
 
 const navItems: Array<{ id: SectionId; label: string }> = [
   { id: "overview", label: "Overview" },
   { id: "scope", label: "Current Scope" },
-  { id: "roles", label: "Current Roles" },
-  { id: "system", label: "Systems View" },
+  { id: "experience", label: "Experience" },
   { id: "background", label: "Background" },
   { id: "contact", label: "Contact" }
 ];
@@ -75,19 +49,13 @@ function isExternalLink(href: string) {
   return href.startsWith("http");
 }
 
-function InlineLinkRow({
-  links,
-  className
-}: {
-  links: ActionLink[];
-  className?: string;
-}) {
+function ActionRow({ links }: { links: ActionLink[] }) {
   return (
-    <div className={["inline-links", className].filter(Boolean).join(" ")}>
+    <div className="action-row">
       {links.map((link) => (
         <a
           key={link.label}
-          className="inline-links__link"
+          className="action-row__link"
           href={link.href}
           {...(isExternalLink(link.href)
             ? { target: "_blank", rel: "noreferrer" }
@@ -101,91 +69,58 @@ function InlineLinkRow({
   );
 }
 
+function ContactLinks({ links }: { links: ActionLink[] }) {
+  return (
+    <ul className="contact-list">
+      {links.map((link) => (
+        <li key={link.label} className="contact-list__item">
+          <a
+            className="contact-list__link"
+            href={link.href}
+            {...(isExternalLink(link.href)
+              ? { target: "_blank", rel: "noreferrer" }
+              : {})}
+            {...(link.download ? { download: true } : {})}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function SectionIntro({ body }: { body?: string }) {
+  if (!body) {
+    return null;
+  }
+
+  return <p className="section-heading__body">{body}</p>;
+}
+
+function SectionLabel({ label, className }: { label?: string; className: string }) {
+  if (!label) {
+    return null;
+  }
+
+  return <p className={className}>{label}</p>;
+}
+
 function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const coreNarrativeRef = useRef<HTMLDivElement>(null);
-
+  const detailRef = useRef<HTMLElement>(null);
   const [activeSection, setActiveSection] = useState<SectionId>("overview");
-  const [activeRoleId, setActiveRoleId] = useState(
-    siteContent.roles.entries[0]?.id ?? ""
+  const [activeRole, setActiveRole] = useState(
+    siteContent.experience.entries[0].id
   );
-  const [activeSystemStage, setActiveSystemStage] = useState<OperatingStageId>(
-    siteContent.systemsView.stages[0]?.id ?? "labs"
-  );
-  const [systemProgress, setSystemProgress] = useState(0.4);
-  const [shouldLoadNarrativeScene, setShouldLoadNarrativeScene] =
-    useState(true);
 
-  const activeRole = useMemo(
+  const activeEntry = useMemo<ExperienceEntry>(
     () =>
-      siteContent.roles.entries.find((entry) => entry.id === activeRoleId) ??
-      siteContent.roles.entries[0],
-    [activeRoleId]
+      siteContent.experience.entries.find((entry) => entry.id === activeRole) ??
+      siteContent.experience.entries[0],
+    [activeRole]
   );
-
-  const isCoreNarrativeSection =
-    activeSection === "overview" ||
-    activeSection === "scope" ||
-    activeSection === "roles" ||
-    activeSection === "system";
-
-  const activeSceneStage = useMemo(() => {
-    switch (activeSection) {
-      case "scope":
-      case "roles":
-        return "labs" as const;
-      case "system":
-        return activeSystemStage;
-      case "background":
-      case "contact":
-        return "closing" as const;
-      case "overview":
-      default:
-        return "opening" as const;
-    }
-  }, [activeSection, activeSystemStage]);
-
-  const activeSceneLegend = useMemo(() => {
-    switch (activeSection) {
-      case "scope":
-        return siteContent.sceneLegend.scope;
-      case "roles":
-        return siteContent.sceneLegend.roles;
-      case "system":
-        return siteContent.sceneLegend.systems[activeSystemStage];
-      case "background":
-      case "contact":
-        return siteContent.sceneLegend.closing;
-      case "overview":
-      default:
-        return siteContent.sceneLegend.overview;
-    }
-  }, [activeSection, activeSystemStage]);
-
-  const activeSceneProgress = useMemo(() => {
-    switch (activeSection) {
-      case "scope":
-        return 0.34;
-      case "roles":
-        return 0.42;
-      case "system":
-        return Math.min(0.84, 0.48 + systemProgress * 0.28);
-      case "background":
-      case "contact":
-        return 0.86;
-      case "overview":
-      default:
-        return 0.2;
-    }
-  }, [activeSection, systemProgress]);
-
-  const sceneMotionProfile: SceneMotionProfile =
-    activeSection === "system"
-      ? "immersive"
-      : activeSection === "overview"
-        ? "teaser"
-        : "steady";
 
   useEffect(() => {
     document.title = siteContent.meta.title;
@@ -197,40 +132,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const node = coreNarrativeRef.current;
-    if (!node) {
-      return undefined;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setShouldLoadNarrativeScene(true);
-          }
-        });
-      },
-      { rootMargin: "280px 0px" }
-    );
-
-    observer.observe(node);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
     if (!prefersReducedMotion) {
-      return undefined;
+      return;
     }
 
     const sections = Array.from(
       document.querySelectorAll<HTMLElement>("[data-section]")
     );
-    const steps = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-operating-stage]")
-    );
-
-    const sectionObserver = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
@@ -239,100 +148,110 @@ function App() {
         });
       },
       {
-        threshold: 0,
-        rootMargin: "-46% 0px -46% 0px"
+        threshold: 0.4,
+        rootMargin: "-15% 0px -45% 0px"
       }
     );
 
-    const stageObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const element = entry.target as HTMLElement;
-            setActiveSystemStage(
-              element.dataset.operatingStage as OperatingStageId
-            );
-            setSystemProgress(0.5);
-          }
-        });
-      },
-      {
-        threshold: 0,
-        rootMargin: "-44% 0px -44% 0px"
-      }
-    );
+    sections.forEach((section) => observer.observe(section));
 
-    sections.forEach((section) => sectionObserver.observe(section));
-    steps.forEach((step) => stageObserver.observe(step));
-
-    return () => {
-      sectionObserver.disconnect();
-      stageObserver.disconnect();
-    };
+    return () => observer.disconnect();
   }, [prefersReducedMotion]);
 
   useLayoutEffect(() => {
     if (!rootRef.current) {
-      return undefined;
+      return;
     }
 
     const ctx = gsap.context(() => {
       if (prefersReducedMotion) {
-        gsap.set(".js-reveal", { autoAlpha: 1, y: 0 });
+        document.documentElement.style.setProperty("--scroll-progress", "0");
         return;
       }
 
-      gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
-        ScrollTrigger.create({
-          trigger: section,
-          start: "top 52%",
-          end: "bottom 48%",
-          onEnter: () => setActiveSection(section.id as SectionId),
-          onEnterBack: () => setActiveSection(section.id as SectionId)
-        });
-      });
+      gsap.fromTo(
+        ".js-hero-item",
+        { autoAlpha: 0, y: 14 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.55,
+          ease: "power2.out",
+          stagger: 0.04
+        }
+      );
 
-      gsap.utils.toArray<HTMLElement>(".js-reveal").forEach((panel) => {
+      gsap.utils.toArray<HTMLElement>(".js-stage").forEach((stage) => {
+        const revealTargets = stage.querySelectorAll<HTMLElement>(".js-stage-reveal");
+        if (!revealTargets.length) {
+          return;
+        }
+
         gsap.fromTo(
-          panel,
-          { autoAlpha: 0, y: 26 },
+          revealTargets,
+          { autoAlpha: 0, y: 24 },
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.8,
+            duration: 0.65,
             ease: "power2.out",
+            stagger: 0.05,
             scrollTrigger: {
-              trigger: panel,
-              start: "top 84%",
+              trigger: stage,
+              start: "top 78%",
               once: true
             }
           }
         );
       });
 
-      gsap.utils
-        .toArray<HTMLElement>("[data-operating-stage]")
-        .forEach((step) => {
-          const stageId = step.dataset.operatingStage as OperatingStageId;
-
-          ScrollTrigger.create({
-            trigger: step,
-            start: "top 60%",
-            end: "bottom 40%",
-            onEnter: () => setActiveSystemStage(stageId),
-            onEnterBack: () => setActiveSystemStage(stageId),
-            onUpdate: (self) => {
-              if (self.isActive) {
-                setActiveSystemStage(stageId);
-                setSystemProgress(self.progress);
-              }
+      gsap.utils.toArray<HTMLElement>("[data-section]").forEach((section) => {
+        ScrollTrigger.create({
+          trigger: section,
+          start: "top center",
+          end: "bottom center",
+          onToggle: (self) => {
+            if (self.isActive) {
+              setActiveSection(section.id as SectionId);
             }
-          });
+          }
         });
+      });
+
+      ScrollTrigger.create({
+        start: 0,
+        end: "max",
+        onUpdate: (self) => {
+          document.documentElement.style.setProperty(
+            "--scroll-progress",
+            self.progress.toFixed(4)
+          );
+        }
+      });
     }, rootRef);
 
     return () => ctx.revert();
   }, [prefersReducedMotion]);
+
+  useEffect(() => {
+    if (prefersReducedMotion || !detailRef.current) {
+      return;
+    }
+
+    const items = detailRef.current.querySelectorAll<HTMLElement>(".js-detail-item");
+    gsap.fromTo(
+      items,
+      { autoAlpha: 0, y: 12 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.3,
+        ease: "power2.out",
+        stagger: 0.04,
+        clearProps: "opacity,transform"
+      }
+    );
+  }, [activeRole, prefersReducedMotion]);
 
   return (
     <div className="site-app" ref={rootRef}>
@@ -345,16 +264,13 @@ function App() {
           <a className="site-brand" href="#overview">
             James M. Spencer
           </a>
-
-          <nav className="site-nav" aria-label="Section navigation">
+          <nav className="site-nav" aria-label="Primary">
             {navItems.map((item) => (
               <a
                 key={item.id}
                 className="site-nav__link"
                 href={`#${item.id}`}
-                aria-current={
-                  activeSection === item.id ? "location" : undefined
-                }
+                aria-current={activeSection === item.id ? "location" : undefined}
               >
                 {item.label}
               </a>
@@ -363,297 +279,232 @@ function App() {
         </div>
       </header>
 
-      <main id="content" className="site-main">
-        <div
-          ref={coreNarrativeRef}
-          className={`core-narrative${
-            activeSection === "system" ? " is-system-active" : ""
-          }${isCoreNarrativeSection ? " is-scene-active" : ""}`}
+      <main id="content">
+        <section
+          id="overview"
+          data-section="overview"
+          className="stage stage--overview"
         >
-          <div className="shell core-narrative__shell">
-            <div className="core-content">
-              <section
-                id="overview"
-                className="site-section hero-section"
-                data-section="overview"
-              >
-                <div className="hero-copy js-reveal">
-                  <p className="section-label">Overview</p>
-                  <h1 className="hero-copy__name">{siteContent.hero.name}</h1>
-                  <p className="hero-copy__title">{siteContent.hero.title}</p>
-                  <p className="hero-copy__location">{siteContent.hero.location}</p>
-
-                  <div className="hero-copy__summary">
-                    <p>{siteContent.hero.thesis}</p>
-                  </div>
-
-                  <InlineLinkRow links={siteContent.hero.links} />
-
-                  <div className="hero-proof">
-                    {siteContent.hero.proofStrip.map((item) => (
-                      <article
-                        key={item.headline}
-                        className={`hero-proof__item hero-proof__item--${
-                          item.tone ?? "neutral"
-                        }`}
-                      >
-                        <h2 className="hero-proof__headline">{item.headline}</h2>
-                        <p className="hero-proof__detail">{item.detail}</p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              <section
-                id="scope"
-                className="site-section scope-section"
-                data-section="scope"
-              >
-                <div className="section-heading js-reveal">
-                  <h2 className="section-title">{siteContent.scope.heading}</h2>
+          <div className="shell hero">
+            <div className="hero__layout">
+              <div className="hero__copy">
+                <SectionLabel
+                  label={siteContent.hero.label}
+                  className="hero__eyebrow js-hero-item"
+                />
+                <h1 className="hero__name js-hero-item">
+                  {siteContent.hero.name}
+                </h1>
+                <p className="hero__title js-hero-item">{siteContent.hero.title}</p>
+                <p className="hero__location js-hero-item">
+                  {siteContent.hero.location}
+                </p>
+                <div className="hero__summary js-hero-item">
+                  {siteContent.hero.summary.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
                 </div>
 
-                <div className="scope-intro-grid">
-                  <article className="scope-intro js-reveal">
-                    <p className="scope-intro__lead">{siteContent.scope.intro}</p>
-                    <p className="scope-intro__context">{siteContent.scope.context}</p>
-                  </article>
-
-                  <aside className="results-panel js-reveal">
-                    <p className="results-panel__label">Selected Results</p>
-                    <div className="results-list">
-                      {siteContent.scope.results.map((result) => (
-                        <article key={result.title} className="results-list__item">
-                          <h3 className="results-list__title">{result.title}</h3>
-                          <p className="results-list__detail">{result.detail}</p>
-                        </article>
-                      ))}
-                    </div>
-                  </aside>
+                <div className="js-hero-item">
+                  <ActionRow links={siteContent.hero.actions} />
                 </div>
+              </div>
 
-                <div className="domains-grid js-reveal">
-                  {siteContent.scope.domains.map((domain) => (
-                    <article
-                      key={domain.title}
-                      className={`domain-item domain-item--${domain.tone ?? "neutral"}`}
-                    >
-                      <h3 className="domain-item__title">{domain.title}</h3>
-                      <p className="domain-item__detail">{domain.detail}</p>
+              <aside className="hero-proof-panel js-hero-item" aria-label="Key proof">
+                <p className="hero-proof-panel__label">At a glance</p>
+                <div className="hero-proof-panel__list">
+                  {siteContent.hero.proof.map((item) => (
+                    <article className="hero-proof-panel__item" key={item.headline}>
+                      <h3 className="hero-proof-panel__headline">{item.headline}</h3>
+                      <p className="hero-proof-panel__detail">{item.detail}</p>
                     </article>
                   ))}
                 </div>
-              </section>
-
-              <section
-                id="roles"
-                className="site-section roles-section"
-                data-section="roles"
-              >
-                <div className="section-heading js-reveal">
-                  <h2 className="section-title">{siteContent.roles.heading}</h2>
-                  <p className="section-intro">{siteContent.roles.intro}</p>
-                </div>
-
-                <div className="roles-layout">
-                  <div
-                    className="role-tabs js-reveal"
-                    role="tablist"
-                    aria-label="Current roles"
-                  >
-                    {siteContent.roles.entries.map((entry) => (
-                      <button
-                        key={entry.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={activeRole?.id === entry.id}
-                        className={`role-tabs__button${
-                          entry.sceneFocus === "labs"
-                            ? " role-tabs__button--primary"
-                            : ""
-                        }${
-                          activeRole?.id === entry.id ? " is-active" : ""
-                        }`}
-                        onClick={() => setActiveRoleId(entry.id)}
-                      >
-                        <span className="role-tabs__label">{entry.navLabel}</span>
-                        <span className="role-tabs__meta">{entry.dates}</span>
-                      </button>
-                    ))}
-                  </div>
-
-                  {activeRole ? (
-                    <article className="role-detail js-reveal" role="tabpanel">
-                      <p className="role-detail__eyebrow">{activeRole.organization}</p>
-                      <h3 className="role-detail__title">{activeRole.title}</h3>
-                      <p className="role-detail__dates">{activeRole.dates}</p>
-                      <p className="role-detail__summary">{activeRole.summary}</p>
-
-                      <ul className="detail-list">
-                        {activeRole.bullets.map((bullet) => (
-                          <li key={bullet}>{bullet}</li>
-                        ))}
-                      </ul>
-
-                      <dl className="detail-evidence">
-                        {activeRole.evidence.map((item) => (
-                          <div key={item.label} className="detail-evidence__item">
-                            <dt>{item.label}</dt>
-                            <dd>{item.value}</dd>
-                          </div>
-                        ))}
-                      </dl>
-
-                      {activeRole.link ? (
-                        <InlineLinkRow
-                          links={[activeRole.link]}
-                          className="inline-links--detail"
-                        />
-                      ) : null}
-                    </article>
-                  ) : null}
-                </div>
-              </section>
-
-              <section
-                id="system"
-                className="site-section system-section"
-                data-section="system"
-              >
-                <div className="section-heading js-reveal">
-                  <h2 className="section-title">{siteContent.systemsView.heading}</h2>
-                  <p className="section-intro">{siteContent.systemsView.intro}</p>
-                </div>
-
-                <div className="system-shell js-reveal">
-                  <div className="system-steps">
-                    {siteContent.systemsView.stages.map((entry) => (
-                      <article
-                        key={entry.id}
-                        className={`system-step${
-                          activeSystemStage === entry.id ? " is-active" : ""
-                        }`}
-                        data-operating-stage={entry.id}
-                      >
-                        <p className="system-step__kicker">{entry.kicker}</p>
-                        <h3 className="system-step__title">{entry.title}</h3>
-                        <p className="system-step__summary">{entry.summary}</p>
-                        <ul className="system-step__evidence">
-                          {entry.evidence.map((line) => (
-                            <li key={line}>{line}</li>
-                          ))}
-                        </ul>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </section>
+              </aside>
             </div>
-
-            <aside className="core-scene js-reveal">
-              <div className="core-scene__sticky">
-                <div
-                  className={`scene-frame scene-frame--map${
-                    activeSection === "overview"
-                      ? " scene-frame--map-hero"
-                      : ""
-                  }${activeSection === "system"
-                    ? " scene-frame--map-immersive"
-                    : ""
-                  }`}
-                  aria-hidden="true"
-                >
-                  {shouldLoadNarrativeScene ? (
-                    <Suspense
-                      fallback={<div className="scene-frame__placeholder" />}
-                    >
-                      <AtlasScene
-                        activeStage={activeSceneStage}
-                        focus={activeSection === "roles" ? activeRole?.sceneFocus : undefined}
-                        reducedMotion={prefersReducedMotion}
-                        stageProgress={activeSceneProgress}
-                        motionProfile={sceneMotionProfile}
-                        variant={
-                          activeSection === "overview" ? "overview" : "narrative"
-                        }
-                        paused={!isCoreNarrativeSection}
-                      />
-                    </Suspense>
-                  ) : (
-                    <div className="scene-frame__placeholder" />
-                  )}
-                </div>
-
-                <div className="scene-legend">
-                  <p className="scene-legend__kicker">
-                    {activeSceneLegend.kicker}
-                  </p>
-                  <h3 className="scene-legend__title">
-                    {activeSceneLegend.title}
-                  </h3>
-                  <p className="scene-legend__summary">
-                    {activeSceneLegend.summary}
-                  </p>
-                  <div className="scene-legend__items">
-                    {activeSceneLegend.items.map((item) => (
-                      <article
-                        key={item.label}
-                        className={`scene-legend__item scene-legend__item--${
-                          item.tone ?? "neutral"
-                        }`}
-                      >
-                        <h4 className="scene-legend__item-label">
-                          {item.label}
-                        </h4>
-                        <p className="scene-legend__item-detail">
-                          {item.detail}
-                        </p>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </aside>
           </div>
-        </div>
+        </section>
 
-        <section
-          id="background"
-          className="site-section background-section"
-          data-section="background"
-        >
+        <section id="scope" data-section="scope" className="stage stage--scope js-stage">
           <div className="shell">
-            <div className="section-heading js-reveal">
-              <h2 className="section-title">{siteContent.background.heading}</h2>
-              <p className="section-intro">{siteContent.background.intro}</p>
+            <div className="section-heading js-stage-reveal">
+              <SectionLabel
+                label={siteContent.scope.label}
+                className="section-heading__label"
+              />
+              <h2 className="section-heading__title">{siteContent.scope.heading}</h2>
+              <SectionIntro body={siteContent.scope.overview} />
             </div>
 
-            <div className="background-grid">
-              <div className="background-list js-reveal">
-                {siteContent.background.entries.map((entry) => (
-                  <article key={`${entry.title}-${entry.organization}`} className="background-item">
-                    <h3 className="background-item__title">{entry.title}</h3>
-                    <p className="background-item__meta">
-                      {entry.organization}
-                      <span>{entry.dates}</span>
-                    </p>
-                    <p className="background-item__summary">{entry.summary}</p>
+            <div className="scope-context js-stage-reveal" aria-label="Current context">
+              {siteContent.scope.context.map((item) => (
+                <span className="scope-context__item" key={item}>
+                  {item}
+                </span>
+              ))}
+            </div>
+
+            <div className="scope-layout">
+              <div className="scope-domains js-stage-reveal">
+                {siteContent.scope.domains.map((domain) => (
+                  <article className="scope-domains__item" key={domain.title}>
+                    <h3>{domain.title}</h3>
+                    <p>{domain.description}</p>
                   </article>
                 ))}
               </div>
 
-              <aside className="education-block js-reveal">
-                <p className="education-block__label">Education</p>
-                <h3 className="education-block__degree">
-                  {siteContent.background.education.degree}
+              <aside className="scope-results js-stage-reveal">
+                <p className="scope-results__label">Selected results</p>
+                <div className="scope-results__list">
+                  {siteContent.scope.results.map((result) => (
+                    <article className="scope-results__item" key={result.title}>
+                      <h3>{result.title}</h3>
+                      <p>{result.detail}</p>
+                    </article>
+                  ))}
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="experience"
+          data-section="experience"
+          className="stage stage--experience js-stage"
+        >
+          <div className="shell">
+            <div className="section-heading js-stage-reveal">
+              <SectionLabel
+                label={siteContent.experience.label}
+                className="section-heading__label"
+              />
+              <h2 className="section-heading__title">
+                {siteContent.experience.heading}
+              </h2>
+              <SectionIntro body={siteContent.experience.intro} />
+            </div>
+
+            <div className="experience-layout">
+              <div className="experience-nav js-stage-reveal">
+                {siteContent.experience.entries.map((entry, index) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    className="experience-nav__item"
+                    data-active={activeRole === entry.id}
+                    aria-pressed={activeRole === entry.id}
+                    onClick={() => setActiveRole(entry.id)}
+                  >
+                    <span className="experience-nav__index">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span className="experience-nav__text">
+                      <span className="experience-nav__label">{entry.navLabel}</span>
+                      <span className="experience-nav__dates">{entry.dates}</span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <article className="experience-detail js-stage-reveal" ref={detailRef}>
+                <p className="experience-detail__dates js-detail-item">
+                  {activeEntry.dates}
+                </p>
+                <h3 className="experience-detail__title js-detail-item">
+                  {activeEntry.title}
                 </h3>
-                <p className="education-block__school">
-                  {siteContent.background.education.organization}
+                <p className="experience-detail__organization js-detail-item">
+                  {activeEntry.organization}
                 </p>
-                <p className="education-block__dates">
-                  {siteContent.background.education.dates}
+                <p className="experience-detail__summary js-detail-item">
+                  {activeEntry.summary}
                 </p>
+                {activeEntry.link ? (
+                  <p className="experience-detail__link js-detail-item">
+                    <a
+                      href={activeEntry.link.href}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      {activeEntry.link.label}
+                    </a>
+                  </p>
+                ) : null}
+
+                <div className="experience-detail__grid">
+                  <ul className="experience-detail__list js-detail-item">
+                    {activeEntry.responsibilities.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+
+                  <dl className="experience-detail__evidence js-detail-item">
+                    {activeEntry.evidence.map((item) => (
+                      <div key={item.label} className="experience-detail__evidence-item">
+                        <dt>{item.label}</dt>
+                        <dd>{item.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
+          id="background"
+          data-section="background"
+          className="stage stage--background js-stage"
+        >
+          <div className="shell">
+            <div className="section-heading js-stage-reveal">
+              <SectionLabel
+                label={siteContent.background.label}
+                className="section-heading__label"
+              />
+              <h2 className="section-heading__title">
+                {siteContent.background.heading}
+              </h2>
+              <SectionIntro body={siteContent.background.intro} />
+            </div>
+
+            <div className="background-layout">
+              <div className="background-roles js-stage-reveal">
+                {siteContent.background.entries.map((entry) => (
+                  <article className="background-role" key={entry.title}>
+                    <div className="background-role__top">
+                      <h3>{entry.title}</h3>
+                      <p>{entry.dates}</p>
+                    </div>
+                    <p className="background-role__organization">
+                      {entry.organization}
+                    </p>
+                    <p className="background-role__summary">{entry.summary}</p>
+                  </article>
+                ))}
+              </div>
+
+              <aside className="background-aside js-stage-reveal">
+                {siteContent.background.portrait ? (
+                  <figure className="background-portrait">
+                    <img
+                      src={siteContent.background.portrait.src}
+                      alt={siteContent.background.portrait.alt}
+                      width={1200}
+                      height={1600}
+                    />
+                  </figure>
+                ) : null}
+
+                <div className="background-education">
+                  <p className="background-education__label">Education</p>
+                  <h3>{siteContent.background.education.degree}</h3>
+                  <p>{siteContent.background.education.organization}</p>
+                  <p>{siteContent.background.education.dates}</p>
+                </div>
               </aside>
             </div>
           </div>
@@ -661,16 +512,21 @@ function App() {
 
         <section
           id="contact"
-          className="site-section contact-section"
           data-section="contact"
+          className="stage stage--contact js-stage"
         >
-          <div className="shell">
-            <div className="contact-panel js-reveal">
-              <h2 className="section-title">{siteContent.contact.heading}</h2>
-              <InlineLinkRow
-                links={siteContent.contact.links}
-                className="inline-links--contact"
+          <div className="shell contact">
+            <div className="section-heading js-stage-reveal">
+              <SectionLabel
+                label={siteContent.contact.label}
+                className="section-heading__label"
               />
+              <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
+              <SectionIntro body={siteContent.contact.intro} />
+            </div>
+
+            <div className="contact__actions js-stage-reveal">
+              <ContactLinks links={siteContent.contact.links} />
             </div>
           </div>
         </section>

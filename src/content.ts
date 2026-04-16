@@ -1,56 +1,39 @@
-import type { MapFocus } from "./campusScenePresets";
-
 export type ActionLink = {
   label: string;
   href: string;
   download?: boolean;
 };
 
-export type AccentTone = "labs" | "program" | "network" | "neutral";
-
-export type HeroProofItem = {
+export type ProofItem = {
   headline: string;
   detail: string;
-  tone?: AccentTone;
 };
 
-export type ScopeDomain = {
+export type DomainItem = {
+  title: string;
+  description: string;
+};
+
+export type ScopeResult = {
   title: string;
   detail: string;
-  tone?: AccentTone;
 };
 
-export type ResultItem = {
-  title: string;
-  detail: string;
-};
-
-export type RoleEvidence = {
+export type ExperienceEvidence = {
   label: string;
   value: string;
 };
 
-export type RoleEntry = {
+export type ExperienceEntry = {
   id: string;
   navLabel: string;
-  sceneFocus: MapFocus;
   title: string;
   organization: string;
   dates: string;
   summary: string;
-  bullets: string[];
-  evidence: RoleEvidence[];
+  responsibilities: string[];
+  evidence: ExperienceEvidence[];
   link?: ActionLink;
-};
-
-export type OperatingStageId = MapFocus;
-
-export type SystemsViewStage = {
-  id: OperatingStageId;
-  kicker: string;
-  title: string;
-  summary: string;
-  evidence: string[];
 };
 
 export type BackgroundEntry = {
@@ -60,23 +43,9 @@ export type BackgroundEntry = {
   summary: string;
 };
 
-export type EducationEntry = {
-  degree: string;
-  organization: string;
-  dates: string;
-};
-
-export type SceneLegendItem = {
-  label: string;
-  detail: string;
-  tone?: AccentTone;
-};
-
-export type SceneLegendBlock = {
-  kicker: string;
-  title: string;
-  summary: string;
-  items: SceneLegendItem[];
+export type PortraitAsset = {
+  src: string;
+  alt: string;
 };
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
@@ -88,32 +57,38 @@ export const siteContent = {
       "James M. Spencer leads operations for research laboratories, scientific programs, and professional communities at Harvard Medical School."
   },
   hero: {
+    label: "",
     name: "James M. Spencer",
     title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
-    thesis:
-      "James M. Spencer manages operations for two Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology at Harvard Medical School. He leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals, with day-to-day responsibility for staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and execution.",
-    proofStrip: [
+    summary: [
+      "James M. Spencer manages operations for two Howard Hughes Medical Institute (HHMI) Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students, and chairs the Lab Management Network of Professionals, a peer professional-development organization for laboratory managers.",
+      "His remit includes staffing, budgets, facilities, equipment, biosafety level 2 laboratory space, vendor coordination, and day-to-day execution."
+    ],
+    proof: [
       {
-        headline: "Two research laboratories under one operating model",
+        headline:
+          "Two Howard Hughes Medical Institute Investigator laboratories, one shared operating footprint",
         detail:
-          "Shared facilities, equipment, vendor coordination, and regulated laboratory space run across a connected footprint in two buildings.",
-        tone: "labs"
+          "Direct responsibility spans shared laboratory space in two buildings, with one operating model across facilities, equipment, and daily execution."
       },
       {
-        headline: "Community Phages, now in its fifth year",
+        headline: "Community Phages is now in its fifth annual cycle",
         detail:
-          "An annual eight-week summer internship program for Roxbury Community College students, with end-to-end operational delivery each season.",
-        tone: "program"
+          "An eight-week summer internship program for Roxbury Community College students, planned and run from setup through closeout."
       },
       {
-        headline: "Chair of a professional network for lab managers",
+        headline: "Chairs a lab-manager professional-development network",
         detail:
-          "Regional and national programming connects laboratory managers across Howard Hughes Medical Institute laboratories and institute partners.",
-        tone: "network"
+          "Leads board work and programming for the Lab Management Network of Professionals, supporting regional and national convenings."
+      },
+      {
+        headline: "Operational value comes through steady, disciplined execution",
+        detail:
+          "Cost stewardship, vendor management, onboarding, and day-to-day continuity help keep complex scientific environments running well."
       }
-    ] as HeroProofItem[],
-    links: [
+    ] as ProofItem[],
+    actions: [
       {
         label: "Resume",
         href: asset("assets/resume/james-m-spencer-resume.pdf"),
@@ -126,112 +101,115 @@ export const siteContent = {
     ] as ActionLink[]
   },
   scope: {
-    heading: "Current Scope",
-    intro:
-      "James's current remit centers on keeping research laboratories, a summer internship program, and a professional lab manager network coordinated, reliable, and operational.",
-    context:
-      "Current responsibilities sit within the Department of Microbiology at Harvard Medical School, two Howard Hughes Medical Institute Investigator laboratories, the Community Phages summer internship program, and the Lab Management Network of Professionals.",
+    label: "Current Scope",
+    heading: "Current responsibilities",
+    overview:
+      "His current work combines laboratory operations, staffing, financial stewardship, and program delivery. It sits at the intersection of Howard Hughes Medical Institute-supported research laboratories, Community Phages, and professional programming for lab managers.",
+    context: [
+      "Department of Microbiology, Harvard Medical School",
+      "Howard Hughes Medical Institute-supported laboratories",
+      "Community Phages summer internship program",
+      "Lab Management Network of Professionals"
+    ],
     domains: [
       {
-        title: "Research laboratory operations",
-        detail:
-          "Budgets, purchasing, equipment, facilities, vendor coordination, and management of regulated laboratory space across active research groups.",
-        tone: "labs"
+        title: "Laboratory operations",
+        description:
+          "Budgets, equipment, facilities, vendor relationships, purchasing, regulated laboratory space, and day-to-day continuity across shared research environments."
       },
       {
         title: "People, hiring, and onboarding",
-        detail:
-          "Candidate visits, recruiting logistics, onboarding, schedules, and practical support for scientists, trainees, and visiting participants.",
-        tone: "neutral"
+        description:
+          "Candidate visits, onboarding, recruiting logistics, schedules, and practical support for scientists, trainees, and visiting participants."
       },
       {
-        title: "Budgets, vendors, facilities, and equipment",
-        detail:
-          "Stewardship of the external relationships and physical infrastructure that keep laboratories and programs functioning day to day.",
-        tone: "labs"
+        title: "Budgets, vendors, and facilities",
+        description:
+          "Cost stewardship, service coordination, repairs, space planning, and the vendor relationships that keep laboratory operations steady."
       },
       {
-        title: "Scientific programs and community leadership",
-        detail:
-          "Community Phages operations, board leadership, and convenings for a professional network of laboratory managers.",
-        tone: "program"
+        title: "Scientific programs and professional community",
+        description:
+          "Annual internship-program delivery, regional meetings, national convenings, and recurring support for a lab manager peer network."
       }
-    ] as ScopeDomain[],
+    ] as DomainItem[],
     results: [
       {
-        title: "Continuity held while the research footprint expanded",
+        title: "Efficiency and cost stewardship",
         detail:
-          "A second Howard Hughes Medical Institute Investigator laboratory was added in August 2025 while shared facilities, equipment, and regulated laboratory space stayed coordinated under one system."
+          "Improves operating efficiency through careful planning, purchasing discipline, and vendor management."
       },
       {
-        title: "Program delivery depends on repeatable setup, execution, and closeout",
+        title: "Expanded scope without fragmentation",
         detail:
-          "The annual eight-week internship program depends on repeatable planning, setup, daily logistics, student support, and closeout."
+          "Added a second laboratory in August 2025 while maintaining one coherent operating model across shared facilities, equipment, and regulated space."
       },
       {
-        title: "Professional leadership carries the work beyond one local operation",
+        title: "Community Phages delivered end to end",
         detail:
-          "Regional programming and national convenings support the broader lab manager community and its institute partners."
+          "Runs the annual operating cycle for the eight-week internship program, from planning and setup through daily logistics and closeout."
+      },
+      {
+        title: "Professional network leadership",
+        detail:
+          "Chairs the Lab Management Network of Professionals and helps lead programming that brings together dozens to hundreds of participants across regional and national convenings."
       }
-    ] as ResultItem[]
+    ] as ScopeResult[]
   },
-  roles: {
-    heading: "Current Roles",
-    intro:
-      "The primary role is research laboratory operations leadership. Community Phages and network leadership extend that operating profile into program delivery and professional leadership for lab managers.",
+  experience: {
+    label: "Experience",
+    heading: "Current roles",
+    intro: "",
     entries: [
       {
-        id: "laboratories",
-        navLabel: "Research laboratory operations",
-        sceneFocus: "labs",
+        id: "labs",
+        navLabel: "Laboratory Operations",
         title: "Laboratory Manager",
         organization:
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "Leads the shared operating structure for two Howard Hughes Medical Institute Investigator laboratories within the Department of Microbiology at Harvard Medical School.",
-        bullets: [
-          "Runs budgets, purchasing, vendor relationships, facilities coordination, equipment planning, and regulated laboratory space across a shared research footprint spanning two buildings.",
-          "Leads hiring logistics, onboarding, candidate visits, and the practical support that keeps scientists, trainees, and visitors moving.",
-          "Provides continuity and operational judgment as the footprint expanded from one laboratory to two in August 2025."
+          "Leads shared operations for two Howard Hughes Medical Institute Investigator laboratories within the Department of Microbiology at Harvard Medical School.",
+        responsibilities: [
+          "Directs budgets, purchasing, vendor relationships, facilities coordination, and equipment planning across a shared research footprint spanning two buildings.",
+          "Handles hiring logistics, onboarding, candidate visits, regulated laboratory-space coordination, and day-to-day continuity for two active research laboratories."
         ],
         evidence: [
           {
-            label: "Current scope",
+            label: "Current remit",
             value:
-              "Two Howard Hughes Medical Institute Investigator laboratories with one shared biosafety level 2 laboratory footprint."
+              "Operational leadership across staffing, budgets, facilities, equipment, vendor coordination, and continuity."
           },
           {
-            label: "Responsibility",
+            label: "Operating context",
             value:
-              "Staffing, budgets, equipment, facilities, vendor coordination, onboarding, and continuity."
-          },
-          {
-            label: "Positioning",
-            value:
-              "This is the core operating role; the program and network work extend outward from it."
+              "Two HHMI Investigator laboratories with one shared biosafety level 2 laboratory footprint."
           }
         ]
       },
       {
-        id: "community-phages",
-        navLabel: "Community Phages operations",
-        sceneFocus: "program",
+        id: "program",
+        navLabel: "Program Operations",
         title: "Program Operations Lead",
         organization:
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "Leads the operating delivery behind Community Phages, an eight-week summer internship program for Roxbury Community College students.",
-        bullets: [
-          "Builds and runs the annual program environment, including benches, supplies, safety setup, schedules, access, partner coordination, and closeout.",
+          "Leads the operating model for Community Phages, an eight-week summer internship program for Roxbury Community College students.",
+        responsibilities: [
+          "Builds and runs the annual program environment, including benches, supplies, safety setup, access, schedules, partner coordination, and closeout.",
           "Owns the operational side of the program end to end, supporting students, instructors, visitors, and daily execution throughout the summer."
         ],
         evidence: [
           {
-            label: "Program",
+            label: "Program structure",
             value:
-              "An annual eight-week summer internship program now in its fifth operating cycle."
+              "Fifth annual operating cycle for an eight-week research internship program."
+          },
+          {
+            label: "Delivery model",
+            value:
+              "Combines laboratory setup, logistics, student support, field activity coordination, and closeout."
           }
         ],
         link: {
@@ -240,231 +218,54 @@ export const siteContent = {
         }
       },
       {
-        id: "network-leadership",
-        navLabel: "Network leadership",
-        sceneFocus: "network",
+        id: "network",
+        navLabel: "Network Leadership",
         title: "Chair, Advisory Board",
         organization:
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "Chairs the advisory board for the Lab Management Network of Professionals, a professional community for laboratory managers across Howard Hughes Medical Institute laboratories.",
-        bullets: [
+          "Chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development organization for Howard Hughes Medical Institute lab managers.",
+        responsibilities: [
           "Sets board priorities and helps shape regional and national programming for a network of laboratory managers across the institute.",
-          "Supports recurring programming, board coordination, and ongoing community support for laboratory managers and institute partners."
+          "Supports recurring peer infrastructure through monthly programming and the institute-wide Slack community."
         ],
         evidence: [
           {
-            label: "Convenings",
+            label: "Programming scale",
             value:
               "Regional gatherings and larger national convenings for laboratory managers and institute partners."
+          },
+          {
+            label: "Leadership focus",
+            value:
+              "Board direction, recurring programming, and professional community support."
           }
         ]
       }
-    ] as RoleEntry[]
-  },
-  sceneLegend: {
-    overview: {
-      kicker: "Systems Map",
-      title: "A cross-section of the operating system behind the visible role",
-      summary:
-        "The scene reads as a research campus cross-section rather than a literal building: shared laboratory infrastructure, a recurring summer program, and professional leadership beyond one local operation.",
-      items: [
-        {
-          label: "Shared lab backbone",
-          detail:
-            "A central operations spine feeds two active research laboratories with one coordinated operating model.",
-          tone: "labs"
-        },
-        {
-          label: "Program cycle",
-          detail:
-            "A lower loop stands for the setup, delivery, and closeout required each summer.",
-          tone: "program"
-        },
-        {
-          label: "Network layer",
-          detail:
-            "An upper lattice represents convenings, board leadership, and professional community work.",
-          tone: "network"
-        }
-      ]
-    } as SceneLegendBlock,
-    scope: {
-      kicker: "Current Read",
-      title: "The cross-section stays anchored to shared lab infrastructure",
-      summary:
-        "The cross-section stays anchored on the shared lab system in this section because that operating surface holds together the broader remit around it.",
-      items: [
-        {
-          label: "Shared utilities",
-          detail:
-            "Facilities, equipment, vendor relationships, and regulated space sit on the same spine.",
-          tone: "labs"
-        },
-        {
-          label: "People and continuity",
-          detail:
-            "Hiring, onboarding, scheduling, and day-to-day continuity radiate outward from that backbone.",
-          tone: "neutral"
-        }
-      ]
-    } as SceneLegendBlock,
-    roles: {
-      kicker: "Current Roles",
-      title: "The cross-section stays lab-led while the role detail changes",
-      summary:
-        "Laboratory operations remain the primary visual state here. Program and network roles are shown as extensions of the same operating system rather than separate worlds.",
-      items: [
-        {
-          label: "Primary anchor",
-          detail:
-            "The two-laboratory operating model remains the dominant read in this section.",
-          tone: "labs"
-        },
-        {
-          label: "Local emphasis only",
-          detail:
-            "Role selection can strengthen a layer, but it does not rebuild the whole scene.",
-          tone: "neutral"
-        }
-      ]
-    } as SceneLegendBlock,
-    systems: {
-      labs: {
-        kicker: "Systems View",
-        title: "Shared lab infrastructure forms the upper operating backbone",
-        summary:
-          "Two lab zones, shared utilities, and the central spine stand in for the infrastructure researchers depend on every day.",
-        items: [
-          {
-            label: "Two active labs",
-            detail:
-              "Parallel decks represent two research laboratories operating through one shared system.",
-            tone: "labs"
-          },
-          {
-            label: "One operating backbone",
-            detail:
-              "Facilities, equipment, vendor coordination, and regulated space stay tied to the same central route.",
-            tone: "labs"
-          }
-        ]
-      } as SceneLegendBlock,
-      program: {
-        kicker: "Systems View",
-        title: "A recurring program reads as a lower operating loop",
-        summary:
-          "The lower loop stands for preparation, setup, student support, daily execution, and closeout across each annual run of Community Phages.",
-        items: [
-          {
-            label: "Checkpoint rhythm",
-            detail:
-              "Gates and repeated stations represent the recurring steps that make the program run cleanly.",
-            tone: "program"
-          },
-          {
-            label: "Visible experience, hidden setup",
-            detail:
-              "The student-facing program depends on a stable operating loop beneath it.",
-            tone: "program"
-          }
-        ]
-      } as SceneLegendBlock,
-      network: {
-        kicker: "Systems View",
-        title: "Network leadership rises above the local operating footprint",
-        summary:
-          "The upper bridge structure represents board work, convenings, and the professional ties that connect lab managers across institutions.",
-        items: [
-          {
-            label: "Regional and national reach",
-            detail:
-              "The elevated lattice broadens the map beyond one local operation.",
-            tone: "network"
-          },
-          {
-            label: "Professional convenings",
-            detail:
-              "Bridges and nodes stand for recurring programming, coordination, and community leadership.",
-            tone: "network"
-          }
-        ]
-      } as SceneLegendBlock
-    },
-    closing: {
-      kicker: "Core Narrative",
-      title: "The cross-section settles before the closing sections",
-      summary:
-        "The mapped operating system releases before the quieter background and contact sections so the page can close as a professional profile rather than a continuous visual performance.",
-      items: [
-        {
-          label: "Primary operating profile established",
-          detail:
-            "The core narrative has already covered laboratories, program delivery, and network leadership before the closing sections begin.",
-          tone: "neutral"
-        }
-      ]
-    }
-  },
-  systemsView: {
-    heading: "Systems View",
-    intro:
-      "The campus cross-section is not a literal facility. It condenses the work beneath the visible role into linked structures for shared laboratory infrastructure, recurring program delivery, and professional leadership beyond a single laboratory.",
-    stages: [
-      {
-        id: "labs",
-        kicker: "Laboratory infrastructure",
-        title: "Shared infrastructure behind two active laboratories",
-        summary:
-          "This layer stands for the shared backbone researchers rely on every day: facilities, equipment, vendor coordination, staffing logistics, and management of regulated laboratory space.",
-        evidence: [
-          "Shared facilities, equipment, vendors, and laboratory space are coordinated through one operating structure.",
-          "Continuity matters most when laboratories grow, change, and remain active at the same time."
-        ]
-      },
-      {
-        id: "program",
-        kicker: "Program operations",
-        title: "The annual operating cycle behind Community Phages",
-        summary:
-          "This layer represents the repeatable cycle required to run Community Phages each summer: preparation, setup, scheduling, access, supplies, student support, field activity, and closeout.",
-        evidence: [
-          "Operational delivery runs from pre-program setup through daily execution and final closeout.",
-          "The visible student experience depends on a stable system beneath it."
-        ]
-      },
-      {
-        id: "network",
-        kicker: "Network leadership",
-        title: "Professional leadership beyond a single laboratory",
-        summary:
-          "This layer extends beyond a single laboratory. It stands for board leadership, recurring programming, and convenings that connect laboratory managers across institutions.",
-        evidence: [
-          "The work includes regional and national convenings for laboratory managers and institute partners.",
-          "Leadership here is about shaping a professional community, not just running one local operation."
-        ]
-      }
-    ] as SystemsViewStage[]
+    ] as ExperienceEntry[]
   },
   background: {
-    heading: "Background",
+    label: "Background",
+    heading: "Earlier research and leadership work.",
     intro:
-      "Earlier bench research and student leadership work helped shape the operating approach behind the current role.",
+      "Earlier work in bench science and residential leadership helped build the foundation for the current operations role.",
+    portrait: null as PortraitAsset | null,
     entries: [
       {
         title: "Research Assistant",
-        organization: "Peter Chien laboratory, University of Massachusetts Amherst",
+        organization:
+          "Peter Chien laboratory, University of Massachusetts Amherst",
         dates: "2015 - 2018",
         summary:
-          "Bench research in bacterial stress response built an early foundation in experimental work, documentation, and day-to-day laboratory execution."
+          "Worked on bacterial stress-response questions in Caulobacter crescentus and developed a bench-research foundation in experimental design, documentation, and day-to-day lab execution."
       },
       {
         title: "Area Governor",
         organization: "University of Massachusetts Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
-          "Led a residential area of roughly 6,000 students and supported a 14-person student leadership board."
+          "Led a residential area of roughly 6,000 students and recruited, trained, and supported a 14-person student leadership board."
       },
       {
         title: "Resident Assistant",
@@ -478,24 +279,26 @@ export const siteContent = {
       degree: "B.S., Science and Biochemistry",
       organization: "University of Massachusetts Amherst",
       dates: "2018"
-    } as EducationEntry
+    }
   },
   contact: {
+    label: "",
     heading: "Contact",
+    intro: "",
     links: [
+      {
+        label: "LinkedIn",
+        href: "https://www.linkedin.com/in/jamesmspencer/"
+      },
       {
         label: "Resume",
         href: asset("assets/resume/james-m-spencer-resume.pdf"),
         download: true
-      },
-      {
-        label: "LinkedIn",
-        href: "https://www.linkedin.com/in/jamesmspencer/"
       }
     ] as ActionLink[]
   },
   footer: {
     disclaimer:
-      "This website is maintained by James M. Spencer in a personal capacity. It is not an official website of Harvard Medical School, Howard Hughes Medical Institute, or any affiliated laboratory or program, and nothing here should be understood as speaking on behalf of those institutions."
+      "This website is maintained by James M. Spencer in a personal capacity. It is not an official website of Harvard Medical School, HHMI, or any affiliated laboratory or program, and nothing here should be understood as speaking on behalf of those institutions."
   }
 };
