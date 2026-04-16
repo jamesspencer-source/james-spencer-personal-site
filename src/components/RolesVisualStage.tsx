@@ -77,9 +77,9 @@ const PROGRAM_SEQUENCE_START = 0.54;
 const PROGRAM_SEQUENCE_END = 0.84;
 
 const globeRouteConnections = [
-  ["Boston", "Washington, DC"],
-  ["Washington, DC", "New York City"],
-  ["Washington, DC", "San Francisco"]
+  ["Washington, DC", "Boston"],
+  ["Boston", "San Francisco"],
+  ["San Francisco", "New York City"]
 ] as const;
 
 function clamp01(value: number) {
@@ -109,10 +109,6 @@ function buildProgramDash(progress: number) {
   return 1 - getProgramSequenceProgress(progress);
 }
 
-function buildGlobeDash(progress: number) {
-  return 1 - smoothstep(0.84, 1, progress);
-}
-
 function getProgramSequenceProgress(progress: number) {
   return smoothstep(PROGRAM_SEQUENCE_START, PROGRAM_SEQUENCE_END, progress);
 }
@@ -129,23 +125,23 @@ function projectHostCity(
 
   return {
     ...city,
-    x: point[0] + (city.offsetX ?? 0),
-    y: point[1] + (city.offsetY ?? 0)
+    x: point[0],
+    y: point[1]
   };
 }
 
 function getHostRegionRadius(label: HostCity["label"]) {
   switch (label) {
     case "Boston":
-      return 34;
+      return 26;
     case "Washington, DC":
-      return 30;
-    case "San Francisco":
       return 28;
+    case "San Francisco":
+      return 26;
     case "New York City":
       return 22;
     default:
-      return 24;
+      return 22;
   }
 }
 
@@ -157,6 +153,17 @@ function getSequenceEmphasis(sequenceProgress: number, index: number, total: num
 function getSequenceReveal(sequenceProgress: number, index: number, total: number) {
   const start = total <= 1 ? 0 : index / total;
   return smoothstep(start - 0.02, start + 0.08, sequenceProgress);
+}
+
+function getChronologicalReveal(sequenceProgress: number, index: number, total: number) {
+  const start = total <= 1 ? 0 : index / total;
+  return smoothstep(start - 0.04, start + 0.1, sequenceProgress);
+}
+
+function getGlobeLabelTransform(city: HostCity & { x: number; y: number }) {
+  const xOffset = city.x > 600 ? -152 : 16;
+  const yOffset = city.y < 190 ? 18 : -18;
+  return `translate(${xOffset} ${yOffset})`;
 }
 
 function getCalloutStyle(
@@ -262,7 +269,9 @@ function RolesVisualStage({
       return [];
     }
 
-    const cityByLabel = new Map(cities.map((city) => [city.label, city]));
+    const cityByLabel = new Map(
+      cities.map((city, index) => [city.label, { city, index }])
+    );
 
     return globeRouteConnections.flatMap(([from, to]) => {
       const start = cityByLabel.get(from);
@@ -275,39 +284,22 @@ function RolesVisualStage({
       const arc = {
         type: "LineString",
         coordinates: [
-          [start.longitude, start.latitude],
-          [end.longitude, end.latitude]
+          [start.city.longitude, start.city.latitude],
+          [end.city.longitude, end.city.latitude]
         ]
       } as LineString;
 
       return [
         {
           key: `${from}-${to}`,
-          d: globePath(arc) ?? ""
+          d: globePath(arc) ?? "",
+          revealIndex: Math.max(start.index, end.index)
         }
       ];
     });
   }, [globePath, networkVisual]);
 
-  const globeFocusLabel = useMemo(() => {
-    if (hoveredCity) {
-      return hoveredCity;
-    }
-
-    let bestLabel: string | null = null;
-    let bestEmphasis = -1;
-
-    projectedCities.forEach((city, index) => {
-      const emphasis = getSequenceEmphasis(globeSequenceProgress, index, projectedCities.length);
-
-      if (emphasis > bestEmphasis) {
-        bestEmphasis = emphasis;
-        bestLabel = city.label;
-      }
-    });
-
-    return bestLabel;
-  }, [globeSequenceProgress, hoveredCity, projectedCities]);
+  const globeFocusLabel = hoveredCity;
 
   const activeCallouts =
     chapters.find((chapter) => chapter.id === activeChapterId)?.callouts ?? [];
@@ -842,13 +834,13 @@ function RolesVisualStage({
 
           {projectedCities.map((city, index) => {
             const radius = getHostRegionRadius(city.label);
-            const emphasis = getSequenceEmphasis(
+            const reveal = getChronologicalReveal(
               globeSequenceProgress,
               index,
               projectedCities.length
             );
             const active = globeFocusLabel === city.label;
-            const visualEmphasis = active ? 1 : emphasis;
+            const visualEmphasis = active ? 1 : reveal;
 
             return (
               <g
@@ -857,9 +849,10 @@ function RolesVisualStage({
                 transform={`translate(${city.x} ${city.y})`}
                 style={{
                   opacity:
-                    mix(0.18, 0.96, visualEmphasis) *
+                    reveal *
+                    mix(0.32, 0.9, visualEmphasis) *
                     clamp01(globeEnter * 1.08 - index * 0.04),
-                  transform: `scale(${mix(0.92, active ? 1.24 : 1.08, visualEmphasis)})`
+                  transform: `scale(${mix(0.82, active ? 1.2 : 1, visualEmphasis)})`
                 }}
               >
                 <circle className="scene-globe__region-glow" r={radius} />
@@ -869,9 +862,13 @@ function RolesVisualStage({
             );
           })}
 
-          {routePaths.map((route, index) => (
+          {routePaths.map((route) => (
             (() => {
-              const emphasis = getSequenceEmphasis(globeSequenceProgress, index, routePaths.length);
+              const reveal = getChronologicalReveal(
+                globeSequenceProgress,
+                route.revealIndex,
+                projectedCities.length
+              );
 
               return (
                 <path
@@ -880,13 +877,10 @@ function RolesVisualStage({
                   d={route.d}
                   pathLength={1}
                   style={{
-                    opacity: mix(0.34, 1, emphasis),
-                    strokeWidth: mix(1.9, 3.8, emphasis),
+                    opacity: reveal * 0.88,
+                    strokeWidth: mix(1.9, 3.2, reveal),
                     strokeDasharray: 1,
-                    strokeDashoffset: Math.max(
-                      0,
-                      buildGlobeDash(progress) + index * 0.12 - emphasis * 0.16
-                    )
+                    strokeDashoffset: 1 - reveal
                   }}
                 />
               );
@@ -894,15 +888,14 @@ function RolesVisualStage({
           ))}
 
           {projectedCities.map((city, index) => {
-            const emphasis = getSequenceEmphasis(
+            const reveal = getChronologicalReveal(
               globeSequenceProgress,
               index,
               projectedCities.length
             );
             const active = globeFocusLabel === city.label;
-            const label = `${city.label}, ${city.state}${city.year ? ` · ${city.year}` : ""}`;
-            const labelWidth = Math.max(138, label.length * 6.4);
-            const passiveWidth = Math.max(72, city.label.length * 6 + 20);
+            const label = `${city.label}${city.year ? ` · ${city.year}` : ""}`;
+            const labelWidth = Math.max(142, label.length * 7.2 + 22);
             return (
               <g
                 key={`${city.label}-${city.year}`}
@@ -919,30 +912,20 @@ function RolesVisualStage({
                   setHoveredCity((current) => (current === city.label ? null : city.label))
                 }
                 style={{
-                  opacity: mix(0.5, 1, active ? 1 : emphasis) * clamp01(globeEnter * 1.15),
-                  transform: `scale(${mix(0.94, active ? 1.22 : 1.08, active ? 1 : emphasis)})`
+                  opacity: reveal * clamp01(globeEnter * 1.15),
+                  transform: `scale(${mix(0.86, active ? 1.2 : 1, active ? 1 : reveal)})`
                 }}
               >
                 <circle
                   className="scene-globe__pin-aura"
-                  r={mix(16, active ? 30 : 22, active ? 1 : emphasis)}
+                  r={mix(14, active ? 30 : 21, active ? 1 : reveal)}
                 />
                 <circle className="scene-globe__pin-ring" r="11" />
                 <circle className="scene-globe__pin-core" r="4.6" />
-                <g
-                  className="scene-globe__pin-city"
-                  transform="translate(14 -16)"
-                  style={{ opacity: mix(0.54, 1, active ? 1 : emphasis) }}
-                >
-                  <rect x="-6" y="-17" width={passiveWidth} height="24" rx="12" />
-                  <text x="8" y="-1">
-                    {city.label}
-                  </text>
-                </g>
                 {active ? (
-                  <g className="scene-globe__pin-label" transform="translate(14 -16)">
-                    <rect x="-6" y="12" width={labelWidth} height="28" rx="12" />
-                    <text x="8" y="30">
+                  <g className="scene-globe__pin-label" transform={getGlobeLabelTransform(city)}>
+                    <rect x="-6" y="-22" width={labelWidth} height="32" rx="12" />
+                    <text x="8" y="-2">
                       {label}
                     </text>
                   </g>
@@ -956,10 +939,10 @@ function RolesVisualStage({
             transform="translate(94 582)"
             style={{ opacity: clamp01(globeEnter * 1.12) }}
           >
-            <rect width="392" height="82" rx="18" />
-            <text x="22" y="28">Hosted conferences</text>
-            <text x="22" y="52">Boston · Washington, DC · San Francisco</text>
-            <text x="22" y="69">New York City</text>
+            <rect width="430" height="82" rx="18" />
+            <text x="22" y="28">Conference footprint</text>
+            <text x="22" y="52">Regional and national meeting sites appear chronologically.</text>
+            <text x="22" y="69">Each location remains visible as the map progresses.</text>
           </g>
         </svg>
       </div>

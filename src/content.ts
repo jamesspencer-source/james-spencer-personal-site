@@ -28,8 +28,6 @@ export type HostCity = {
   longitude: number;
   year?: string;
   note?: string;
-  offsetX?: number;
-  offsetY?: number;
 };
 
 export type RoleVisual =
@@ -77,24 +75,20 @@ const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 const hostCities: HostCity[] = [
   {
-    label: "Boston",
-    state: "Massachusetts",
-    latitude: 42.3601,
-    longitude: -71.0589,
-    year: "2024",
-    note: "Regional meetings, including Chicago lab managers hosted in Boston",
-    offsetX: -10,
-    offsetY: -14
-  },
-  {
     label: "Washington, DC",
     state: "District of Columbia",
     latitude: 38.9072,
     longitude: -77.0369,
     year: "2023 + 2025",
-    note: "National meetings",
-    offsetX: 16,
-    offsetY: 14
+    note: "National meetings"
+  },
+  {
+    label: "Boston",
+    state: "Massachusetts",
+    latitude: 42.3601,
+    longitude: -71.0589,
+    year: "2024",
+    note: "Regional meetings, including Chicago lab managers hosted in Boston"
   },
   {
     label: "San Francisco",
@@ -102,9 +96,7 @@ const hostCities: HostCity[] = [
     latitude: 37.7749,
     longitude: -122.4194,
     year: "2026",
-    note: "Regional meeting",
-    offsetX: -12,
-    offsetY: -6
+    note: "Regional meeting"
   },
   {
     label: "New York City",
@@ -112,9 +104,7 @@ const hostCities: HostCity[] = [
     latitude: 40.7128,
     longitude: -74.006,
     year: "2026",
-    note: "Regional meeting",
-    offsetX: 14,
-    offsetY: -14
+    note: "Regional meeting"
   }
 ];
 

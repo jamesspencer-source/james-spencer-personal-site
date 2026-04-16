@@ -1603,26 +1603,19 @@ button {
   fill: rgba(57, 90, 74, 0.98);
 }
 
-.scene-globe__pin-city rect,
 .scene-globe__pin-label rect {
   fill: rgba(8, 11, 14, 0.84);
   stroke: rgba(255, 255, 255, 0.08);
 }
 
-.scene-globe__pin-city,
 .scene-globe__pin-label {
   transition: opacity 180ms ease, transform 180ms ease;
 }
 
-.scene-globe__pin-city text,
 .scene-globe__pin-label text {
   fill: rgba(245, 248, 246, 0.98);
   font-size: 11px;
   font-weight: 600;
-}
-
-.scene-globe__pin-city text {
-  fill: rgba(228, 236, 231, 0.88);
 }
 
 .scene-globe__legend rect {
