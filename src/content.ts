@@ -112,7 +112,7 @@ export const siteContent = {
   meta: {
     title: "James M. Spencer | Laboratory Operations and Scientific Program Leader",
     description:
-      "James M. Spencer leads laboratory operations, scientific program delivery, and professional community leadership at Harvard Medical School."
+      "James M. Spencer leads research operations work supporting Howard Hughes Medical Institute Investigator laboratories, Community Phages, and a professional lab-management network."
   },
   hero: {
     label: "",
@@ -120,24 +120,24 @@ export const siteContent = {
     title: "Laboratory Operations and Scientific Program Leader",
     location: "Boston, Massachusetts",
     summary: [
-      "James M. Spencer manages operations for two Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals.",
-      "His work covers staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and day-to-day execution."
+      "James M. Spencer leads the operating work that keeps complex research environments, scientific programs, and lab-manager communities running. At Harvard Medical School, he manages operations for two distinct Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology, leads operations for the Community Phages summer internship program, and chairs the Lab Management Network of Professionals.",
+      "His work centers on practical execution: staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and day-to-day support for science and program delivery."
     ],
     proof: [
       {
-        headline: "Two distinct research laboratories in one department",
+        headline: "Two distinct HHMI Investigator laboratories",
         detail:
-          "Direct responsibility spans facilities, equipment, regulated space, and staff support across two buildings."
+          "Supports separate scientific programs in the same department, with operations spanning facilities, equipment, regulated space, and staff support across two buildings."
       },
       {
-        headline: "Annual scientific-program delivery",
+        headline: "Community Phages program operations",
         detail:
-          "Leads the operating cycle for Community Phages, an eight-week summer internship program now in its fifth year."
+          "Coordinates annual delivery for Community Phages, an eight-week summer internship program now in its fifth year."
       },
       {
-        headline: "Regional and national lab-manager conference leadership",
+        headline: "Lab-manager conference leadership",
         detail:
-          "Chairs the Lab Management Network of Professionals and helps shape programming for regional and national meetings."
+          "Chairs the Lab Management Network of Professionals advisory board and helps plan regional and national conferences."
       }
     ] as ProofItem[],
     actions: [
@@ -156,32 +156,32 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers.",
+      "James's current work is anchored in laboratory operations, with program delivery and lab-manager network leadership extending the same planning, coordination, and follow-through into student training and professional development.",
     chapters: [
       {
         id: "overview",
         sceneId: "overview",
         navLabel: "Overview",
-        title: "Current responsibilities",
+        title: "Current work",
         organization:
           "Harvard Medical School, Howard Hughes Medical Institute, and the Lab Management Network of Professionals",
         dates: "Current",
         summary:
-          "James's current work has three main parts: leading day-to-day laboratory operations, running the Community Phages summer internship program, and chairing a professional network for laboratory managers. The throughline across all three is operational execution.",
+          "James's current work is anchored in laboratory operations for two distinct research labs. He also applies the same planning and follow-through to Community Phages and the Lab Management Network of Professionals, where program delivery, conference planning, and year-round coordination matter.",
         responsibilities: [
-          "Laboratory operations remain the primary role, covering staffing, budgets, equipment, facilities, vendor relationships, and regulated research space across two active laboratories.",
-          "Program delivery and network leadership extend the same operations discipline into an annual student internship program and recurring regional and national conferences for lab managers."
+          "Maintains continuity across staffing, budgets, facilities, equipment, vendors, and regulated space for active research labs with separate scientific programs and locations.",
+          "Applies that coordination work to an annual student internship program and recurring regional and national conferences for lab managers."
         ],
         evidence: [
           {
             label: "Current scope",
             value:
-              "Two research laboratories, one annual summer program, and recurring regional and national professional meetings."
+              "Two research laboratories, one annual summer program, and recurring regional and national conferences for lab managers."
           },
           {
-            label: "Shared throughline",
+            label: "Execution focus",
             value:
-              "Planning, staffing, logistics, facilities, and continuity across each operating surface."
+              "Planning, staffing, logistics, facilities coordination, and continuity across research, program, and professional-community work."
           }
         ],
         visual: {
@@ -197,10 +197,10 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "As laboratory manager for the Bernhardt and Abraham laboratories, James manages operations for two distinct Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role covers continuity across people, space, budgets, equipment, vendor relationships, and daily execution.",
+          "James's core role is laboratory operations leadership for the Bernhardt and Abraham laboratories: two distinct Howard Hughes Medical Institute Investigator labs in Harvard Medical School's Department of Microbiology, with separate scientific programs and locations. He keeps the administrative, facilities, equipment, vendor, staffing, and daily coordination work moving so the labs can stay focused on science.",
         responsibilities: [
-          "Directs budgets, purchasing, facilities coordination, vendor relationships, and equipment planning across laboratory space in the Veritas Science Center and the building formerly known as the Harvard Institutes of Medicine.",
-          "Handles hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
+          "Coordinates budgets, purchasing, facilities, vendor relationships, and equipment planning for laboratory space in the Veritas Science Center and the building formerly known as the Harvard Institutes of Medicine.",
+          "Manages hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
         ],
         evidence: [
           {
@@ -209,9 +209,9 @@ export const siteContent = {
               "Two distinct Howard Hughes Medical Institute Investigator laboratories in the same department, located across two buildings."
           },
           {
-            label: "Operating surface",
+            label: "Core responsibilities",
             value:
-              "Staffing, facilities, equipment, budgets, vendor coordination, onboarding, and day-to-day continuity."
+              "Staffing support, facilities coordination, equipment planning, budgets, purchasing, vendor relationships, onboarding, access, and daily continuity."
           }
         ],
         visual: {
@@ -227,21 +227,21 @@ export const siteContent = {
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "James leads the operating side of Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. The role covers funding coordination, hiring and onboarding, laboratory setup, biosafety preparation, partner logistics, instructor support, student experience, and closeout.",
+          "James leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He coordinates the annual delivery system: funding, hiring, onboarding, laboratory setup, biosafety preparation, partner logistics, instructor support, student experience, and closeout.",
         responsibilities: [
-          "Builds the annual program before students arrive, including funding coordination, hiring and interviewing, access, biosafety planning, bench setup, supply readiness, and lab-space turnover.",
-          "Runs delivery end to end during the program, coordinating instructors, partner logistics, student support, field trips, daily schedules, and final closeout."
+          "Prepares the annual program before students arrive, including funding coordination, hiring and interviewing, access, biosafety planning, bench setup, supply readiness, and lab-space turnover.",
+          "Coordinates delivery during the program, including instructors, partner logistics, student support, field trips, daily schedules, and final closeout."
         ],
         evidence: [
           {
             label: "Program cycle",
             value:
-              "Fifth annual operating cycle for an eight-week research internship program."
+              "Fifth annual cycle for an eight-week research internship program."
           },
           {
-            label: "Operating scope",
+            label: "Delivery system",
             value:
-              "Funding, hiring, onboarding, lab buildout, biosafety preparation, daily execution, and closeout across one repeatable annual sequence."
+              "Funding coordination, hiring, onboarding, lab buildout, biosafety preparation, partner logistics, student support, daily schedules, and closeout."
           }
         ],
         link: {
@@ -261,21 +261,21 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, recurring programming, and relationship-building across regional and national conferences.",
+          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers. The role includes board priorities, conference planning, recurring programming, peer exchange, and partner relationships across regional and national conferences.",
         responsibilities: [
-          "Sets board priorities and helps plan regional and national meetings for laboratory managers and institute partners.",
-          "Supports recurring programming, peer exchange, speaker coordination, and the year-round continuity that keeps the network active between conferences."
+          "Sets board priorities and helps plan regional and national conferences for laboratory managers and institute partners.",
+          "Maintains year-round programming, peer exchange, speaker coordination, and continuity between conferences."
         ],
         evidence: [
           {
-            label: "Leadership scope",
+            label: "Advisory-board leadership",
             value:
               "Board direction, conference planning, and recurring professional-development programming for laboratory managers."
           },
           {
             label: "Hosted conferences",
             value:
-              "Regional and national meetings organized in Boston, Washington, DC, San Francisco, and New York City."
+              "Regional and national conferences organized in Boston, Washington, DC, San Francisco, and New York City."
           }
         ],
         visual: {
