@@ -1363,6 +1363,13 @@ button {
   stroke: rgba(206, 218, 212, 0.22);
   stroke-width: 3;
   stroke-linecap: round;
+  transition: opacity 180ms ease, stroke-width 180ms ease;
+}
+
+.scene-program__station-accent {
+  fill: rgba(163, 208, 184, 0.16);
+  stroke: rgba(223, 239, 231, 0.26);
+  stroke-width: 1.2;
 }
 
 .scene-program__stations rect {
@@ -1377,6 +1384,10 @@ button {
   font-size: 13px;
   font-weight: 700;
   text-anchor: middle;
+}
+
+.scene-program__station-dot {
+  fill: rgba(166, 205, 184, 0.94);
 }
 
 .scene-program__gates circle {

@@ -59,6 +59,15 @@ const programStations = [
   { label: "Closeout", x: 352, y: 454 }
 ];
 
+const programConnectorPaths = [
+  "M 504 244 L 504 306",
+  "M 672 278 L 640 334",
+  "M 726 426 L 662 426",
+  "M 610 558 L 566 520",
+  "M 394 560 L 430 520",
+  "M 312 430 L 372 430"
+] as const;
+
 const globeRouteConnections = [
   ["Boston", "Washington, DC"],
   ["Washington, DC", "New York City"],
@@ -89,7 +98,7 @@ function fadeBetween(
 }
 
 function buildProgramDash(progress: number) {
-  return 1 - smoothstep(0.54, 0.7, progress);
+  return 1 - smoothstep(0.54, 0.78, progress);
 }
 
 function buildGlobeDash(progress: number) {
@@ -126,6 +135,11 @@ function getHostRegionRadius(label: HostCity["label"]) {
     default:
       return 24;
   }
+}
+
+function getProgramStepEmphasis(sequenceProgress: number, index: number, total: number) {
+  const center = total <= 1 ? 0.5 : index / (total - 1);
+  return fadeBetween(sequenceProgress, center - 0.2, center - 0.08, center + 0.08, center + 0.2);
 }
 
 function getCalloutStyle(
@@ -178,7 +192,8 @@ function RolesVisualStage({
   const programEnter = smoothstep(0.48, 0.62, progress);
   const programExit = smoothstep(0.74, 0.88, progress);
   const programStationsVisibility =
-    smoothstep(0.58, 0.68, progress) * (1 - smoothstep(0.8, 0.9, progress));
+    smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.86, 0.94, progress));
+  const programSequenceProgress = clamp01((progress - 0.62) / 0.24);
   const globeEnter = smoothstep(0.76, 0.94, progress);
 
   const globeProjection = useMemo(() => {
@@ -615,27 +630,63 @@ function RolesVisualStage({
           />
 
           <g className="scene-program__connectors">
-            <path d="M 504 244 L 504 306" />
-            <path d="M 672 278 L 640 334" />
-            <path d="M 726 426 L 662 426" />
-            <path d="M 610 558 L 566 520" />
-            <path d="M 394 560 L 430 520" />
-            <path d="M 312 430 L 372 430" />
+            {programConnectorPaths.map((path, index) => {
+              const emphasis = getProgramStepEmphasis(
+                programSequenceProgress,
+                index,
+                programConnectorPaths.length
+              );
+
+              return (
+                <path
+                  key={path}
+                  d={path}
+                  style={{
+                    opacity: mix(0.35, 1, emphasis),
+                    strokeWidth: mix(2.8, 4.6, emphasis)
+                  }}
+                />
+              );
+            })}
           </g>
 
           <g className="scene-program__stations">
             {programStations.map((station, index) => {
               const width = station.label.length > 10 ? 112 : 94;
               const yOffset = mix(20, 0, programStationsVisibility);
+              const emphasis = getProgramStepEmphasis(
+                programSequenceProgress,
+                index,
+                programStations.length
+              );
+              const scale = mix(0.96, 1.1, emphasis);
+              const translateX = station.x - width / 2;
+              const translateY = station.y - 24 + yOffset;
               return (
                 <g
                   key={station.label}
-                  transform={`translate(${station.x - width / 2} ${station.y - 24 + yOffset})`}
+                  transform={`translate(${translateX} ${translateY}) translate(${width / 2} 24) scale(${scale}) translate(${-width / 2} -24)`}
                   style={{
-                    opacity: clamp01(programStationsVisibility * 1.08 - index * 0.05)
+                    opacity: mix(0.56, 1, emphasis) * clamp01(programStationsVisibility * 1.08)
                   }}
                 >
+                  <rect
+                    className="scene-program__station-accent"
+                    x={-6}
+                    y={-6}
+                    width={width + 12}
+                    height={60}
+                    rx={18}
+                    style={{ opacity: emphasis * 0.9 }}
+                  />
                   <rect width={width} height={48} rx={15} />
+                  <circle
+                    className="scene-program__station-dot"
+                    cx={16}
+                    cy={24}
+                    r={mix(4, 6.5, emphasis)}
+                    style={{ opacity: mix(0.54, 1, emphasis) }}
+                  />
                   <text x={width / 2} y={29}>
                     {station.label}
                   </text>
