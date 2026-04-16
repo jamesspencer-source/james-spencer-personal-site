@@ -221,7 +221,8 @@ button {
 }
 
 .stage--contact {
-  padding-top: clamp(3.4rem, 6vw, 4.4rem);
+  padding-top: clamp(4.6rem, 8vw, 6rem);
+  background: linear-gradient(180deg, rgba(236, 229, 216, 0) 0%, rgba(232, 224, 211, 0.28) 100%);
 }
 
 .hero__layout {
@@ -798,16 +799,12 @@ button {
 }
 
 .roles-story__chrome {
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.72fr);
-  gap: 1.5rem 2rem;
-  align-items: start;
-  margin: 0 auto;
   width: min(100%, 88rem);
+  margin: 0 auto;
 }
 
 .roles-story__heading-block {
-  max-width: 34rem;
+  max-width: 44rem;
 }
 
 .roles-story__eyebrow {
@@ -819,20 +816,22 @@ button {
 }
 
 .roles-story__heading {
-  max-width: 14ch;
+  max-width: 18ch;
   margin: 0;
-  font-size: clamp(2.8rem, 4.9vw, 5.4rem);
-  line-height: 0.96;
+  font-size: clamp(2.3rem, 4.2vw, 4.6rem);
+  line-height: 1;
   letter-spacing: -0.03em;
   font-weight: 600;
+  text-wrap: balance;
 }
 
 .roles-story__intro {
-  max-width: 32rem;
-  margin: 1rem 0 0;
+  max-width: 42rem;
+  margin: 0.9rem 0 0;
   color: rgba(229, 237, 232, 0.74);
   font-size: clamp(1rem, 1.4vw, 1.08rem);
-  line-height: 1.62;
+  line-height: 1.58;
+  text-wrap: pretty;
 }
 
 .roles-story__progress {
@@ -840,17 +839,18 @@ button {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.65rem;
   align-self: start;
+  max-width: 32rem;
 }
 
 .roles-story__progress-item {
   display: grid;
   gap: 0.24rem;
   align-content: start;
-  min-height: 4.25rem;
-  padding: 0.8rem 0.9rem;
+  min-height: 4rem;
+  padding: 0.8rem 0.85rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.045);
   color: rgba(242, 247, 243, 0.88);
   text-align: left;
   cursor: pointer;
@@ -881,23 +881,25 @@ button {
 
 .roles-story__layout {
   display: grid;
-  grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.1fr);
-  gap: 2rem clamp(2rem, 4vw, 4rem);
-  align-items: end;
+  grid-template-columns: minmax(24rem, 0.84fr) minmax(0, 1.16fr);
+  gap: 1.75rem clamp(2rem, 4vw, 4rem);
+  align-items: center;
   width: min(100%, 88rem);
-  min-height: calc(100svh - var(--header-offset) - 4rem);
-  margin: 1.8rem auto 0;
+  min-height: calc(100svh - var(--header-offset) - 6rem);
+  margin: 1.15rem auto 0;
 }
 
 .roles-story__copy {
-  align-self: stretch;
   display: grid;
-  align-items: end;
+  align-content: start;
+  gap: 1rem;
+  align-self: center;
+  min-height: 0;
 }
 
 .roles-story__panels {
   position: relative;
-  min-height: 31rem;
+  min-height: 28rem;
 }
 
 .roles-story__panel-shell {
@@ -912,10 +914,10 @@ button {
 }
 
 .roles-story__panel {
-  max-width: 38rem;
-  padding: 1.45rem 1.35rem 1.5rem;
-  background: rgba(9, 12, 15, 0.34);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 37rem;
+  padding: 1.35rem 1.3rem 1.4rem;
+  background: rgba(7, 10, 14, 0.44);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
   box-shadow:
     0 24px 54px rgba(0, 0, 0, 0.24),
@@ -933,8 +935,8 @@ button {
 
 .roles-story__title {
   margin: 0.58rem 0 0;
-  font-size: clamp(2rem, 3.2vw, 3rem);
-  line-height: 1;
+  font-size: clamp(1.85rem, 3vw, 2.8rem);
+  line-height: 1.02;
   font-weight: 600;
 }
 
@@ -947,11 +949,12 @@ button {
 }
 
 .roles-story__summary {
-  max-width: 35rem;
+  max-width: 34rem;
   margin: 1rem 0 0;
   color: rgba(245, 248, 246, 0.92);
-  font-size: 1.08rem;
-  line-height: 1.67;
+  font-size: 1.03rem;
+  line-height: 1.63;
+  text-wrap: pretty;
 }
 
 .roles-story__link {
@@ -1019,17 +1022,18 @@ button {
   color: rgba(239, 244, 241, 0.88);
   font-size: 0.98rem;
   line-height: 1.55;
+  text-wrap: pretty;
 }
 
 .roles-story__visual {
-  align-self: stretch;
+  align-self: center;
   min-height: 0;
 }
 
 .roles-scene {
   position: relative;
-  min-height: 42rem;
-  height: min(calc(100svh - var(--header-offset) - 6rem), 46rem);
+  min-height: 36rem;
+  height: min(calc(100svh - var(--header-offset) - 8rem), 44rem);
   border-radius: 0;
   overflow: hidden;
 }
@@ -1044,15 +1048,15 @@ button {
 
 .roles-scene__backdrop {
   background:
-    radial-gradient(circle at 72% 26%, rgba(109, 163, 138, 0.16), transparent 18rem),
-    radial-gradient(circle at 82% 72%, rgba(102, 137, 182, 0.16), transparent 20rem),
-    linear-gradient(180deg, rgba(32, 39, 46, 0.96) 0%, rgba(9, 12, 16, 1) 100%);
+    radial-gradient(circle at 72% 26%, rgba(148, 193, 166, 0.18), transparent 18rem),
+    radial-gradient(circle at 80% 74%, rgba(120, 147, 186, 0.14), transparent 19rem),
+    linear-gradient(180deg, rgba(39, 47, 56, 0.96) 0%, rgba(9, 12, 16, 1) 100%);
 }
 
 .roles-scene__glow {
   background:
-    linear-gradient(90deg, rgba(244, 250, 247, 0.02) 0%, rgba(244, 250, 247, 0) 28%),
-    radial-gradient(circle at 58% 44%, rgba(255, 255, 255, 0.05), transparent 17rem);
+    linear-gradient(90deg, rgba(244, 250, 247, 0.05) 0%, rgba(244, 250, 247, 0) 28%),
+    radial-gradient(circle at 60% 42%, rgba(255, 255, 255, 0.07), transparent 16rem);
 }
 
 .roles-scene__layer {
@@ -1073,52 +1077,73 @@ button {
   fill: rgba(0, 0, 0, 0.34);
 }
 
-.scene-labs__building {
-  fill: rgba(133, 157, 171, 0.16);
-  stroke: rgba(221, 230, 225, 0.07);
+.scene-labs__ground {
+  fill: none;
+  stroke: rgba(233, 240, 236, 0.16);
+  stroke-width: 2;
+}
+
+.scene-labs__ground--minor {
   stroke-width: 1.2;
+  stroke: rgba(233, 240, 236, 0.08);
 }
 
-.scene-labs__deck-top {
-  fill: url(#labs-top-left);
+.scene-labs__tower-top,
+.scene-labs__tower-main {
+  fill: url(#labs-glass);
 }
 
-.scene-labs__deck-top--right {
-  fill: url(#labs-top-right);
-}
-
-.scene-labs__deck-face,
-.scene-labs__deck-side {
-  fill: url(#labs-front);
-  stroke: rgba(198, 213, 205, 0.1);
+.scene-labs__tower-front,
+.scene-labs__tower-side,
+.scene-labs__him-top,
+.scene-labs__him-main,
+.scene-labs__him-side {
+  fill: url(#labs-glass-side);
+  stroke: rgba(231, 239, 235, 0.08);
   stroke-width: 1.1;
 }
 
-.scene-labs__spine-top {
-  fill: rgba(120, 152, 138, 0.5);
+.scene-labs__tower-main,
+.scene-labs__him-main {
+  fill: url(#labs-concrete);
 }
 
-.scene-labs__spine-face,
-.scene-labs__spine-side {
-  fill: url(#labs-spine);
+.scene-labs__floors,
+.scene-labs__windows {
+  opacity: 0.55;
 }
 
-.scene-labs__bridges polygon {
-  fill: rgba(118, 151, 137, 0.32);
-}
-
-.scene-labs__modules polygon:nth-child(1n),
-.scene-labs__modules polygon:nth-child(2n),
-.scene-labs__modules polygon:nth-child(3n) {
-  fill: rgba(233, 239, 235, 0.18);
-  stroke: rgba(216, 227, 220, 0.12);
+.scene-labs__floor-line,
+.scene-labs__window-line {
+  fill: none;
+  stroke: rgba(233, 239, 235, 0.12);
   stroke-width: 1;
+}
+
+.scene-labs__highlight-bands polygon,
+.scene-labs__bridges polygon {
+  fill: url(#labs-highlight);
+  opacity: 0.9;
+}
+
+.scene-labs__floor-markers text,
+.scene-labs__labels text {
+  fill: rgba(246, 249, 247, 0.94);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.scene-labs__labels text {
+  font-size: 13px;
+  font-weight: 600;
+  fill: rgba(221, 233, 226, 0.86);
 }
 
 .scene-labs__signals path {
   fill: none;
   stroke: rgba(153, 197, 174, 0.9);
-  stroke-width: 4;
+  stroke-width: 4.2;
   stroke-linecap: round;
 }
 
@@ -1144,27 +1169,45 @@ button {
   stroke-width: 1.2;
 }
 
-.scene-program__cards rect {
-  fill: rgba(250, 252, 251, 0.18);
-  stroke: rgba(240, 246, 242, 0.16);
-  stroke-width: 1;
+.scene-program__connectors path {
+  fill: none;
+  stroke: rgba(206, 218, 212, 0.22);
+  stroke-width: 3;
+  stroke-linecap: round;
 }
 
-.scene-program__cards rect:nth-child(2),
-.scene-program__cards rect:nth-child(3) {
-  fill: rgba(189, 205, 196, 0.2);
-  stroke: none;
+.scene-program__stations rect {
+  fill: rgba(250, 252, 251, 0.16);
+  stroke: rgba(240, 246, 242, 0.18);
+  stroke-width: 1;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.18));
+}
+
+.scene-program__stations text {
+  fill: rgba(243, 247, 245, 0.95);
+  font-size: 14px;
+  font-weight: 700;
+  text-anchor: middle;
 }
 
 .scene-program__gates circle {
   fill: rgba(165, 204, 182, 0.94);
 }
 
-.scene-program__spokes path {
-  fill: none;
-  stroke: rgba(190, 202, 196, 0.22);
-  stroke-width: 3;
-  stroke-linecap: round;
+.scene-program__core-labels text {
+  fill: rgba(241, 246, 243, 0.95);
+  text-anchor: middle;
+}
+
+.scene-program__core-labels text:first-child {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.scene-program__core-labels text:last-child {
+  font-size: 13px;
+  font-weight: 600;
+  fill: rgba(193, 214, 201, 0.82);
 }
 
 .scene-globe__aura {
@@ -1177,19 +1220,25 @@ button {
 
 .scene-globe__graticule {
   fill: none;
-  stroke: rgba(238, 244, 240, 0.16);
+  stroke: rgba(238, 244, 240, 0.14);
   stroke-width: 1.2;
 }
 
+.scene-globe__world {
+  fill: rgba(160, 177, 170, 0.3);
+  stroke: rgba(236, 243, 239, 0.1);
+  stroke-width: 0.9;
+}
+
 .scene-globe__landmass {
-  fill: rgba(92, 125, 107, 0.42);
-  stroke: rgba(236, 243, 239, 0.12);
-  stroke-width: 1.2;
+  fill: rgba(112, 157, 131, 0.74);
+  stroke: rgba(236, 243, 239, 0.22);
+  stroke-width: 1.1;
 }
 
 .scene-globe__state {
   fill: none;
-  stroke: rgba(236, 243, 239, 0.12);
+  stroke: rgba(236, 243, 239, 0.22);
   stroke-width: 0.8;
 }
 
@@ -1240,11 +1289,12 @@ button {
 }
 
 .roles-scene__callout--right {
+  justify-items: end;
   transform-origin: right center;
 }
 
 .roles-scene__callout--center {
-  transform: translate(-50%, -50%);
+  justify-items: center;
 }
 
 .roles-scene__callout-dot {
@@ -1266,7 +1316,9 @@ button {
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-  white-space: nowrap;
+  max-width: 11rem;
+  line-height: 1.32;
+  text-wrap: pretty;
 }
 
 .roles-story--reduced {
@@ -1396,14 +1448,38 @@ button {
 
 .contact {
   display: grid;
-  grid-template-columns: minmax(13rem, 0.7fr) minmax(0, 1fr);
-  gap: 1rem 2.4rem;
-  max-width: 58rem;
+  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+  gap: 1.25rem 2.8rem;
+  max-width: 68rem;
   align-items: start;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--line-strong);
+}
+
+.contact__content {
+  min-width: 0;
 }
 
 .contact__actions {
-  margin-top: 0.35rem;
+  margin-top: 1.1rem;
+}
+
+.contact__portrait {
+  margin: 0;
+  justify-self: end;
+  width: min(100%, 16rem);
+}
+
+.contact__portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 22%;
+  border-radius: 6px;
+  box-shadow:
+    0 18px 34px rgba(20, 22, 17, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .contact-list {
@@ -1467,21 +1543,21 @@ button {
   }
 
   .roles-story__chrome,
-  .roles-story__layout,
   .roles-story__card {
     grid-template-columns: 1fr;
   }
 
   .roles-story__layout {
-    min-height: calc(100svh - var(--header-offset) - 2.75rem);
+    grid-template-columns: 1fr;
+    min-height: calc(100svh - var(--header-offset) - 3rem);
   }
 
   .roles-story__heading {
-    max-width: 13ch;
+    max-width: 16ch;
   }
 
   .roles-story__panels {
-    min-height: 28rem;
+    min-height: 26rem;
   }
 
   .roles-story__visual,
@@ -1490,12 +1566,13 @@ button {
   }
 
   .roles-scene {
-    height: min(calc(100svh - var(--header-offset) - 4rem), 34rem);
-    min-height: 28rem;
+    height: min(calc(100svh - var(--header-offset) - 4rem), 32rem);
+    min-height: 25rem;
   }
 
   .roles-scene__callout-label {
     font-size: 0.78rem;
+    max-width: 9rem;
   }
 }
 
@@ -1524,7 +1601,7 @@ button {
   }
 
   .roles-story__panels {
-    min-height: 33rem;
+    min-height: 31rem;
   }
 
   .roles-story__panel {

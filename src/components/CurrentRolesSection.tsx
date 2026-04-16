@@ -93,10 +93,12 @@ function ReducedMotionRoles() {
   return (
     <section id="roles" data-section="roles" className="stage stage--roles">
       <div className="roles-story roles-story--reduced">
-        <div className="roles-story__heading-block">
-          <p className="roles-story__eyebrow">{siteContent.rolesSection.label}</p>
-          <h2 className="roles-story__heading">{siteContent.rolesSection.heading}</h2>
-          <p className="roles-story__intro">{siteContent.rolesSection.intro}</p>
+        <div className="roles-story__chrome">
+          <div className="roles-story__heading-block">
+            <p className="roles-story__eyebrow">{siteContent.rolesSection.label}</p>
+            <h2 className="roles-story__heading">{siteContent.rolesSection.heading}</h2>
+            <p className="roles-story__intro">{siteContent.rolesSection.intro}</p>
+          </div>
         </div>
 
         <div className="roles-story__cards">
@@ -177,19 +179,19 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       onUpdate: () => updateProgress(progressState.value)
     });
 
-    scrollTriggerRef.current = ScrollTrigger.create({
-      trigger: sectionRef.current,
-      animation: masterTimeline,
-      pin: viewportRef.current,
-      start: () => `top top+=${headerHeight}`,
-      end: () =>
-        `+=${Math.round(
-          window.innerHeight * (window.innerWidth < 900 ? 2.7 : 3.3)
-        )}`,
-      scrub: 0.5,
-      anticipatePin: 1,
-      invalidateOnRefresh: true
-    });
+      scrollTriggerRef.current = ScrollTrigger.create({
+        trigger: sectionRef.current,
+        animation: masterTimeline,
+        pin: viewportRef.current,
+        start: () => `top top+=${headerHeight}`,
+        end: () =>
+          `+=${Math.round(
+            window.innerHeight * (window.innerWidth < 900 ? 2.95 : 3.55)
+          )}`,
+        scrub: 0.38,
+        anticipatePin: 1,
+        invalidateOnRefresh: true
+      });
 
     return () => {
       if (rafRef.current !== null) {
@@ -231,27 +233,27 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
             <h2 className="roles-story__heading">{siteContent.rolesSection.heading}</h2>
             <p className="roles-story__intro">{siteContent.rolesSection.intro}</p>
           </div>
-
-          <nav className="roles-story__progress" aria-label="Current role chapters">
-            {chapters.map((chapter, index) => (
-              <button
-                key={chapter.id}
-                type="button"
-                className="roles-story__progress-item"
-                data-active={activeChapterId === chapter.id}
-                onClick={() => handleJump(chapter.id)}
-              >
-                <span className="roles-story__progress-index">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="roles-story__progress-label">{chapter.navLabel}</span>
-              </button>
-            ))}
-          </nav>
         </div>
 
         <div className="roles-story__layout">
           <div className="roles-story__copy">
+            <nav className="roles-story__progress" aria-label="Current role chapters">
+              {chapters.map((chapter, index) => (
+                <button
+                  key={chapter.id}
+                  type="button"
+                  className="roles-story__progress-item"
+                  data-active={activeChapterId === chapter.id}
+                  onClick={() => handleJump(chapter.id)}
+                >
+                  <span className="roles-story__progress-index">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="roles-story__progress-label">{chapter.navLabel}</span>
+                </button>
+              ))}
+            </nav>
+
             <div className="roles-story__panels">
               {chapters.map((chapter) => (
                 <div

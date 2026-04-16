@@ -358,18 +358,31 @@ function App() {
           className="stage stage--contact js-stage"
         >
           <div className="shell contact">
-            <div className="section-heading js-stage-reveal">
-              <SectionLabel
-                label={siteContent.contact.label}
-                className="section-heading__label"
-              />
-              <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
-              <SectionIntro body={siteContent.contact.intro} />
+            <div className="contact__content js-stage-reveal">
+              <div className="section-heading">
+                <SectionLabel
+                  label={siteContent.contact.label}
+                  className="section-heading__label"
+                />
+                <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
+                <SectionIntro body={siteContent.contact.intro} />
+              </div>
+
+              <div className="contact__actions">
+                <ContactLinks links={siteContent.contact.links} />
+              </div>
             </div>
 
-            <div className="contact__actions js-stage-reveal">
-              <ContactLinks links={siteContent.contact.links} />
-            </div>
+            {siteContent.contact.portrait ? (
+              <figure className="contact__portrait js-stage-reveal">
+                <img
+                  src={siteContent.contact.portrait.src}
+                  alt={siteContent.contact.portrait.alt}
+                  width={960}
+                  height={1200}
+                />
+              </figure>
+            ) : null}
           </div>
         </section>
       </main>

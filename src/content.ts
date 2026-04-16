@@ -28,6 +28,8 @@ export type HostCity = {
   longitude: number;
   year?: string;
   note?: string;
+  offsetX?: number;
+  offsetY?: number;
 };
 
 export type RoleVisual =
@@ -62,6 +64,14 @@ export type PortraitAsset = {
   alt: string;
 };
 
+export type ContactContent = {
+  label: string;
+  heading: string;
+  intro: string;
+  portrait?: PortraitAsset | null;
+  links: ActionLink[];
+};
+
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 const hostCities: HostCity[] = [
@@ -71,7 +81,9 @@ const hostCities: HostCity[] = [
     latitude: 38.9847,
     longitude: -77.0947,
     year: "2023",
-    note: "National meeting"
+    note: "National meeting",
+    offsetX: -14,
+    offsetY: -16
   },
   {
     label: "Cambridge",
@@ -79,7 +91,9 @@ const hostCities: HostCity[] = [
     latitude: 42.3736,
     longitude: -71.1097,
     year: "2024",
-    note: "Boston regional meeting"
+    note: "Boston regional meeting",
+    offsetX: 8,
+    offsetY: -10
   },
   {
     label: "Chicago",
@@ -87,7 +101,9 @@ const hostCities: HostCity[] = [
     latitude: 41.8781,
     longitude: -87.6298,
     year: "2024",
-    note: "Chicago regional meeting"
+    note: "Chicago regional meeting",
+    offsetX: -8,
+    offsetY: 2
   },
   {
     label: "Chevy Chase",
@@ -95,7 +111,9 @@ const hostCities: HostCity[] = [
     latitude: 38.9648,
     longitude: -77.0875,
     year: "2025",
-    note: "National meeting"
+    note: "National meeting",
+    offsetX: 14,
+    offsetY: 14
   }
 ];
 
@@ -145,9 +163,9 @@ export const siteContent = {
   },
   rolesSection: {
     label: "Current Roles",
-    heading: "Three current roles, one operating profile",
+    heading: "Current roles and operating responsibilities",
     intro:
-      "James's current work combines laboratory operations, program delivery, and professional-community leadership. Together, these roles cover the systems that keep research environments, student programs, and peer networks running with continuity.",
+      "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers. Together, these roles cover the research environments, student logistics, and peer-network planning that he runs alongside his primary laboratory-operations role.",
     chapters: [
       {
         id: "labs",
@@ -158,41 +176,41 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "As laboratory manager for the Bernhardt and Abraham laboratories, James leads the operating model for two Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role centers on continuity across people, space, budgets, equipment, vendors, and day-to-day execution.",
+          "As laboratory manager for the Bernhardt and Abraham laboratories, James runs the shared operating model for two Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role covers continuity across people, space, budgets, equipment, vendor relationships, and daily execution.",
         responsibilities: [
-          "Directs budgets, purchasing, facilities coordination, vendor relationships, and equipment planning across a shared laboratory footprint in two buildings.",
-          "Handles hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for two active research laboratories."
+          "Directs budgets, purchasing, facilities coordination, vendor relationships, and equipment planning across laboratory space in the Veritas Science Center and the building formerly known as the Harvard Institutes of Medicine.",
+          "Handles hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
         ],
         evidence: [
           {
             label: "Current footprint",
             value:
-              "Two Howard Hughes Medical Institute Investigator laboratories working from one shared operating model."
+              "Two Howard Hughes Medical Institute Investigator laboratories operating from one shared management model across two buildings."
           },
           {
             label: "Operating surface",
             value:
-              "Staffing, facilities, equipment, budgets, vendors, onboarding, and day-to-day continuity."
+              "Staffing, facilities, equipment, budgets, vendor coordination, onboarding, and day-to-day continuity."
           }
         ],
         callouts: [
           {
-            label: "Shared support spine",
-            x: 60,
-            y: 30,
-            align: "right"
-          },
-          {
-            label: "Regulated space and facilities",
+            label: "Veritas Science Center",
             x: 22,
-            y: 70,
+            y: 28,
             align: "left"
           },
           {
-            label: "Staffing, equipment, and vendors",
-            x: 82,
-            y: 74,
+            label: "Harvard Institutes of Medicine",
+            x: 84,
+            y: 34,
             align: "right"
+          },
+          {
+            label: "Ninth- and tenth-floor laboratory space",
+            x: 54,
+            y: 66,
+            align: "center"
           }
         ],
         visual: {
@@ -208,10 +226,10 @@ export const siteContent = {
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "James leads the operating side of Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He runs the annual cycle from planning and setup through delivery, student support, and closeout.",
+          "James leads the operating side of Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. The role covers funding coordination, hiring and onboarding, laboratory setup, biosafety preparation, partner logistics, instructor support, student experience, and closeout.",
         responsibilities: [
-          "Builds and runs the annual program environment, including supplies, bench setup, safety preparation, access, schedules, and partner coordination.",
-          "Owns the operational side of delivery end to end, supporting students, instructors, visitors, and daily logistics throughout the program."
+          "Builds the annual program before students arrive, including funding coordination, hiring and interviewing, access, biosafety planning, bench setup, supply readiness, and lab-space turnover.",
+          "Runs delivery end to end during the program, coordinating instructors, partner logistics, student support, field trips, daily schedules, and final closeout."
         ],
         evidence: [
           {
@@ -220,29 +238,9 @@ export const siteContent = {
               "Fifth annual operating cycle for an eight-week research internship program."
           },
           {
-            label: "Delivery scope",
+            label: "Operating scope",
             value:
-              "Planning, setup, daily execution, student support, and closeout across one repeatable annual sequence."
-          }
-        ],
-        callouts: [
-          {
-            label: "Planning and setup",
-            x: 24,
-            y: 28,
-            align: "left"
-          },
-          {
-            label: "Program delivery and daily support",
-            x: 82,
-            y: 48,
-            align: "right"
-          },
-          {
-            label: "Closeout and continuity",
-            x: 54,
-            y: 80,
-            align: "center"
+              "Funding, hiring, onboarding, lab buildout, biosafety preparation, daily execution, and closeout across one repeatable annual sequence."
           }
         ],
         link: {
@@ -262,41 +260,21 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, and recurring programming across regional and national convenings.",
+          "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, recurring programming, and relationship-building across regional and national convenings.",
         responsibilities: [
           "Sets board priorities and helps plan regional and national meetings for laboratory managers and institute partners.",
-          "Supports recurring programming, peer exchange, and the professional infrastructure that helps the network stay active between convenings."
+          "Supports recurring programming, peer exchange, speaker coordination, and the year-round continuity that keeps the network active between convenings."
         ],
         evidence: [
           {
             label: "Leadership remit",
             value:
-              "Board direction, conference planning, and recurring professional-development programming for lab managers."
+              "Board direction, conference planning, and recurring professional-development programming for laboratory managers."
           },
           {
             label: "Hosted convenings",
             value:
-              "Regional and national meetings hosted in Massachusetts, Illinois, and Maryland."
-          }
-        ],
-        callouts: [
-          {
-            label: "Regional hosts",
-            x: 30,
-            y: 44,
-            align: "left"
-          },
-          {
-            label: "National convenings",
-            x: 71,
-            y: 34,
-            align: "right"
-          },
-          {
-            label: "Ongoing peer network",
-            x: 78,
-            y: 74,
-            align: "right"
+              "Regional and national meetings hosted in Massachusetts, Illinois, and the Washington, DC area."
           }
         ],
         visual: {
@@ -346,6 +324,10 @@ export const siteContent = {
     label: "",
     heading: "Contact",
     intro: "",
+    portrait: {
+      src: asset("assets/images/james-m-spencer-hero-5904.jpg"),
+      alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."
+    },
     links: [
       {
         label: "LinkedIn",
@@ -357,7 +339,7 @@ export const siteContent = {
         download: true
       }
     ] as ActionLink[]
-  },
+  } satisfies ContactContent,
   footer: {
     disclaimer:
       "This website is maintained by James M. Spencer in a personal capacity. It is not an official website of Harvard Medical School, HHMI, or any affiliated laboratory or program, and nothing here should be understood as speaking on behalf of those institutions."
