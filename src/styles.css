@@ -1234,6 +1234,21 @@ button {
   stroke-width: 1;
 }
 
+.scene-labs__podium-front,
+.scene-labs__podium-side,
+.scene-labs__connector-front,
+.scene-labs__connector-side,
+.scene-labs__auditorium-front,
+.scene-labs__auditorium-side {
+  opacity: 0.78;
+}
+
+.scene-labs__podium-roof,
+.scene-labs__connector-roof,
+.scene-labs__auditorium-roof {
+  opacity: 0.84;
+}
+
 .scene-labs__roof-unit,
 .scene-labs__roof-stack {
   fill: rgba(190, 205, 198, 0.42);
@@ -1252,6 +1267,16 @@ button {
   fill: none;
   stroke: rgba(223, 233, 228, 0.28);
   stroke-width: 2.2;
+}
+
+.scene-labs__roof-grid-line {
+  fill: none;
+  stroke: rgba(232, 240, 236, 0.12);
+  stroke-width: 1.2;
+}
+
+.scene-labs__roof-grid-line--soft {
+  stroke: rgba(232, 240, 236, 0.08);
 }
 
 .scene-labs__floors,
@@ -1276,10 +1301,16 @@ button {
   stroke-width: 1.2;
 }
 
-.scene-labs__highlight-bands polygon,
+.scene-labs__highlight-bands polygon {
+  fill: rgba(222, 235, 229, 0.3);
+  stroke: rgba(233, 241, 237, 0.12);
+  stroke-width: 0.8;
+}
+
 .scene-labs__bridges polygon {
-  fill: url(#labs-highlight);
-  opacity: 0.9;
+  fill: rgba(176, 197, 188, 0.22);
+  stroke: rgba(228, 236, 232, 0.16);
+  stroke-width: 0.8;
 }
 
 .scene-labs__floor-markers text,
@@ -1299,8 +1330,8 @@ button {
 
 .scene-labs__signals path {
   fill: none;
-  stroke: rgba(153, 197, 174, 0.9);
-  stroke-width: 4.2;
+  stroke: rgba(168, 203, 186, 0.78);
+  stroke-width: 2.6;
   stroke-linecap: round;
 }
 
