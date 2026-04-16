@@ -86,10 +86,10 @@ const hostCities: HostCity[] = [
     offsetY: -14
   },
   {
-    label: "Chevy Chase",
-    state: "Maryland",
-    latitude: 38.9648,
-    longitude: -77.0875,
+    label: "Washington, DC",
+    state: "District of Columbia",
+    latitude: 38.9072,
+    longitude: -77.0369,
     year: "2023 + 2025",
     note: "National meetings",
     offsetX: 16,
@@ -254,7 +254,7 @@ export const siteContent = {
           {
             label: "Hosted convenings",
             value:
-              "Regional and national meetings organized in Boston, Chevy Chase, San Francisco, and New York City."
+              "Regional and national meetings organized in Boston, Washington, DC, San Francisco, and New York City."
           }
         ],
         visual: {
