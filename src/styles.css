@@ -773,7 +773,7 @@ button {
 .roles-story {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--header-offset) + 0.75rem) clamp(1.25rem, 3vw, 2.5rem) 1.4rem;
+  padding: calc(var(--header-offset) + 0.55rem) clamp(1.25rem, 3vw, 2.5rem) 1.25rem;
   color: rgba(243, 247, 244, 0.96);
   background:
     radial-gradient(circle at 76% 18%, rgba(112, 161, 137, 0.18), transparent 23rem),
@@ -816,17 +816,17 @@ button {
 }
 
 .roles-story__heading {
-  max-width: 12ch;
+  max-width: 11.2ch;
   margin: 0;
   font-size: clamp(2.1rem, 3.7vw, 3.9rem);
-  line-height: 0.98;
+  line-height: 1.02;
   letter-spacing: -0.03em;
   font-weight: 600;
   text-wrap: balance;
 }
 
 .roles-story__intro {
-  max-width: 31rem;
+  max-width: 34rem;
   margin: 0.75rem 0 0;
   color: rgba(229, 237, 232, 0.74);
   font-size: clamp(0.96rem, 1.2vw, 1.02rem);
@@ -883,9 +883,9 @@ button {
   display: grid;
   grid-template-columns: minmax(24rem, 0.84fr) minmax(0, 1.16fr);
   gap: 1.75rem clamp(2rem, 4vw, 4rem);
-  align-items: center;
+  align-items: start;
   width: min(100%, 88rem);
-  min-height: calc(100svh - var(--header-offset) - 2rem);
+  min-height: calc(100svh - var(--header-offset) - 1.25rem);
   margin: 0 auto;
 }
 
@@ -894,13 +894,14 @@ button {
   grid-template-rows: auto auto minmax(0, 1fr);
   align-content: start;
   gap: 0.85rem;
-  align-self: center;
+  align-self: start;
   min-height: 0;
+  padding-top: 0.15rem;
 }
 
 .roles-story__panels {
   position: relative;
-  min-height: 22rem;
+  min-height: 20rem;
 }
 
 .roles-story__panel-shell {
@@ -916,7 +917,7 @@ button {
 
 .roles-story__panel {
   max-width: 37rem;
-  padding: 1.2rem 1.2rem 1.25rem;
+  padding: 1.05rem 1.05rem 1.1rem;
   background: rgba(7, 10, 14, 0.44);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
@@ -937,24 +938,26 @@ button {
 .roles-story__title {
   margin: 0.58rem 0 0;
   font-size: clamp(1.85rem, 3vw, 2.8rem);
-  line-height: 1.02;
+  line-height: 1.04;
   font-weight: 600;
+  text-wrap: balance;
 }
 
 .roles-story__organization {
   max-width: 34rem;
   margin: 0.78rem 0 0;
   color: rgba(228, 235, 231, 0.72);
-  font-size: 0.96rem;
-  line-height: 1.58;
+  font-size: 0.94rem;
+  line-height: 1.52;
+  text-wrap: pretty;
 }
 
 .roles-story__summary {
   max-width: 34rem;
-  margin: 0.8rem 0 0;
+  margin: 0.72rem 0 0;
   color: rgba(245, 248, 246, 0.92);
-  font-size: 1rem;
-  line-height: 1.58;
+  font-size: 0.97rem;
+  line-height: 1.54;
   text-wrap: pretty;
 }
 
@@ -977,21 +980,21 @@ button {
 .roles-story__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 0.8rem;
-  margin-top: 1rem;
+  gap: 0.72rem;
+  margin-top: 0.9rem;
 }
 
 .roles-story__list {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.66rem;
   margin: 0;
   padding-left: 1.1rem;
 }
 
 .roles-story__list li {
   color: rgba(238, 244, 240, 0.88);
-  font-size: 1rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .roles-story__evidence {
@@ -1001,7 +1004,7 @@ button {
 }
 
 .roles-story__evidence-item {
-  padding-top: 0.78rem;
+  padding-top: 0.68rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -1021,20 +1024,21 @@ button {
 .roles-story__evidence dd {
   margin: 0.35rem 0 0;
   color: rgba(239, 244, 241, 0.88);
-  font-size: 0.98rem;
-  line-height: 1.55;
+  font-size: 0.94rem;
+  line-height: 1.48;
   text-wrap: pretty;
 }
 
 .roles-story__visual {
-  align-self: center;
+  align-self: start;
   min-height: 0;
+  padding-top: 0.55rem;
 }
 
 .roles-scene {
   position: relative;
-  min-height: 31rem;
-  height: min(calc(100svh - var(--header-offset) - 4.5rem), 38rem);
+  min-height: 27.5rem;
+  height: min(calc(100svh - var(--header-offset) - 3rem), 36rem);
   border-radius: 0;
   overflow: hidden;
 }
@@ -1089,24 +1093,32 @@ button {
   stroke: rgba(233, 240, 236, 0.08);
 }
 
-.scene-labs__tower-top,
-.scene-labs__tower-main {
+.scene-labs__veritas-roof,
+.scene-labs__veritas-front,
+.scene-labs__podium-roof {
   fill: url(#labs-glass);
 }
 
-.scene-labs__tower-front,
-.scene-labs__tower-side,
-.scene-labs__him-top,
-.scene-labs__him-main,
-.scene-labs__him-side {
+.scene-labs__veritas-side,
+.scene-labs__veritas-edge,
+.scene-labs__podium-front,
+.scene-labs__podium-side {
   fill: url(#labs-glass-side);
   stroke: rgba(231, 239, 235, 0.08);
   stroke-width: 1.1;
 }
 
-.scene-labs__tower-main,
-.scene-labs__him-main {
+.scene-labs__him-roof,
+.scene-labs__him-main,
+.scene-labs__him-front {
   fill: url(#labs-concrete);
+}
+
+.scene-labs__him-roof,
+.scene-labs__him-main,
+.scene-labs__him-front {
+  stroke: rgba(231, 239, 235, 0.08);
+  stroke-width: 1.1;
 }
 
 .scene-labs__floors,
@@ -1114,11 +1126,21 @@ button {
   opacity: 0.55;
 }
 
+.scene-labs__podium-lines {
+  opacity: 0.42;
+}
+
 .scene-labs__floor-line,
 .scene-labs__window-line {
   fill: none;
   stroke: rgba(233, 239, 235, 0.12);
   stroke-width: 1;
+}
+
+.scene-labs__podium-line {
+  fill: none;
+  stroke: rgba(233, 239, 235, 0.12);
+  stroke-width: 1.2;
 }
 
 .scene-labs__highlight-bands polygon,
@@ -1139,6 +1161,7 @@ button {
   font-size: 13px;
   font-weight: 600;
   fill: rgba(221, 233, 226, 0.86);
+  text-anchor: middle;
 }
 
 .scene-labs__signals path {

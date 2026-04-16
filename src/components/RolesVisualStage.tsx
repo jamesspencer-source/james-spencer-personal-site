@@ -248,58 +248,75 @@ function RolesVisualStage({
           <path className="scene-labs__ground scene-labs__ground--minor" d="M 178 596 L 794 596" />
 
           <g className="scene-labs__structure">
-            <polygon className="scene-labs__tower-top" points="196,180 330,180 368,206 236,206" />
-            <polygon className="scene-labs__tower-front" points="196,180 236,206 236,534 196,508" />
-            <polygon className="scene-labs__tower-main" points="236,206 368,206 368,560 236,534" />
-            <polygon className="scene-labs__tower-side" points="368,206 416,238 416,592 368,560" />
+            <polygon className="scene-labs__veritas-roof" points="152,172 310,172 352,202 194,202" />
+            <polygon className="scene-labs__veritas-edge" points="152,172 194,202 194,520 152,492" />
+            <polygon className="scene-labs__veritas-front" points="194,202 352,202 352,548 194,520" />
+            <polygon className="scene-labs__veritas-side" points="352,202 410,240 410,586 352,548" />
 
-            <polygon className="scene-labs__him-top" points="516,214 694,214 736,240 558,240" />
-            <polygon className="scene-labs__him-main" points="558,240 736,240 736,570 558,570" />
-            <polygon className="scene-labs__him-side" points="736,240 786,274 786,604 736,570" />
+            <polygon className="scene-labs__podium-roof" points="304,340 520,340 574,374 356,374" />
+            <polygon className="scene-labs__podium-front" points="356,374 574,374 574,494 356,466" />
+            <polygon className="scene-labs__podium-side" points="574,374 622,406 622,526 574,494" />
+
+            <polygon className="scene-labs__him-roof" points="612,214 716,214 782,258 678,258" />
+            <polygon className="scene-labs__him-front" points="612,214 678,258 678,522 612,488" />
+            <polygon className="scene-labs__him-main" points="678,258 782,258 782,556 678,522" />
           </g>
 
           <g className="scene-labs__floors">
             {Array.from({ length: 10 }).map((_, index) => {
-              const y = 248 + index * 28;
+              const y = 236 + index * 28;
               return (
                 <g key={y}>
-                  <path className="scene-labs__floor-line" d={`M 242 ${y} L 366 ${y}`} />
-                  <path className="scene-labs__floor-line" d={`M 564 ${y + 18} L 734 ${y + 18}`} />
+                  <path className="scene-labs__floor-line" d={`M 204 ${y} L 348 ${y}`} />
+                  <path className="scene-labs__floor-line" d={`M 688 ${y + 34} L 778 ${y + 34}`} />
                 </g>
               );
             })}
           </g>
 
-          <g className="scene-labs__windows">
-            {Array.from({ length: 8 }).map((_, column) => {
-              const x = 252 + column * 14;
-              return <path key={x} className="scene-labs__window-line" d={`M ${x} 214 L ${x} 528`} />;
+          <g className="scene-labs__podium-lines">
+            {Array.from({ length: 5 }).map((_, index) => {
+              const y = 396 + index * 20;
+              return (
+                <path
+                  key={y}
+                  className="scene-labs__podium-line"
+                  d={`M 364 ${y} L 570 ${y}`}
+                />
+              );
             })}
+          </g>
+
+          <g className="scene-labs__windows">
             {Array.from({ length: 9 }).map((_, column) => {
-              const x = 578 + column * 18;
-              return <path key={x} className="scene-labs__window-line" d={`M ${x} 246 L ${x} 564`} />;
+              const x = 214 + column * 16;
+              return <path key={x} className="scene-labs__window-line" d={`M ${x} 210 L ${x} 514`} />;
+            })}
+            {Array.from({ length: 6 }).map((_, column) => {
+              const x = 694 + column * 14;
+              return <path key={x} className="scene-labs__window-line" d={`M ${x} 270 L ${x} 520`} />;
             })}
           </g>
 
           <g className="scene-labs__highlight-bands">
-            <polygon points="236,330 368,330 368,356 236,356" />
-            <polygon points="236,366 368,366 368,392 236,392" />
-            <polygon points="558,348 736,348 736,374 558,374" />
-            <polygon points="558,384 736,384 736,410 558,410" />
-            <polygon points="368,330 410,358 410,384 368,356" />
-            <polygon points="368,366 410,394 410,420 368,392" />
-            <polygon points="736,348 782,380 782,406 736,374" />
-            <polygon points="736,384 782,416 782,442 736,410" />
+            <polygon points="194,332 352,332 352,356 194,356" />
+            <polygon points="194,366 352,366 352,390 194,390" />
+            <polygon points="352,332 410,370 410,394 352,356" />
+            <polygon points="352,366 410,404 410,428 352,390" />
+            <polygon points="678,344 782,344 782,368 678,368" />
+            <polygon points="678,378 782,378 782,402 678,402" />
+            <polygon points="612,332 678,370 678,394 612,356" />
+            <polygon points="612,366 678,404 678,428 612,390" />
           </g>
 
           <g className="scene-labs__bridges">
-            <polygon points="410,356 558,356 558,384 410,384" />
-            <polygon points="410,392 558,392 558,420 410,420" />
+            <polygon points="410,356 678,356 678,380 410,380" />
+            <polygon points="410,390 678,390 678,414 410,414" />
           </g>
 
           <g className="scene-labs__floor-markers">
-            <text x="436" y="374">09</text>
-            <text x="436" y="410">10</text>
+            <text x="530" y="373">09</text>
+            <text x="530" y="407">10</text>
           </g>
 
           <g
@@ -307,7 +324,7 @@ function RolesVisualStage({
             style={{ opacity: mix(0.6, 1, 1 - labsCompress) }}
           >
             <path
-              d="M 420 370 L 548 370"
+              d="M 424 368 L 670 368"
               pathLength={1}
               style={{
                 strokeDasharray: 1,
@@ -315,7 +332,7 @@ function RolesVisualStage({
               }}
             />
             <path
-              d="M 420 406 L 548 406"
+              d="M 424 402 L 670 402"
               pathLength={1}
               style={{
                 strokeDasharray: 1,
@@ -325,8 +342,8 @@ function RolesVisualStage({
           </g>
 
           <g className="scene-labs__labels">
-            <text x="240" y="618">Veritas Science Center</text>
-            <text x="554" y="618">Harvard Institutes of Medicine</text>
+            <text x="280" y="606">Veritas Science Center</text>
+            <text x="694" y="606">Harvard Institutes of Medicine</text>
           </g>
         </svg>
       </div>

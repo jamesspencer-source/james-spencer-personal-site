@@ -165,7 +165,7 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers. Laboratory operations remain the core role, with the program and network work building on that same operating base.",
+      "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers.",
     chapters: [
       {
         id: "labs",
