@@ -139,10 +139,10 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
   const chapterVisibility = useMemo(
     () => ({
-      overview: fadeBetween(progress, 0, 0.06, 0.18, 0.32),
-      labs: fadeBetween(progress, 0.18, 0.32, 0.46, 0.62),
-      program: fadeBetween(progress, 0.46, 0.62, 0.74, 0.88),
-      network: fadeBetween(progress, 0.7, 0.86, 1.02, 1.12)
+      overview: fadeBetween(progress, 0, 0.06, 0.22, 0.38),
+      labs: fadeBetween(progress, 0.18, 0.32, 0.54, 0.7),
+      program: fadeBetween(progress, 0.46, 0.6, 0.8, 0.96),
+      network: fadeBetween(progress, 0.72, 0.88, 1.04, 1.16)
     }),
     [progress]
   );
@@ -259,17 +259,26 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
             <div className="roles-story__panels">
               {chapters.map((chapter) => (
-                <div
-                  key={chapter.id}
-                  id={`roles-${chapter.id}`}
-                  className="roles-story__panel-shell"
-                  style={{
-                    opacity: chapterVisibility[chapter.id],
-                    transform: `translate3d(0, ${20 - chapterVisibility[chapter.id] * 20}px, 0)`
-                  }}
-                >
-                  <RoleCopy chapter={chapter} active={activeChapterId === chapter.id} />
-                </div>
+                (() => {
+                  const isActive = activeChapterId === chapter.id;
+                  const opacity = isActive
+                    ? Math.max(chapterVisibility[chapter.id], 0.96)
+                    : chapterVisibility[chapter.id];
+
+                  return (
+                    <div
+                      key={chapter.id}
+                      id={`roles-${chapter.id}`}
+                      className="roles-story__panel-shell"
+                      style={{
+                        opacity,
+                        transform: `translate3d(0, ${isActive ? 0 : 20 - opacity * 20}px, 0)`
+                      }}
+                    >
+                      <RoleCopy chapter={chapter} active={isActive} />
+                    </div>
+                  );
+                })()
               ))}
             </div>
           </div>

@@ -591,13 +591,13 @@ function RolesVisualStage({
           <g className="scene-program__stations">
             {programStations.map((station, index) => {
               const width = station.label.length > 10 ? 112 : 94;
+              const yOffset = mix(18, 0, programEnter);
               return (
                 <g
                   key={station.label}
-                  transform={`translate(${station.x - width / 2} ${station.y - 24})`}
+                  transform={`translate(${station.x - width / 2} ${station.y - 24 + yOffset})`}
                   style={{
-                    opacity: clamp01(programEnter * 1.15 - index * 0.08),
-                    transform: `translateY(${mix(18, 0, programEnter)}px)`
+                    opacity: clamp01(programEnter * 1.15 - index * 0.08)
                   }}
                 >
                   <rect width={width} height={48} rx={15} />
