@@ -68,6 +68,9 @@ const programConnectorPaths = [
   "M 312 430 L 372 430"
 ] as const;
 
+const PROGRAM_SEQUENCE_START = 0.54;
+const PROGRAM_SEQUENCE_END = 0.84;
+
 const globeRouteConnections = [
   ["Boston", "Washington, DC"],
   ["Washington, DC", "New York City"],
@@ -98,11 +101,15 @@ function fadeBetween(
 }
 
 function buildProgramDash(progress: number) {
-  return 1 - smoothstep(0.54, 0.78, progress);
+  return 1 - getProgramSequenceProgress(progress);
 }
 
 function buildGlobeDash(progress: number) {
   return 1 - smoothstep(0.84, 1, progress);
+}
+
+function getProgramSequenceProgress(progress: number) {
+  return smoothstep(PROGRAM_SEQUENCE_START, PROGRAM_SEQUENCE_END, progress);
 }
 
 function projectHostCity(
@@ -140,6 +147,11 @@ function getHostRegionRadius(label: HostCity["label"]) {
 function getSequenceEmphasis(sequenceProgress: number, index: number, total: number) {
   const center = total <= 1 ? 0.5 : index / (total - 1);
   return fadeBetween(sequenceProgress, center - 0.2, center - 0.08, center + 0.08, center + 0.2);
+}
+
+function getSequenceReveal(sequenceProgress: number, index: number, total: number) {
+  const start = total <= 1 ? 0 : index / total;
+  return smoothstep(start - 0.02, start + 0.08, sequenceProgress);
 }
 
 function getCalloutStyle(
@@ -193,7 +205,7 @@ function RolesVisualStage({
   const programExit = smoothstep(0.74, 0.88, progress);
   const programStationsVisibility =
     smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.86, 0.94, progress));
-  const programSequenceProgress = clamp01((progress - 0.62) / 0.24);
+  const programSequenceProgress = getProgramSequenceProgress(progress);
   const globeSequenceProgress = clamp01((progress - 0.82) / 0.18);
   const globeEnter = smoothstep(0.76, 0.94, progress);
 
@@ -657,13 +669,18 @@ function RolesVisualStage({
                 index,
                 programConnectorPaths.length
               );
+              const reveal = getSequenceReveal(
+                programSequenceProgress,
+                index,
+                programConnectorPaths.length
+              );
 
               return (
                 <path
                   key={path}
                   d={path}
                   style={{
-                    opacity: mix(0.35, 1, emphasis),
+                    opacity: mix(0.16, 1, emphasis) * reveal,
                     strokeWidth: mix(2.8, 4.6, emphasis)
                   }}
                 />
@@ -674,13 +691,18 @@ function RolesVisualStage({
           <g className="scene-program__stations">
             {programStations.map((station, index) => {
               const width = station.label.length > 10 ? 112 : 94;
-              const yOffset = mix(20, 0, programStationsVisibility);
+              const reveal = getSequenceReveal(
+                programSequenceProgress,
+                index,
+                programStations.length
+              );
+              const yOffset = mix(18, 0, reveal);
               const emphasis = getSequenceEmphasis(
                 programSequenceProgress,
                 index,
                 programStations.length
               );
-              const scale = mix(0.96, 1.1, emphasis);
+              const scale = mix(0.92, mix(1, 1.1, emphasis), reveal);
               const translateX = station.x - width / 2;
               const translateY = station.y - 24 + yOffset;
               return (
@@ -688,7 +710,10 @@ function RolesVisualStage({
                   key={station.label}
                   transform={`translate(${translateX} ${translateY}) translate(${width / 2} 24) scale(${scale}) translate(${-width / 2} -24)`}
                   style={{
-                    opacity: mix(0.56, 1, emphasis) * clamp01(programStationsVisibility * 1.08)
+                    opacity:
+                      reveal *
+                      mix(0.68, 1, emphasis) *
+                      clamp01(programStationsVisibility * 1.08)
                   }}
                 >
                   <rect
