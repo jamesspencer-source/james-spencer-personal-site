@@ -10,6 +10,8 @@ type CurrentRolesSectionProps = {
   reducedMotion: boolean;
 };
 
+const PROGRAM_COPY_PROGRESS_END = 0.8;
+
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
 }
@@ -30,11 +32,11 @@ function fadeBetween(
 }
 
 function getActiveChapterId(progress: number): RoleChapter["id"] {
-  if (progress >= 0.84) {
+  if (progress >= 0.86) {
     return "network";
   }
 
-  if (progress >= 0.6) {
+  if (progress >= 0.58) {
     return "program";
   }
 
@@ -151,15 +153,15 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
   const chapters = siteContent.rolesSection.chapters;
   const programChapterProgress = clamp01(
-    (progress - chapterStops.program) / (chapterStops.network - chapterStops.program)
+    (progress - chapterStops.program) / (PROGRAM_COPY_PROGRESS_END - chapterStops.program)
   );
 
   const chapterVisibility = useMemo(
     () => ({
       overview: fadeBetween(progress, 0, 0.08, 0.24, 0.36),
       labs: fadeBetween(progress, 0.2, 0.32, 0.58, 0.7),
-      program: fadeBetween(progress, 0.54, 0.66, 0.84, 0.96),
-      network: fadeBetween(progress, 0.8, 0.9, 1.06, 1.16)
+      program: fadeBetween(progress, 0.52, 0.64, 0.9, 1.02),
+      network: fadeBetween(progress, 0.82, 0.92, 1.08, 1.18)
     }),
     [progress]
   );
@@ -208,7 +210,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       start: () => `top top+=${headerHeight}`,
       end: () =>
         `+=${Math.round(
-          window.innerHeight * (window.innerWidth < 900 ? 3.4 : 4.3)
+          window.innerHeight * (window.innerWidth < 900 ? 4.1 : 5.1)
         )}`,
       scrub: 0.38,
       anticipatePin: 1,

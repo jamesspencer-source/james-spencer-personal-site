@@ -46,8 +46,8 @@ const WORLD_LAND = feature(
 const chapterStops: Record<RoleChapter["id"], number> = {
   overview: 0,
   labs: 0.24,
-  program: 0.54,
-  network: 0.82
+  program: 0.52,
+  network: 0.86
 };
 
 const programStations = [
@@ -73,8 +73,10 @@ const programConnectorPaths = [
   "M 312 430 L 372 430"
 ] as const;
 
-const PROGRAM_SEQUENCE_START = 0.54;
-const PROGRAM_SEQUENCE_END = 0.84;
+const PROGRAM_SEQUENCE_START = 0.52;
+const PROGRAM_SEQUENCE_END = 0.8;
+const GLOBE_SEQUENCE_START = 0.84;
+const GLOBE_SEQUENCE_END = 0.96;
 
 const globeRouteConnections = [
   ["Washington, DC", "Boston"],
@@ -208,18 +210,20 @@ function RolesVisualStage({
 
   const overviewVisibility = fadeBetween(progress, 0, 0.08, 0.2, 0.34);
   const labsVisibility = fadeBetween(progress, 0.2, 0.34, 0.48, 0.62);
-  const programVisibility = fadeBetween(progress, 0.48, 0.62, 0.74, 0.88);
-  const globeVisibility = fadeBetween(progress, 0.74, 0.88, 1.02, 1.12);
+  const programVisibility = fadeBetween(progress, 0.48, 0.62, 0.84, 0.96);
+  const globeVisibility = fadeBetween(progress, 0.78, 0.9, 1.08, 1.18);
 
   const overviewCompress = smoothstep(0.18, 0.34, progress);
   const labsCompress = smoothstep(0.48, 0.62, progress);
   const programEnter = smoothstep(0.48, 0.62, progress);
-  const programExit = smoothstep(0.74, 0.88, progress);
+  const programExit = smoothstep(0.84, 0.96, progress);
   const programStationsVisibility =
-    smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.86, 0.94, progress));
+    smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.94, 0.99, progress));
   const programSequenceProgress = getProgramSequenceProgress(progress);
-  const globeSequenceProgress = clamp01((progress - 0.82) / 0.18);
-  const globeEnter = smoothstep(0.76, 0.94, progress);
+  const globeSequenceProgress = clamp01(
+    (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)
+  );
+  const globeEnter = smoothstep(0.78, 0.9, progress);
 
   const globeProjection = useMemo(() => {
     return geoOrthographic()
