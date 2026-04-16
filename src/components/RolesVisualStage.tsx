@@ -337,19 +337,19 @@ function RolesVisualStage({
           </defs>
 
           <g className="scene-overview__cards">
-            <g className="scene-overview__card" transform="translate(70 168)">
-              <rect className="scene-overview__card-frame" width="248" height="290" rx="28" />
-              <text className="scene-overview__index" x="30" y="38">
+            <g className="scene-overview__card" transform="translate(42 136)">
+              <rect className="scene-overview__card-frame" width="276" height="360" rx="28" />
+              <text className="scene-overview__index" x="30" y="42">
                 01
               </text>
-              <text className="scene-overview__title" x="30" y="68">
+              <text className="scene-overview__title" x="30" y="78">
                 Laboratory
               </text>
-              <text className="scene-overview__title" x="30" y="94">
+              <text className="scene-overview__title" x="30" y="106">
                 operations
               </text>
 
-              <g transform="translate(34 122)">
+              <g transform="translate(30 132) scale(1.08)">
                 <polygon className="scene-overview__mini-building" points="8,28 68,28 88,42 28,42" />
                 <polygon className="scene-overview__mini-building-side" points="8,28 28,42 28,144 8,130" />
                 <polygon className="scene-overview__mini-building-front" points="28,42 88,42 88,158 28,144" />
@@ -360,33 +360,44 @@ function RolesVisualStage({
 
                 <rect className="scene-overview__mini-bridge" x="88" y="92" width="68" height="14" rx="7" />
                 <rect className="scene-overview__mini-bridge" x="88" y="114" width="68" height="14" rx="7" />
+                <rect className="scene-overview__mini-bridge-pulse" x="88" y="92" width="34" height="14" rx="7" />
+                <rect className="scene-overview__mini-bridge-pulse scene-overview__mini-bridge-pulse--delay" x="88" y="114" width="34" height="14" rx="7" />
               </g>
 
-              <text className="scene-overview__caption" x="30" y="248">
+              <text className="scene-overview__caption" x="30" y="286">
                 Two research labs
               </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
-                One shared operating backbone
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="312">
+                Shared operating
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
+                backbone
               </text>
             </g>
 
-            <g className="scene-overview__card" transform="translate(356 168)">
-              <rect className="scene-overview__card-frame" width="248" height="290" rx="28" />
-              <text className="scene-overview__index" x="30" y="38">
+            <g className="scene-overview__card" transform="translate(342 136)">
+              <rect className="scene-overview__card-frame" width="276" height="360" rx="28" />
+              <text className="scene-overview__index" x="30" y="42">
                 02
               </text>
-              <text className="scene-overview__title" x="30" y="68">
+              <text className="scene-overview__title" x="30" y="78">
                 Community
               </text>
-              <text className="scene-overview__title" x="30" y="94">
+              <text className="scene-overview__title" x="30" y="106">
                 Phages
               </text>
 
-              <g transform="translate(28 112)">
+              <g transform="translate(24 126) scale(1.06)">
                 <path
                   className="scene-overview__mini-cycle"
                   d="M 38 98 C 38 54, 74 24, 124 24 C 178 24, 214 60, 214 108 C 214 154, 176 188, 122 188 C 72 188, 38 156, 38 110"
                 />
+                <path
+                  className="scene-overview__mini-cycle-pulse"
+                  d="M 38 98 C 38 54, 74 24, 124 24 C 178 24, 214 60, 214 108 C 214 154, 176 188, 122 188 C 72 188, 38 156, 38 110"
+                  pathLength={1}
+                />
+                <path className="scene-overview__mini-cycle-arrow" d="M 204 84 L 218 108 L 194 105" />
                 <circle className="scene-overview__mini-node" cx="124" cy="24" r="8" />
                 <circle className="scene-overview__mini-node" cx="214" cy="108" r="8" />
                 <circle className="scene-overview__mini-node" cx="122" cy="188" r="8" />
@@ -395,29 +406,32 @@ function RolesVisualStage({
                 <circle className="scene-overview__mini-node scene-overview__mini-node--soft" cx="186" cy="62" r="6" />
               </g>
 
-              <text className="scene-overview__caption" x="30" y="248">
+              <text className="scene-overview__caption" x="30" y="286">
                 Annual program delivery
               </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
-                One repeatable operating cycle
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="312">
+                Repeatable operating
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
+                cycle
               </text>
             </g>
 
-            <g className="scene-overview__card" transform="translate(642 168)">
-              <rect className="scene-overview__card-frame" width="248" height="290" rx="28" />
-              <text className="scene-overview__index" x="30" y="38">
+            <g className="scene-overview__card" transform="translate(642 136)">
+              <rect className="scene-overview__card-frame" width="276" height="360" rx="28" />
+              <text className="scene-overview__index" x="30" y="42">
                 03
               </text>
-              <text className="scene-overview__title" x="30" y="68">
+              <text className="scene-overview__title" x="30" y="78">
                 Network
               </text>
-              <text className="scene-overview__title" x="30" y="94">
+              <text className="scene-overview__title" x="30" y="106">
                 leadership
               </text>
 
-              <g transform="translate(0 -2)">
-                <circle className="scene-overview__mini-globe-aura" cx="124" cy="158" r="88" />
-                <circle className="scene-overview__mini-globe" cx="124" cy="158" r="72" />
+              <g transform="translate(14 18) scale(1.05)">
+                <circle className="scene-overview__mini-globe-aura" cx="124" cy="158" r="92" />
+                <circle className="scene-overview__mini-globe" cx="124" cy="158" r="76" />
                 <path className="scene-overview__mini-graticule" d={overviewGlobePath(graticule) ?? ""} />
                 <path className="scene-overview__mini-land" d={overviewGlobePath(LOWER_48_LAND) ?? ""} />
                 <path className="scene-overview__mini-route" d="M 92 146 C 112 118, 146 116, 164 138" />
@@ -426,11 +440,17 @@ function RolesVisualStage({
                 <circle className="scene-overview__mini-pin" cx="160" cy="160" r="5" />
               </g>
 
-              <text className="scene-overview__caption" x="30" y="248">
-                Regional and national conferences
+              <text className="scene-overview__caption" x="30" y="282">
+                Regional and national
               </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
-                Professional community leadership
+              <text className="scene-overview__caption" x="30" y="306">
+                conferences
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
+                Professional community
+              </text>
+              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="352">
+                leadership
               </text>
             </g>
           </g>
