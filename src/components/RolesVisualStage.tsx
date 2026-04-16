@@ -84,8 +84,19 @@ const globeRouteConnections = [
   ["San Francisco", "New York City"]
 ] as const;
 
+const GLOBE_VIEWBOX_WIDTH = 960;
+const GLOBE_VIEWBOX_HEIGHT = 720;
+const GLOBE_LABEL_TOP = -34;
+const GLOBE_LABEL_BOTTOM = 18;
+const GLOBE_LABEL_MAX_SCALE = 1.08;
+const GLOBE_LABEL_PADDING = 22;
+
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function mix(from: number, to: number, amount: number) {
@@ -163,38 +174,55 @@ function getChronologicalReveal(sequenceProgress: number, index: number, total: 
 }
 
 function getGlobeAnnotation(city: HostCity & { x: number; y: number }) {
-  switch (city.label) {
-    case "Washington, DC":
-      return {
-        x: -252,
-        y: 38,
-        width: 232,
-        detail: "2023 + 2025 national conferences"
-      };
-    case "Boston":
-      return {
-        x: 36,
-        y: -78,
-        width: 210,
-        detail: "2024 regional conference"
-      };
-    case "New York City":
-      return {
-        x: 42,
-        y: 40,
-        width: 212,
-        detail: "2026 regional conference"
-      };
-    case "San Francisco":
-      return {
-        x: -246,
-        y: -64,
-        width: 226,
-        detail: "2026 regional conference"
-      };
-    default:
-      return { x: 28, y: -52, width: 188, detail: "Conference host site" };
-  }
+  const preferred = (() => {
+    switch (city.label) {
+      case "Washington, DC":
+        return {
+          x: -252,
+          y: 38,
+          width: 232,
+          detail: "2023 + 2025 national conferences"
+        };
+      case "Boston":
+        return {
+          x: 36,
+          y: -78,
+          width: 210,
+          detail: "2024 regional conference"
+        };
+      case "New York City":
+        return {
+          x: 42,
+          y: 40,
+          width: 212,
+          detail: "2026 regional conference"
+        };
+      case "San Francisco":
+        return {
+          x: -246,
+          y: -64,
+          width: 226,
+          detail: "2026 regional conference"
+        };
+      default:
+        return { x: 28, y: -52, width: 188, detail: "Conference host site" };
+    }
+  })();
+
+  const scaledWidth = preferred.width * GLOBE_LABEL_MAX_SCALE;
+  const scaledTop = GLOBE_LABEL_TOP * GLOBE_LABEL_MAX_SCALE;
+  const scaledBottom = GLOBE_LABEL_BOTTOM * GLOBE_LABEL_MAX_SCALE;
+
+  const minX = GLOBE_LABEL_PADDING - city.x;
+  const maxX = GLOBE_VIEWBOX_WIDTH - GLOBE_LABEL_PADDING - scaledWidth - city.x;
+  const minY = GLOBE_LABEL_PADDING - city.y - scaledTop;
+  const maxY = GLOBE_VIEWBOX_HEIGHT - GLOBE_LABEL_PADDING - scaledBottom - city.y;
+
+  return {
+    ...preferred,
+    x: clamp(preferred.x, minX, maxX),
+    y: clamp(preferred.y, minY, maxY)
+  };
 }
 
 function getCalloutStyle(
