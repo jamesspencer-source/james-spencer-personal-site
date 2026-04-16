@@ -121,7 +121,7 @@ export const siteContent = {
     location: "Boston, Massachusetts",
     summary: [
       "James M. Spencer manages operations for two Howard Hughes Medical Institute Investigator laboratories in the Department of Microbiology at Harvard Medical School. He also leads operations for the Community Phages summer internship program and chairs the Lab Management Network of Professionals.",
-      "His remit includes staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and day-to-day execution."
+      "His work covers staffing, budgets, facilities, equipment, regulated laboratory space, vendor relationships, onboarding, continuity, and day-to-day execution."
     ],
     proof: [
       {
@@ -268,7 +268,7 @@ export const siteContent = {
         ],
         evidence: [
           {
-            label: "Leadership remit",
+            label: "Leadership scope",
             value:
               "Board direction, conference planning, and recurring professional-development programming for laboratory managers."
           },
