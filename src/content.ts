@@ -145,7 +145,7 @@ export const siteContent = {
           "Leads the operating cycle for Community Phages, an eight-week summer internship program now in its fifth year."
       },
       {
-        headline: "Regional and national lab-manager convening leadership",
+        headline: "Regional and national lab-manager conference leadership",
         detail:
           "Chairs the Lab Management Network of Professionals and helps shape programming for regional and national meetings."
       }
@@ -180,7 +180,7 @@ export const siteContent = {
           "James's current work has three main parts: leading day-to-day laboratory operations, running the Community Phages summer internship program, and chairing a professional network for laboratory managers. The throughline across all three is operational execution.",
         responsibilities: [
           "Laboratory operations remain the primary role, covering staffing, budgets, equipment, facilities, vendor relationships, and regulated research space across two active laboratories.",
-          "Program delivery and network leadership extend that same operating base into an annual student internship program and recurring regional and national convenings for lab managers."
+          "Program delivery and network leadership extend that same operating base into an annual student internship program and recurring regional and national conferences for lab managers."
         ],
         evidence: [
           {
@@ -271,10 +271,10 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, recurring programming, and relationship-building across regional and national convenings.",
+          "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, recurring programming, and relationship-building across regional and national conferences.",
         responsibilities: [
           "Sets board priorities and helps plan regional and national meetings for laboratory managers and institute partners.",
-          "Supports recurring programming, peer exchange, speaker coordination, and the year-round continuity that keeps the network active between convenings."
+          "Supports recurring programming, peer exchange, speaker coordination, and the year-round continuity that keeps the network active between conferences."
         ],
         evidence: [
           {
@@ -283,7 +283,7 @@ export const siteContent = {
               "Board direction, conference planning, and recurring professional-development programming for laboratory managers."
           },
           {
-            label: "Hosted convenings",
+            label: "Hosted conferences",
             value:
               "Regional and national meetings organized in Boston, Washington, DC, San Francisco, and New York City."
           }

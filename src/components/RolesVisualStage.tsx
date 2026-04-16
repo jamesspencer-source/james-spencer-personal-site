@@ -410,7 +410,7 @@ function RolesVisualStage({
               </g>
 
               <text className="scene-overview__caption" x="30" y="248">
-                Regional and national convenings
+                Regional and national conferences
               </text>
               <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="270">
                 Professional community leadership
@@ -881,7 +881,7 @@ function RolesVisualStage({
             style={{ opacity: clamp01(globeEnter * 1.12) }}
           >
             <rect width="392" height="82" rx="18" />
-            <text x="22" y="28">Hosted convenings</text>
+            <text x="22" y="28">Hosted conferences</text>
             <text x="22" y="52">Boston · Washington, DC · San Francisco</text>
             <text x="22" y="69">New York City</text>
           </g>
