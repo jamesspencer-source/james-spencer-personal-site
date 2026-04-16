@@ -157,10 +157,10 @@ function RolesVisualStage({
 
   const globeProjection = useMemo(() => {
     return geoOrthographic()
-      .translate([540, 352])
-      .scale(mix(214, 286, globeEnter))
+      .translate([558, 350])
+      .scale(mix(234, 324, globeEnter))
       .clipAngle(90)
-      .rotate([mix(116, 96, globeEnter), mix(-22, -34, globeEnter)]);
+      .rotate([mix(118, 99, globeEnter), mix(-18, -33, globeEnter)]);
   }, [globeEnter]);
 
   const globePath = useMemo(() => geoPath(globeProjection), [globeProjection]);
@@ -219,7 +219,7 @@ function RolesVisualStage({
         className="roles-scene__layer roles-scene__layer--labs"
         style={{
           opacity: labsVisibility,
-          transform: `translate3d(${mix(0, -72, labsCompress)}px, ${mix(0, -22, labsCompress)}px, 0) scale(${mix(1, 0.88, labsCompress)})`
+          transform: `translate3d(${mix(0, -52, labsCompress)}px, ${mix(-10, -24, labsCompress)}px, 0) scale(${mix(0.98, 0.9, labsCompress)})`
         }}
       >
         <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
@@ -242,20 +242,20 @@ function RolesVisualStage({
             </linearGradient>
           </defs>
 
-          <ellipse className="scene-labs__shadow" cx="488" cy="612" rx="294" ry="58" />
+          <ellipse className="scene-labs__shadow" cx="488" cy="586" rx="294" ry="58" />
 
-          <path className="scene-labs__ground" d="M 132 594 L 836 594" />
-          <path className="scene-labs__ground scene-labs__ground--minor" d="M 178 622 L 794 622" />
+          <path className="scene-labs__ground" d="M 132 568 L 836 568" />
+          <path className="scene-labs__ground scene-labs__ground--minor" d="M 178 596 L 794 596" />
 
           <g className="scene-labs__structure">
             <polygon className="scene-labs__tower-top" points="196,180 330,180 368,206 236,206" />
-            <polygon className="scene-labs__tower-front" points="196,180 236,206 236,560 196,534" />
-            <polygon className="scene-labs__tower-main" points="236,206 368,206 368,586 236,560" />
-            <polygon className="scene-labs__tower-side" points="368,206 416,238 416,618 368,586" />
+            <polygon className="scene-labs__tower-front" points="196,180 236,206 236,534 196,508" />
+            <polygon className="scene-labs__tower-main" points="236,206 368,206 368,560 236,534" />
+            <polygon className="scene-labs__tower-side" points="368,206 416,238 416,592 368,560" />
 
             <polygon className="scene-labs__him-top" points="516,214 694,214 736,240 558,240" />
-            <polygon className="scene-labs__him-main" points="558,240 736,240 736,596 558,596" />
-            <polygon className="scene-labs__him-side" points="736,240 786,274 786,630 736,596" />
+            <polygon className="scene-labs__him-main" points="558,240 736,240 736,570 558,570" />
+            <polygon className="scene-labs__him-side" points="736,240 786,274 786,604 736,570" />
           </g>
 
           <g className="scene-labs__floors">
@@ -273,11 +273,11 @@ function RolesVisualStage({
           <g className="scene-labs__windows">
             {Array.from({ length: 8 }).map((_, column) => {
               const x = 252 + column * 14;
-              return <path key={x} className="scene-labs__window-line" d={`M ${x} 214 L ${x} 554`} />;
+              return <path key={x} className="scene-labs__window-line" d={`M ${x} 214 L ${x} 528`} />;
             })}
             {Array.from({ length: 9 }).map((_, column) => {
               const x = 578 + column * 18;
-              return <path key={x} className="scene-labs__window-line" d={`M ${x} 246 L ${x} 590`} />;
+              return <path key={x} className="scene-labs__window-line" d={`M ${x} 246 L ${x} 564`} />;
             })}
           </g>
 
@@ -325,8 +325,8 @@ function RolesVisualStage({
           </g>
 
           <g className="scene-labs__labels">
-            <text x="242" y="644">Veritas Science Center</text>
-            <text x="560" y="644">Harvard Institutes of Medicine</text>
+            <text x="240" y="618">Veritas Science Center</text>
+            <text x="554" y="618">Harvard Institutes of Medicine</text>
           </g>
         </svg>
       </div>
@@ -411,7 +411,7 @@ function RolesVisualStage({
         className="roles-scene__layer roles-scene__layer--globe"
         style={{
           opacity: globeVisibility,
-          transform: `translate3d(${mix(94, 0, globeEnter)}px, ${mix(28, -10, globeEnter)}px, 0) scale(${mix(0.68, 1.02, globeEnter)})`
+          transform: `translate3d(${mix(72, 0, globeEnter)}px, ${mix(14, -8, globeEnter)}px, 0) scale(${mix(0.74, 1.03, globeEnter)})`
         }}
       >
         <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
@@ -427,8 +427,8 @@ function RolesVisualStage({
             </radialGradient>
           </defs>
 
-          <circle className="scene-globe__aura" cx="540" cy="352" r="300" />
-          <circle className="scene-globe__sphere" cx="540" cy="352" r={mix(214, 286, globeEnter)} />
+          <circle className="scene-globe__aura" cx="558" cy="350" r="328" />
+          <circle className="scene-globe__sphere" cx="558" cy="350" r={mix(234, 324, globeEnter)} />
 
           <path className="scene-globe__graticule" d={globePath(graticule) ?? ""} />
           <path className="scene-globe__world" d={globePath(WORLD_LAND) ?? ""} />
@@ -458,6 +458,7 @@ function RolesVisualStage({
             const active = hoveredCity === city.label;
             const label = `${city.label}, ${city.state}${city.year ? ` · ${city.year}` : ""}`;
             const labelWidth = Math.max(138, label.length * 6.4);
+            const passiveWidth = Math.max(72, city.label.length * 6 + 20);
             return (
               <g
                 key={`${city.label}-${city.year}`}
@@ -478,12 +479,19 @@ function RolesVisualStage({
                   transform: `scale(${active ? 1.16 : 1})`
                 }}
               >
+                <circle className="scene-globe__pin-aura" r="20" />
                 <circle className="scene-globe__pin-ring" r="11" />
                 <circle className="scene-globe__pin-core" r="4.6" />
+                <g className="scene-globe__pin-city" transform="translate(14 -16)">
+                  <rect x="-6" y="-17" width={passiveWidth} height="24" rx="12" />
+                  <text x="8" y="-1">
+                    {city.label}
+                  </text>
+                </g>
                 {active ? (
                   <g className="scene-globe__pin-label" transform="translate(14 -16)">
-                    <rect x="-6" y="-17" width={labelWidth} height="28" rx="12" />
-                    <text x="8" y="1">
+                    <rect x="-6" y="12" width={labelWidth} height="28" rx="12" />
+                    <text x="8" y="30">
                       {label}
                     </text>
                   </g>

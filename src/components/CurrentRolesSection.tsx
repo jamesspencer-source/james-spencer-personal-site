@@ -227,16 +227,14 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   return (
     <section id="roles" data-section="roles" className="stage stage--roles" ref={sectionRef}>
       <div className="roles-story" ref={viewportRef}>
-        <div className="roles-story__chrome">
-          <div className="roles-story__heading-block">
-            <p className="roles-story__eyebrow">{siteContent.rolesSection.label}</p>
-            <h2 className="roles-story__heading">{siteContent.rolesSection.heading}</h2>
-            <p className="roles-story__intro">{siteContent.rolesSection.intro}</p>
-          </div>
-        </div>
-
         <div className="roles-story__layout">
           <div className="roles-story__copy">
+            <div className="roles-story__heading-block">
+              <p className="roles-story__eyebrow">{siteContent.rolesSection.label}</p>
+              <h2 className="roles-story__heading">{siteContent.rolesSection.heading}</h2>
+              <p className="roles-story__intro">{siteContent.rolesSection.intro}</p>
+            </div>
+
             <nav className="roles-story__progress" aria-label="Current role chapters">
               {chapters.map((chapter, index) => (
                 <button

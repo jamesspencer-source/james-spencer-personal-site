@@ -76,44 +76,44 @@ const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 const hostCities: HostCity[] = [
   {
-    label: "Bethesda",
-    state: "Maryland",
-    latitude: 38.9847,
-    longitude: -77.0947,
-    year: "2023",
-    note: "National meeting",
-    offsetX: -14,
-    offsetY: -16
-  },
-  {
-    label: "Cambridge",
+    label: "Boston",
     state: "Massachusetts",
-    latitude: 42.3736,
-    longitude: -71.1097,
+    latitude: 42.3601,
+    longitude: -71.0589,
     year: "2024",
-    note: "Boston regional meeting",
-    offsetX: 8,
-    offsetY: -10
-  },
-  {
-    label: "Chicago",
-    state: "Illinois",
-    latitude: 41.8781,
-    longitude: -87.6298,
-    year: "2024",
-    note: "Chicago regional meeting",
-    offsetX: -8,
-    offsetY: 2
+    note: "Regional meetings, including Chicago lab managers hosted in Boston",
+    offsetX: -10,
+    offsetY: -14
   },
   {
     label: "Chevy Chase",
     state: "Maryland",
     latitude: 38.9648,
     longitude: -77.0875,
-    year: "2025",
-    note: "National meeting",
-    offsetX: 14,
+    year: "2023 + 2025",
+    note: "National meetings",
+    offsetX: 16,
     offsetY: 14
+  },
+  {
+    label: "San Francisco",
+    state: "California",
+    latitude: 37.7749,
+    longitude: -122.4194,
+    year: "2026",
+    note: "Regional meeting",
+    offsetX: -12,
+    offsetY: -6
+  },
+  {
+    label: "New York City",
+    state: "New York",
+    latitude: 40.7128,
+    longitude: -74.006,
+    year: "2026",
+    note: "Regional meeting",
+    offsetX: 14,
+    offsetY: -14
   }
 ];
 
@@ -163,9 +163,9 @@ export const siteContent = {
   },
   rolesSection: {
     label: "Current Roles",
-    heading: "Current roles and operating responsibilities",
+    heading: "Current Roles",
     intro:
-      "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers. Together, these roles cover the research environments, student logistics, and peer-network planning that he runs alongside his primary laboratory-operations role.",
+      "James's current work spans laboratory management, annual program delivery, and professional leadership for lab managers. Laboratory operations remain the core role, with the program and network work building on that same operating base.",
     chapters: [
       {
         id: "labs",
@@ -191,26 +191,6 @@ export const siteContent = {
             label: "Operating surface",
             value:
               "Staffing, facilities, equipment, budgets, vendor coordination, onboarding, and day-to-day continuity."
-          }
-        ],
-        callouts: [
-          {
-            label: "Veritas Science Center",
-            x: 22,
-            y: 28,
-            align: "left"
-          },
-          {
-            label: "Harvard Institutes of Medicine",
-            x: 84,
-            y: 34,
-            align: "right"
-          },
-          {
-            label: "Ninth- and tenth-floor laboratory space",
-            x: 54,
-            y: 66,
-            align: "center"
           }
         ],
         visual: {
@@ -274,7 +254,7 @@ export const siteContent = {
           {
             label: "Hosted convenings",
             value:
-              "Regional and national meetings hosted in Massachusetts, Illinois, and the Washington, DC area."
+              "Regional and national meetings organized in Boston, Chevy Chase, San Francisco, and New York City."
           }
         ],
         visual: {
@@ -325,8 +305,8 @@ export const siteContent = {
     heading: "Contact",
     intro: "",
     portrait: {
-      src: asset("assets/images/james-m-spencer-hero-5904.jpg"),
-      alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."
+      src: asset("assets/images/james-m-spencer-background-5900.jpg"),
+      alt: "James M. Spencer in a studio portrait wearing a navy shirt against a gray background."
     },
     links: [
       {

@@ -773,7 +773,7 @@ button {
 .roles-story {
   position: relative;
   min-height: 100svh;
-  padding: calc(var(--header-offset) + 1.35rem) clamp(1.25rem, 3vw, 2.5rem) 2rem;
+  padding: calc(var(--header-offset) + 0.75rem) clamp(1.25rem, 3vw, 2.5rem) 1.4rem;
   color: rgba(243, 247, 244, 0.96);
   background:
     radial-gradient(circle at 76% 18%, rgba(112, 161, 137, 0.18), transparent 23rem),
@@ -804,7 +804,7 @@ button {
 }
 
 .roles-story__heading-block {
-  max-width: 44rem;
+  max-width: 34rem;
 }
 
 .roles-story__eyebrow {
@@ -816,21 +816,21 @@ button {
 }
 
 .roles-story__heading {
-  max-width: 18ch;
+  max-width: 12ch;
   margin: 0;
-  font-size: clamp(2.3rem, 4.2vw, 4.6rem);
-  line-height: 1;
+  font-size: clamp(2.1rem, 3.7vw, 3.9rem);
+  line-height: 0.98;
   letter-spacing: -0.03em;
   font-weight: 600;
   text-wrap: balance;
 }
 
 .roles-story__intro {
-  max-width: 42rem;
-  margin: 0.9rem 0 0;
+  max-width: 31rem;
+  margin: 0.75rem 0 0;
   color: rgba(229, 237, 232, 0.74);
-  font-size: clamp(1rem, 1.4vw, 1.08rem);
-  line-height: 1.58;
+  font-size: clamp(0.96rem, 1.2vw, 1.02rem);
+  line-height: 1.52;
   text-wrap: pretty;
 }
 
@@ -885,21 +885,22 @@ button {
   gap: 1.75rem clamp(2rem, 4vw, 4rem);
   align-items: center;
   width: min(100%, 88rem);
-  min-height: calc(100svh - var(--header-offset) - 6rem);
-  margin: 1.15rem auto 0;
+  min-height: calc(100svh - var(--header-offset) - 2rem);
+  margin: 0 auto;
 }
 
 .roles-story__copy {
   display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
   align-content: start;
-  gap: 1rem;
+  gap: 0.85rem;
   align-self: center;
   min-height: 0;
 }
 
 .roles-story__panels {
   position: relative;
-  min-height: 28rem;
+  min-height: 22rem;
 }
 
 .roles-story__panel-shell {
@@ -915,7 +916,7 @@ button {
 
 .roles-story__panel {
   max-width: 37rem;
-  padding: 1.35rem 1.3rem 1.4rem;
+  padding: 1.2rem 1.2rem 1.25rem;
   background: rgba(7, 10, 14, 0.44);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 10px;
@@ -950,10 +951,10 @@ button {
 
 .roles-story__summary {
   max-width: 34rem;
-  margin: 1rem 0 0;
+  margin: 0.8rem 0 0;
   color: rgba(245, 248, 246, 0.92);
-  font-size: 1.03rem;
-  line-height: 1.63;
+  font-size: 1rem;
+  line-height: 1.58;
   text-wrap: pretty;
 }
 
@@ -976,8 +977,8 @@ button {
 .roles-story__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 1rem;
-  margin-top: 1.2rem;
+  gap: 0.8rem;
+  margin-top: 1rem;
 }
 
 .roles-story__list {
@@ -1032,8 +1033,8 @@ button {
 
 .roles-scene {
   position: relative;
-  min-height: 36rem;
-  height: min(calc(100svh - var(--header-offset) - 8rem), 44rem);
+  min-height: 31rem;
+  height: min(calc(100svh - var(--header-offset) - 4.5rem), 38rem);
   border-radius: 0;
   overflow: hidden;
 }
@@ -1260,19 +1261,29 @@ button {
   stroke-width: 1.3;
 }
 
+.scene-globe__pin-aura {
+  fill: rgba(148, 195, 170, 0.16);
+}
+
 .scene-globe__pin-core {
   fill: rgba(57, 90, 74, 0.98);
 }
 
+.scene-globe__pin-city rect,
 .scene-globe__pin-label rect {
   fill: rgba(8, 11, 14, 0.84);
   stroke: rgba(255, 255, 255, 0.08);
 }
 
+.scene-globe__pin-city text,
 .scene-globe__pin-label text {
   fill: rgba(245, 248, 246, 0.98);
   font-size: 11px;
   font-weight: 600;
+}
+
+.scene-globe__pin-city text {
+  fill: rgba(228, 236, 231, 0.88);
 }
 
 .roles-scene__callouts {
@@ -1473,9 +1484,8 @@ button {
 .contact__portrait img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: center 22%;
+  height: auto;
+  object-fit: contain;
   border-radius: 6px;
   box-shadow:
     0 18px 34px rgba(20, 22, 17, 0.08),
@@ -1539,7 +1549,7 @@ button {
   }
 
   .roles-story {
-    padding-top: calc(var(--header-offset) + 1rem);
+    padding-top: calc(var(--header-offset) + 0.7rem);
   }
 
   .roles-story__chrome,
@@ -1549,15 +1559,15 @@ button {
 
   .roles-story__layout {
     grid-template-columns: 1fr;
-    min-height: calc(100svh - var(--header-offset) - 3rem);
+    min-height: calc(100svh - var(--header-offset) - 1.8rem);
   }
 
   .roles-story__heading {
-    max-width: 16ch;
+    max-width: 13ch;
   }
 
   .roles-story__panels {
-    min-height: 26rem;
+    min-height: 24rem;
   }
 
   .roles-story__visual,
@@ -1566,8 +1576,8 @@ button {
   }
 
   .roles-scene {
-    height: min(calc(100svh - var(--header-offset) - 4rem), 32rem);
-    min-height: 25rem;
+    height: min(calc(100svh - var(--header-offset) - 3rem), 30rem);
+    min-height: 23rem;
   }
 
   .roles-scene__callout-label {
@@ -1601,7 +1611,7 @@ button {
   }
 
   .roles-story__panels {
-    min-height: 31rem;
+    min-height: 29rem;
   }
 
   .roles-story__panel {

@@ -33,7 +33,7 @@ Current public assets:
 - Social preview: `public/assets/images/social-preview.svg`
 - Resume PDF: `public/assets/resume/james-m-spencer-resume.pdf`
 - Favicon: `public/assets/favicon.svg`
-- Portrait: `public/assets/images/james-m-spencer-hero-5904.jpg`
+- Portrait: `public/assets/images/james-m-spencer-background-5900.jpg`
 
 ## Deployment
 
