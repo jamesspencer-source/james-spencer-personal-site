@@ -65,6 +65,21 @@ function getContactLinkMeta(link: ActionLink) {
   }
 }
 
+function renderScientificNames(text: string) {
+  const speciesName = "Caulobacter crescentus";
+
+  return text.split(speciesName).flatMap((part, index, parts) => {
+    if (index === parts.length - 1) {
+      return part;
+    }
+
+    return [
+      part,
+      <em key={`${speciesName}-${index}`}>{speciesName}</em>
+    ];
+  });
+}
+
 function ActionRow({ links }: { links: ActionLink[] }) {
   return (
     <div className="action-row">
@@ -342,7 +357,9 @@ function App() {
                     <p className="background-role__organization">
                       {entry.organization}
                     </p>
-                    <p className="background-role__summary">{entry.summary}</p>
+                    <p className="background-role__summary">
+                      {renderScientificNames(entry.summary)}
+                    </p>
                   </article>
                 ))}
               </div>
