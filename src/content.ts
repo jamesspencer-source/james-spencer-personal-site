@@ -322,7 +322,7 @@ export const siteContent = {
         organization: "University of Massachusetts Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
-          "Supported residents day to day, served as a peer trainer, and handled on-call response within a large residential system."
+          "Supported residents day to day, was selected as a peer trainer for new staff, and handled on-call response within a large residential system."
       }
     ] as BackgroundEntry[],
     education: {
