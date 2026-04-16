@@ -1194,14 +1194,20 @@ button {
 
 .scene-labs__veritas-roof,
 .scene-labs__veritas-front,
-.scene-labs__podium-roof {
+.scene-labs__podium-roof,
+.scene-labs__connector-roof,
+.scene-labs__auditorium-roof {
   fill: url(#labs-glass);
 }
 
 .scene-labs__veritas-side,
 .scene-labs__veritas-edge,
 .scene-labs__podium-front,
-.scene-labs__podium-side {
+.scene-labs__podium-side,
+.scene-labs__connector-front,
+.scene-labs__connector-side,
+.scene-labs__auditorium-front,
+.scene-labs__auditorium-side {
   fill: url(#labs-glass-side);
   stroke: rgba(231, 239, 235, 0.08);
   stroke-width: 1.1;
@@ -1209,15 +1215,43 @@ button {
 
 .scene-labs__him-roof,
 .scene-labs__him-main,
-.scene-labs__him-front {
+.scene-labs__him-front,
+.scene-labs__him-side {
   fill: url(#labs-concrete);
 }
 
 .scene-labs__him-roof,
 .scene-labs__him-main,
-.scene-labs__him-front {
+.scene-labs__him-front,
+.scene-labs__him-side {
   stroke: rgba(231, 239, 235, 0.08);
   stroke-width: 1.1;
+}
+
+.scene-labs__auditorium-dome {
+  fill: rgba(215, 226, 221, 0.74);
+  stroke: rgba(241, 246, 243, 0.18);
+  stroke-width: 1;
+}
+
+.scene-labs__roof-unit,
+.scene-labs__roof-stack {
+  fill: rgba(190, 205, 198, 0.42);
+  stroke: rgba(241, 246, 243, 0.12);
+  stroke-width: 1;
+}
+
+.scene-labs__roof-fan {
+  fill: rgba(178, 193, 186, 0.54);
+  stroke: rgba(241, 246, 243, 0.12);
+  stroke-width: 1;
+}
+
+.scene-labs__roof-rail,
+.scene-labs__roof-arch {
+  fill: none;
+  stroke: rgba(223, 233, 228, 0.28);
+  stroke-width: 2.2;
 }
 
 .scene-labs__floors,
