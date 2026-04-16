@@ -51,13 +51,19 @@ const chapterStops: Record<RoleChapter["id"], number> = {
 };
 
 const programStations = [
-  { label: "Funding", x: 300, y: 246 },
-  { label: "Hiring", x: 466, y: 188 },
-  { label: "Lab setup", x: 646, y: 246 },
-  { label: "Biosafety", x: 726, y: 418 },
-  { label: "Delivery", x: 520, y: 560 },
-  { label: "Closeout", x: 282, y: 456 }
+  { label: "Funding", x: 352, y: 248 },
+  { label: "Hiring", x: 466, y: 202 },
+  { label: "Lab setup", x: 628, y: 248 },
+  { label: "Biosafety", x: 680, y: 408 },
+  { label: "Delivery", x: 520, y: 536 },
+  { label: "Closeout", x: 352, y: 454 }
 ];
+
+const globeRouteConnections = [
+  ["Boston", "Washington, DC"],
+  ["Washington, DC", "New York City"],
+  ["Washington, DC", "San Francisco"]
+] as const;
 
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
@@ -105,6 +111,21 @@ function projectHostCity(
     x: point[0] + (city.offsetX ?? 0),
     y: point[1] + (city.offsetY ?? 0)
   };
+}
+
+function getHostRegionRadius(label: HostCity["label"]) {
+  switch (label) {
+    case "Boston":
+      return 34;
+    case "Washington, DC":
+      return 30;
+    case "San Francisco":
+      return 28;
+    case "New York City":
+      return 22;
+    default:
+      return 24;
+  }
 }
 
 function getCalloutStyle(
@@ -156,6 +177,8 @@ function RolesVisualStage({
   const labsCompress = smoothstep(0.48, 0.62, progress);
   const programEnter = smoothstep(0.48, 0.62, progress);
   const programExit = smoothstep(0.74, 0.88, progress);
+  const programStationsVisibility =
+    smoothstep(0.58, 0.68, progress) * (1 - smoothstep(0.8, 0.9, progress));
   const globeEnter = smoothstep(0.76, 0.94, progress);
 
   const globeProjection = useMemo(() => {
@@ -201,26 +224,37 @@ function RolesVisualStage({
   );
 
   const routePaths = useMemo(() => {
-    if (projectedCities.length < 2) {
+    const cities = networkVisual?.hostCities ?? [];
+    if (cities.length < 2) {
       return [];
     }
 
-    return projectedCities.slice(0, -1).map((city, index) => {
-      const nextCity = projectedCities[index + 1];
+    const cityByLabel = new Map(cities.map((city) => [city.label, city]));
+
+    return globeRouteConnections.flatMap(([from, to]) => {
+      const start = cityByLabel.get(from);
+      const end = cityByLabel.get(to);
+
+      if (!start || !end) {
+        return [];
+      }
+
       const arc = {
         type: "LineString",
         coordinates: [
-          [city.longitude, city.latitude],
-          [nextCity.longitude, nextCity.latitude]
+          [start.longitude, start.latitude],
+          [end.longitude, end.latitude]
         ]
       } as LineString;
 
-      return {
-        key: `${city.label}-${nextCity.label}`,
-        d: globePath(arc) ?? ""
-      };
+      return [
+        {
+          key: `${from}-${to}`,
+          d: globePath(arc) ?? ""
+        }
+      ];
     });
-  }, [globePath, projectedCities]);
+  }, [globePath, networkVisual]);
 
   const activeCallouts =
     chapters.find((chapter) => chapter.id === activeChapterId)?.callouts ?? [];
@@ -591,13 +625,13 @@ function RolesVisualStage({
           <g className="scene-program__stations">
             {programStations.map((station, index) => {
               const width = station.label.length > 10 ? 112 : 94;
-              const yOffset = mix(18, 0, programEnter);
+              const yOffset = mix(20, 0, programStationsVisibility);
               return (
                 <g
                   key={station.label}
                   transform={`translate(${station.x - width / 2} ${station.y - 24 + yOffset})`}
                   style={{
-                    opacity: clamp01(programEnter * 1.15 - index * 0.08)
+                    opacity: clamp01(programStationsVisibility * 1.08 - index * 0.05)
                   }}
                 >
                   <rect width={width} height={48} rx={15} />
@@ -657,6 +691,27 @@ function RolesVisualStage({
             />
           ))}
 
+          {projectedCities.map((city, index) => {
+            const radius = getHostRegionRadius(city.label);
+            const active = hoveredCity === city.label;
+
+            return (
+              <g
+                key={`region-${city.label}`}
+                className="scene-globe__region"
+                transform={`translate(${city.x} ${city.y})`}
+                style={{
+                  opacity: clamp01(globeEnter * 1.08 - index * 0.06),
+                  transform: `scale(${active ? 1.06 : 1})`
+                }}
+              >
+                <circle className="scene-globe__region-glow" r={radius} />
+                <circle className="scene-globe__region-ring" r={radius * 0.64} />
+                <circle className="scene-globe__region-core" r={Math.max(7, radius * 0.22)} />
+              </g>
+            );
+          })}
+
           {routePaths.map((route, index) => (
             <path
               key={route.key}
@@ -715,6 +770,17 @@ function RolesVisualStage({
               </g>
             );
           })}
+
+          <g
+            className="scene-globe__legend"
+            transform="translate(94 582)"
+            style={{ opacity: clamp01(globeEnter * 1.12) }}
+          >
+            <rect width="392" height="82" rx="18" />
+            <text x="22" y="28">Hosted convenings</text>
+            <text x="22" y="52">Boston · Washington, DC · San Francisco</text>
+            <text x="22" y="69">New York City</text>
+          </g>
         </svg>
       </div>
 

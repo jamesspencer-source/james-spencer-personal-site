@@ -900,13 +900,14 @@ button {
 }
 
 .roles-story__panels {
-  position: relative;
-  min-height: 20rem;
+  display: grid;
+  align-items: start;
+  min-height: 0;
 }
 
 .roles-story__panel-shell {
-  position: absolute;
-  inset: 0;
+  grid-area: 1 / 1;
+  position: relative;
   transition: opacity 220ms ease, transform 220ms ease;
   pointer-events: none;
 }
@@ -1365,15 +1366,15 @@ button {
 }
 
 .scene-program__stations rect {
-  fill: rgba(250, 252, 251, 0.16);
-  stroke: rgba(240, 246, 242, 0.18);
+  fill: rgba(14, 18, 23, 0.78);
+  stroke: rgba(216, 231, 223, 0.16);
   stroke-width: 1;
   filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.18));
 }
 
 .scene-program__stations text {
-  fill: rgba(243, 247, 245, 0.95);
-  font-size: 14px;
+  fill: rgba(241, 247, 243, 0.92);
+  font-size: 13px;
   font-weight: 700;
   text-anchor: middle;
 }
@@ -1432,9 +1433,32 @@ button {
 
 .scene-globe__route {
   fill: none;
-  stroke: rgba(170, 214, 188, 0.92);
-  stroke-width: 2.5;
+  stroke: rgba(176, 219, 196, 0.74);
+  stroke-width: 2.1;
   stroke-linecap: round;
+  filter: drop-shadow(0 0 8px rgba(121, 168, 144, 0.22));
+}
+
+.scene-globe__region {
+  pointer-events: none;
+  transition: transform 180ms ease;
+}
+
+.scene-globe__region-glow {
+  fill: rgba(156, 205, 180, 0.18);
+  filter: drop-shadow(0 0 22px rgba(120, 172, 146, 0.2));
+}
+
+.scene-globe__region-ring {
+  fill: none;
+  stroke: rgba(235, 244, 239, 0.34);
+  stroke-width: 1.35;
+}
+
+.scene-globe__region-core {
+  fill: rgba(160, 211, 184, 0.28);
+  stroke: rgba(242, 248, 244, 0.4);
+  stroke-width: 0.8;
 }
 
 .scene-globe__pin {
@@ -1471,6 +1495,28 @@ button {
 
 .scene-globe__pin-city text {
   fill: rgba(228, 236, 231, 0.88);
+}
+
+.scene-globe__legend rect {
+  fill: rgba(8, 11, 14, 0.68);
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.scene-globe__legend text {
+  font-family: "Inter", sans-serif;
+}
+
+.scene-globe__legend text:first-of-type {
+  fill: rgba(245, 250, 247, 0.96);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.scene-globe__legend text:not(:first-of-type) {
+  fill: rgba(215, 229, 222, 0.84);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .roles-scene__callouts {

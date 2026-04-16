@@ -30,15 +30,15 @@ function fadeBetween(
 }
 
 function getActiveChapterId(progress: number): RoleChapter["id"] {
-  if (progress >= chapterStops.network - 0.03) {
+  if (progress >= 0.84) {
     return "network";
   }
 
-  if (progress >= chapterStops.program - 0.03) {
+  if (progress >= 0.6) {
     return "program";
   }
 
-  if (progress >= chapterStops.labs - 0.02) {
+  if (progress >= 0.26) {
     return "labs";
   }
 
@@ -139,10 +139,10 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
   const chapterVisibility = useMemo(
     () => ({
-      overview: fadeBetween(progress, 0, 0.06, 0.22, 0.38),
-      labs: fadeBetween(progress, 0.18, 0.32, 0.54, 0.7),
-      program: fadeBetween(progress, 0.46, 0.6, 0.8, 0.96),
-      network: fadeBetween(progress, 0.72, 0.88, 1.04, 1.16)
+      overview: fadeBetween(progress, 0, 0.08, 0.24, 0.36),
+      labs: fadeBetween(progress, 0.2, 0.32, 0.58, 0.7),
+      program: fadeBetween(progress, 0.54, 0.66, 0.84, 0.96),
+      network: fadeBetween(progress, 0.8, 0.9, 1.06, 1.16)
     }),
     [progress]
   );
@@ -261,18 +261,17 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
               {chapters.map((chapter) => (
                 (() => {
                   const isActive = activeChapterId === chapter.id;
-                  const opacity = isActive
-                    ? Math.max(chapterVisibility[chapter.id], 0.96)
-                    : chapterVisibility[chapter.id];
+                  const opacity = isActive ? 1 : chapterVisibility[chapter.id];
 
                   return (
                     <div
                       key={chapter.id}
                       id={`roles-${chapter.id}`}
                       className="roles-story__panel-shell"
+                      data-active={isActive}
                       style={{
                         opacity,
-                        transform: `translate3d(0, ${isActive ? 0 : 20 - opacity * 20}px, 0)`
+                        transform: `translate3d(0, ${isActive ? 0 : 24 - opacity * 24}px, 0)`
                       }}
                     >
                       <RoleCopy chapter={chapter} active={isActive} />
