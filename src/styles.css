@@ -1448,6 +1448,7 @@ button {
   stroke-width: 2.1;
   stroke-linecap: round;
   filter: drop-shadow(0 0 8px rgba(121, 168, 144, 0.22));
+  transition: opacity 180ms ease, stroke-width 180ms ease;
 }
 
 .scene-globe__region {
@@ -1456,8 +1457,8 @@ button {
 }
 
 .scene-globe__region-glow {
-  fill: rgba(156, 205, 180, 0.18);
-  filter: drop-shadow(0 0 22px rgba(120, 172, 146, 0.2));
+  fill: rgba(156, 205, 180, 0.22);
+  filter: drop-shadow(0 0 28px rgba(120, 172, 146, 0.24));
 }
 
 .scene-globe__region-ring {
@@ -1474,7 +1475,7 @@ button {
 
 .scene-globe__pin {
   cursor: pointer;
-  transition: transform 180ms ease;
+  transition: transform 180ms ease, opacity 180ms ease;
 }
 
 .scene-globe__pin-ring {
@@ -1484,7 +1485,7 @@ button {
 }
 
 .scene-globe__pin-aura {
-  fill: rgba(148, 195, 170, 0.16);
+  fill: rgba(148, 195, 170, 0.2);
 }
 
 .scene-globe__pin-core {
@@ -1495,6 +1496,11 @@ button {
 .scene-globe__pin-label rect {
   fill: rgba(8, 11, 14, 0.84);
   stroke: rgba(255, 255, 255, 0.08);
+}
+
+.scene-globe__pin-city,
+.scene-globe__pin-label {
+  transition: opacity 180ms ease, transform 180ms ease;
 }
 
 .scene-globe__pin-city text,

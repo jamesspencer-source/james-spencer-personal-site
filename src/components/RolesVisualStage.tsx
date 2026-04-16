@@ -137,7 +137,7 @@ function getHostRegionRadius(label: HostCity["label"]) {
   }
 }
 
-function getProgramStepEmphasis(sequenceProgress: number, index: number, total: number) {
+function getSequenceEmphasis(sequenceProgress: number, index: number, total: number) {
   const center = total <= 1 ? 0.5 : index / (total - 1);
   return fadeBetween(sequenceProgress, center - 0.2, center - 0.08, center + 0.08, center + 0.2);
 }
@@ -194,6 +194,7 @@ function RolesVisualStage({
   const programStationsVisibility =
     smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.86, 0.94, progress));
   const programSequenceProgress = clamp01((progress - 0.62) / 0.24);
+  const globeSequenceProgress = clamp01((progress - 0.82) / 0.18);
   const globeEnter = smoothstep(0.76, 0.94, progress);
 
   const globeProjection = useMemo(() => {
@@ -270,6 +271,26 @@ function RolesVisualStage({
       ];
     });
   }, [globePath, networkVisual]);
+
+  const globeFocusLabel = useMemo(() => {
+    if (hoveredCity) {
+      return hoveredCity;
+    }
+
+    let bestLabel: string | null = null;
+    let bestEmphasis = -1;
+
+    projectedCities.forEach((city, index) => {
+      const emphasis = getSequenceEmphasis(globeSequenceProgress, index, projectedCities.length);
+
+      if (emphasis > bestEmphasis) {
+        bestEmphasis = emphasis;
+        bestLabel = city.label;
+      }
+    });
+
+    return bestLabel;
+  }, [globeSequenceProgress, hoveredCity, projectedCities]);
 
   const activeCallouts =
     chapters.find((chapter) => chapter.id === activeChapterId)?.callouts ?? [];
@@ -631,7 +652,7 @@ function RolesVisualStage({
 
           <g className="scene-program__connectors">
             {programConnectorPaths.map((path, index) => {
-              const emphasis = getProgramStepEmphasis(
+              const emphasis = getSequenceEmphasis(
                 programSequenceProgress,
                 index,
                 programConnectorPaths.length
@@ -654,7 +675,7 @@ function RolesVisualStage({
             {programStations.map((station, index) => {
               const width = station.label.length > 10 ? 112 : 94;
               const yOffset = mix(20, 0, programStationsVisibility);
-              const emphasis = getProgramStepEmphasis(
+              const emphasis = getSequenceEmphasis(
                 programSequenceProgress,
                 index,
                 programStations.length
@@ -713,7 +734,7 @@ function RolesVisualStage({
         className="roles-scene__layer roles-scene__layer--globe"
         style={{
           opacity: globeVisibility,
-          transform: `translate3d(${mix(72, 0, globeEnter)}px, ${mix(14, -8, globeEnter)}px, 0) scale(${mix(0.74, 1.03, globeEnter)})`
+          transform: `translate3d(${mix(78, -4, globeEnter)}px, ${mix(18, -10, globeEnter)}px, 0) scale(${mix(0.72, 1.08, globeEnter)})`
         }}
       >
         <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
@@ -745,7 +766,13 @@ function RolesVisualStage({
 
           {projectedCities.map((city, index) => {
             const radius = getHostRegionRadius(city.label);
-            const active = hoveredCity === city.label;
+            const emphasis = getSequenceEmphasis(
+              globeSequenceProgress,
+              index,
+              projectedCities.length
+            );
+            const active = globeFocusLabel === city.label;
+            const visualEmphasis = active ? 1 : emphasis;
 
             return (
               <g
@@ -753,8 +780,10 @@ function RolesVisualStage({
                 className="scene-globe__region"
                 transform={`translate(${city.x} ${city.y})`}
                 style={{
-                  opacity: clamp01(globeEnter * 1.08 - index * 0.06),
-                  transform: `scale(${active ? 1.06 : 1})`
+                  opacity:
+                    mix(0.18, 0.96, visualEmphasis) *
+                    clamp01(globeEnter * 1.08 - index * 0.04),
+                  transform: `scale(${mix(0.92, active ? 1.24 : 1.08, visualEmphasis)})`
                 }}
               >
                 <circle className="scene-globe__region-glow" r={radius} />
@@ -765,20 +794,36 @@ function RolesVisualStage({
           })}
 
           {routePaths.map((route, index) => (
-            <path
-              key={route.key}
-              className="scene-globe__route"
-              d={route.d}
-              pathLength={1}
-              style={{
-                strokeDasharray: 1,
-                strokeDashoffset: buildGlobeDash(progress) + index * 0.08
-              }}
-            />
+            (() => {
+              const emphasis = getSequenceEmphasis(globeSequenceProgress, index, routePaths.length);
+
+              return (
+                <path
+                  key={route.key}
+                  className="scene-globe__route"
+                  d={route.d}
+                  pathLength={1}
+                  style={{
+                    opacity: mix(0.34, 1, emphasis),
+                    strokeWidth: mix(1.9, 3.8, emphasis),
+                    strokeDasharray: 1,
+                    strokeDashoffset: Math.max(
+                      0,
+                      buildGlobeDash(progress) + index * 0.12 - emphasis * 0.16
+                    )
+                  }}
+                />
+              );
+            })()
           ))}
 
           {projectedCities.map((city, index) => {
-            const active = hoveredCity === city.label;
+            const emphasis = getSequenceEmphasis(
+              globeSequenceProgress,
+              index,
+              projectedCities.length
+            );
+            const active = globeFocusLabel === city.label;
             const label = `${city.label}, ${city.state}${city.year ? ` · ${city.year}` : ""}`;
             const labelWidth = Math.max(138, label.length * 6.4);
             const passiveWidth = Math.max(72, city.label.length * 6 + 20);
@@ -798,14 +843,21 @@ function RolesVisualStage({
                   setHoveredCity((current) => (current === city.label ? null : city.label))
                 }
                 style={{
-                  opacity: clamp01(globeEnter * 1.15 - index * 0.08),
-                  transform: `scale(${active ? 1.16 : 1})`
+                  opacity: mix(0.5, 1, active ? 1 : emphasis) * clamp01(globeEnter * 1.15),
+                  transform: `scale(${mix(0.94, active ? 1.22 : 1.08, active ? 1 : emphasis)})`
                 }}
               >
-                <circle className="scene-globe__pin-aura" r="20" />
+                <circle
+                  className="scene-globe__pin-aura"
+                  r={mix(16, active ? 30 : 22, active ? 1 : emphasis)}
+                />
                 <circle className="scene-globe__pin-ring" r="11" />
                 <circle className="scene-globe__pin-core" r="4.6" />
-                <g className="scene-globe__pin-city" transform="translate(14 -16)">
+                <g
+                  className="scene-globe__pin-city"
+                  transform="translate(14 -16)"
+                  style={{ opacity: mix(0.54, 1, active ? 1 : emphasis) }}
+                >
                   <rect x="-6" y="-17" width={passiveWidth} height="24" rx="12" />
                   <text x="8" y="-1">
                     {city.label}
