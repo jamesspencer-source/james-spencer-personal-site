@@ -51,13 +51,18 @@ const chapterStops: Record<RoleChapter["id"], number> = {
 };
 
 const programStations = [
-  { label: "Funding", x: 352, y: 248 },
-  { label: "Hiring", x: 466, y: 202 },
-  { label: "Lab setup", x: 628, y: 248 },
-  { label: "Biosafety", x: 680, y: 408 },
-  { label: "Delivery", x: 520, y: 536 },
-  { label: "Closeout", x: 352, y: 454 }
+  { label: "Funding", x: 198, y: 214 },
+  { label: "Hiring", x: 428, y: 122 },
+  { label: "Lab setup", x: 658, y: 214 },
+  { label: "Biosafety", x: 682, y: 390 },
+  { label: "Delivery", x: 454, y: 590 },
+  { label: "Closeout", x: 180, y: 452 }
 ];
+
+const programStationCard = {
+  width: 154,
+  height: 56
+};
 
 const programConnectorPaths = [
   "M 504 244 L 504 306",
@@ -690,7 +695,6 @@ function RolesVisualStage({
 
           <g className="scene-program__stations">
             {programStations.map((station, index) => {
-              const width = station.label.length > 10 ? 112 : 94;
               const reveal = getSequenceReveal(
                 programSequenceProgress,
                 index,
@@ -702,13 +706,16 @@ function RolesVisualStage({
                 index,
                 programStations.length
               );
-              const scale = mix(0.92, mix(1, 1.1, emphasis), reveal);
-              const translateX = station.x - width / 2;
-              const translateY = station.y - 24 + yOffset;
+              const scale = mix(0.94, mix(1, 1.04, emphasis), reveal);
+              const translateX = station.x;
+              const translateY = station.y + yOffset;
+              const cardCenterX = programStationCard.width / 2;
+              const cardCenterY = programStationCard.height / 2;
+
               return (
                 <g
                   key={station.label}
-                  transform={`translate(${translateX} ${translateY}) translate(${width / 2} 24) scale(${scale}) translate(${-width / 2} -24)`}
+                  transform={`translate(${translateX} ${translateY}) translate(${cardCenterX} ${cardCenterY}) scale(${scale}) translate(${-cardCenterX} ${-cardCenterY})`}
                   style={{
                     opacity:
                       reveal *
@@ -720,20 +727,27 @@ function RolesVisualStage({
                     className="scene-program__station-accent"
                     x={-6}
                     y={-6}
-                    width={width + 12}
-                    height={60}
+                    width={programStationCard.width + 12}
+                    height={programStationCard.height + 12}
                     rx={18}
                     style={{ opacity: emphasis * 0.9 }}
                   />
-                  <rect width={width} height={48} rx={15} />
+                  <rect
+                    width={programStationCard.width}
+                    height={programStationCard.height}
+                    rx={14}
+                  />
                   <circle
                     className="scene-program__station-dot"
-                    cx={16}
-                    cy={24}
+                    cx={22}
+                    cy={35}
                     r={mix(4, 6.5, emphasis)}
                     style={{ opacity: mix(0.54, 1, emphasis) }}
                   />
-                  <text x={width / 2} y={29}>
+                  <text className="scene-program__station-index" x={18} y={18}>
+                    {String(index + 1).padStart(2, "0")}
+                  </text>
+                  <text className="scene-program__station-label" x={38} y={39}>
                     {station.label}
                   </text>
                 </g>
