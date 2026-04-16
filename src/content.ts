@@ -315,7 +315,7 @@ export const siteContent = {
         organization: "University of Massachusetts Amherst Residential Life",
         dates: "2016 - 2018",
         summary:
-          "Led a residential area of roughly 6,000 students and recruited, trained, and supported a 14-person student leadership board."
+          "Served in an annually elected role overseeing a residential area of roughly 6,000 students, recruiting and supporting a 14-person student leadership board, coordinating cross-institutional partners, and planning large-scale events and initiatives for a broader campus community of thousands."
       },
       {
         title: "Resident Assistant",
