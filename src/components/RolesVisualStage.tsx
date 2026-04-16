@@ -1,453 +1,465 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import gsap from "gsap";
+import { useMemo, useState } from "react";
+import {
+  geoGraticule,
+  geoOrthographic,
+  geoPath
+} from "d3-geo";
+import type { Feature, FeatureCollection, Geometry, LineString, MultiPolygon } from "geojson";
+import { feature, merge } from "topojson-client";
+import usAtlasData from "us-atlas/states-10m.json";
 import { type HostCity, type RoleChapter } from "../content";
 
 type RolesVisualStageProps = {
-  chapter: RoleChapter;
-  reducedMotion: boolean;
+  progress: number;
+  activeChapterId: RoleChapter["id"];
+  chapters: RoleChapter[];
 };
 
-type ProjectedPoint = {
-  x: number;
-  y: number;
-  visible: boolean;
+type UsAtlasShape = {
+  type: "Topology";
+  objects: {
+    states: {
+      type: string;
+      geometries: Array<{
+        id: string | number;
+      }>;
+    };
+  };
 };
 
-const GLOBE_CENTER_X = 208;
-const GLOBE_CENTER_Y = 214;
-const GLOBE_RADIUS = 144;
-const GLOBE_LON = -96;
-const GLOBE_LAT = 37;
+const atlas = usAtlasData as unknown as UsAtlasShape;
 
-const lower48Outline: Array<[number, number]> = [
-  [-124.7, 48.6],
-  [-124.2, 46.2],
-  [-123.2, 43.7],
-  [-122.4, 41.8],
-  [-121.3, 39.8],
-  [-119.7, 37.5],
-  [-118.4, 35.2],
-  [-117.1, 33.2],
-  [-114.7, 32.6],
-  [-111.0, 31.8],
-  [-108.2, 31.3],
-  [-106.5, 31.8],
-  [-104.0, 29.9],
-  [-100.4, 28.8],
-  [-97.0, 26.2],
-  [-90.6, 29.0],
-  [-88.0, 30.4],
-  [-85.0, 29.8],
-  [-82.4, 28.9],
-  [-80.3, 25.6],
-  [-80.2, 27.8],
-  [-80.6, 30.2],
-  [-79.0, 32.2],
-  [-77.0, 34.6],
-  [-75.8, 36.3],
-  [-75.1, 38.6],
-  [-74.1, 40.9],
-  [-71.2, 41.6],
-  [-70.1, 43.4],
-  [-69.5, 45.0],
-  [-71.3, 45.7],
-  [-73.4, 44.9],
-  [-74.8, 43.9],
-  [-76.3, 44.0],
-  [-79.0, 43.4],
-  [-82.8, 42.2],
-  [-84.8, 46.0],
-  [-89.8, 48.2],
-  [-95.5, 49.0],
-  [-104.0, 49.0],
-  [-110.3, 48.9],
-  [-116.2, 48.9],
-  [-124.7, 48.6]
-];
+const LOWER_48_EXCLUSIONS = new Set([2, 15, 60, 66, 69, 72, 78]);
 
-const globeGridLatitudes = [20, 30, 40, 50];
-const globeGridLongitudes = [-120, -105, -90, -75];
+const LOWER_48_FEATURES = feature(
+  atlas as never,
+  atlas.objects.states as never
+) as unknown as FeatureCollection<Geometry>;
 
-function toRadians(value: number) {
-  return (value * Math.PI) / 180;
+const LOWER_48_STATES = LOWER_48_FEATURES.features.filter(
+  (item) => !LOWER_48_EXCLUSIONS.has(Number(item.id))
+) as Array<Feature<Geometry>>;
+
+const LOWER_48_LAND = merge(
+  atlas as never,
+  atlas.objects.states.geometries.filter(
+    (geometry) => !LOWER_48_EXCLUSIONS.has(Number(geometry.id))
+  ) as never
+) as MultiPolygon;
+
+const chapterStops: Record<RoleChapter["id"], number> = {
+  labs: 0,
+  program: 0.46,
+  network: 0.84
+};
+
+function clamp01(value: number) {
+  return Math.max(0, Math.min(1, value));
 }
 
-function projectGlobePoint(
-  longitude: number,
-  latitude: number,
-  centerLongitude = GLOBE_LON,
-  centerLatitude = GLOBE_LAT
-): ProjectedPoint {
-  const lambda = toRadians(longitude);
-  const phi = toRadians(latitude);
-  const lambda0 = toRadians(centerLongitude);
-  const phi0 = toRadians(centerLatitude);
+function mix(from: number, to: number, amount: number) {
+  return from + (to - from) * amount;
+}
 
-  const cosc =
-    Math.sin(phi0) * Math.sin(phi) +
-    Math.cos(phi0) * Math.cos(phi) * Math.cos(lambda - lambda0);
+function smoothstep(start: number, end: number, value: number) {
+  const x = clamp01((value - start) / (end - start));
+  return x * x * (3 - 2 * x);
+}
 
-  const x = GLOBE_RADIUS * Math.cos(phi) * Math.sin(lambda - lambda0);
-  const y =
-    GLOBE_RADIUS *
-    (Math.cos(phi0) * Math.sin(phi) -
-      Math.sin(phi0) * Math.cos(phi) * Math.cos(lambda - lambda0));
+function fadeBetween(
+  value: number,
+  enterStart: number,
+  enterEnd: number,
+  exitStart: number,
+  exitEnd: number
+) {
+  return smoothstep(enterStart, enterEnd, value) * (1 - smoothstep(exitStart, exitEnd, value));
+}
+
+function projectHostCity(
+  city: HostCity,
+  projection: ReturnType<typeof geoOrthographic>
+) {
+  const point = projection([city.longitude, city.latitude]);
+
+  if (!point) {
+    return null;
+  }
 
   return {
-    x: GLOBE_CENTER_X + x,
-    y: GLOBE_CENTER_Y - y,
-    visible: cosc >= -0.06
+    ...city,
+    x: point[0],
+    y: point[1]
   };
 }
 
-function buildProjectedPath(points: Array<[number, number]>) {
-  return points
-    .map(([longitude, latitude], index) => {
-      const point = projectGlobePoint(longitude, latitude);
-      return `${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
-    })
-    .join(" ");
+function buildProgramDash(progress: number) {
+  return 1 - smoothstep(0.36, 0.58, progress);
 }
 
-function buildLatitudePath(latitude: number) {
-  const points: string[] = [];
-
-  for (let longitude = -130; longitude <= -64; longitude += 2) {
-    const point = projectGlobePoint(longitude, latitude);
-    if (!point.visible) {
-      continue;
-    }
-
-    points.push(`${points.length === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
-  }
-
-  return points.join(" ");
+function buildGlobeDash(progress: number) {
+  return 1 - smoothstep(0.76, 0.92, progress);
 }
 
-function buildLongitudePath(longitude: number) {
-  const points: string[] = [];
+function getCalloutStyle(
+  callout: NonNullable<RoleChapter["callouts"]>[number],
+  active: boolean
+) {
+  const translateX =
+    callout.align === "right" ? 16 : callout.align === "center" ? 0 : -16;
 
-  for (let latitude = 22; latitude <= 54; latitude += 1.5) {
-    const point = projectGlobePoint(longitude, latitude);
-    if (!point.visible) {
-      continue;
-    }
-
-    points.push(`${points.length === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
-  }
-
-  return points.join(" ");
-}
-
-function buildRoutePath(start: ProjectedPoint, end: ProjectedPoint) {
-  const midpointX = (start.x + end.x) / 2;
-  const midpointY = Math.min(start.y, end.y) - 42;
-  return `M ${start.x.toFixed(2)} ${start.y.toFixed(2)} Q ${midpointX.toFixed(2)} ${midpointY.toFixed(2)} ${end.x.toFixed(2)} ${end.y.toFixed(2)}`;
-}
-
-function LabsSchematicPanel() {
-  return (
-    <svg
-      className="roles-visual-panel roles-visual-panel--labs"
-      viewBox="0 0 440 440"
-      role="presentation"
-    >
-      <defs>
-        <linearGradient id="labs-surface" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="rgba(255,255,255,0.76)" />
-          <stop offset="100%" stopColor="rgba(255,255,255,0.08)" />
-        </linearGradient>
-        <linearGradient id="labs-spine" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#61826f" />
-          <stop offset="100%" stopColor="#30453b" />
-        </linearGradient>
-      </defs>
-
-      <g className="js-visual-enter">
-        <rect className="visual-labs__backplate" x="38" y="72" width="364" height="288" rx="28" />
-        <rect className="visual-labs__deck" x="52" y="114" width="136" height="174" rx="20" />
-        <rect className="visual-labs__deck" x="252" y="114" width="136" height="174" rx="20" />
-        <rect className="visual-labs__spine" x="204" y="82" width="32" height="248" rx="14" />
-        <rect className="visual-labs__rail" x="116" y="154" width="124" height="12" rx="6" />
-        <rect className="visual-labs__rail" x="200" y="154" width="124" height="12" rx="6" />
-        <rect className="visual-labs__rail" x="116" y="228" width="124" height="12" rx="6" />
-        <rect className="visual-labs__rail" x="200" y="228" width="124" height="12" rx="6" />
-
-        <g className="visual-labs__modules">
-          {[
-            [74, 134],
-            [74, 182],
-            [74, 230],
-            [128, 134],
-            [128, 182],
-            [128, 230],
-            [274, 134],
-            [274, 182],
-            [274, 230],
-            [328, 134],
-            [328, 182],
-            [328, 230]
-          ].map(([x, y]) => (
-            <rect key={`${x}-${y}`} x={x} y={y} width="38" height="28" rx="8" />
-          ))}
-        </g>
-
-        <g className="visual-labs__support-lines">
-          <path d="M 84 324 H 356" />
-          <path d="M 104 324 V 352" />
-          <path d="M 170 324 V 352" />
-          <path d="M 220 324 V 352" />
-          <path d="M 270 324 V 352" />
-          <path d="M 336 324 V 352" />
-        </g>
-
-        <g className="visual-labs__building-markers">
-          <path d="M 92 96 L 122 76 L 152 96 V 112 H 92 Z" />
-          <path d="M 288 96 L 318 76 L 348 96 V 112 H 288 Z" />
-        </g>
-
-        <circle className="visual-labs__signal" cx="220" cy="126" r="6" />
-        <circle className="visual-labs__signal" cx="220" cy="196" r="6" />
-        <circle className="visual-labs__signal" cx="220" cy="266" r="6" />
-      </g>
-    </svg>
-  );
-}
-
-function ProgramCyclePanel() {
-  return (
-    <svg
-      className="roles-visual-panel roles-visual-panel--program"
-      viewBox="0 0 440 440"
-      role="presentation"
-    >
-      <defs>
-        <linearGradient id="program-track" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#6d8a78" />
-          <stop offset="100%" stopColor="#365144" />
-        </linearGradient>
-      </defs>
-
-      <g className="js-visual-enter">
-        <rect className="visual-program__backplate" x="42" y="82" width="356" height="276" rx="28" />
-        <path
-          className="visual-program__loop"
-          d="M 132 186 C 132 141, 182 118, 220 118 C 284 118, 334 160, 334 220 C 334 280, 284 322, 220 322 C 166 322, 126 290, 112 246"
-        />
-        <path
-          className="visual-program__loop-secondary"
-          d="M 148 196 C 148 160, 188 140, 222 140 C 272 140, 310 173, 310 220 C 310 267, 272 300, 222 300 C 182 300, 150 278, 136 244"
-        />
-
-        <g className="visual-program__gates">
-          <rect x="184" y="98" width="72" height="24" rx="12" />
-          <rect x="328" y="204" width="24" height="64" rx="12" />
-          <rect x="184" y="316" width="72" height="24" rx="12" />
-          <rect x="88" y="200" width="24" height="64" rx="12" />
-        </g>
-
-        <g className="visual-program__stations">
-          <rect x="78" y="132" width="70" height="42" rx="12" />
-          <rect x="290" y="132" width="70" height="42" rx="12" />
-          <rect x="292" y="264" width="70" height="42" rx="12" />
-          <rect x="80" y="264" width="70" height="42" rx="12" />
-        </g>
-
-        <g className="visual-program__checkpoints">
-          <circle cx="220" cy="118" r="8" />
-          <circle cx="334" cy="220" r="8" />
-          <circle cx="220" cy="322" r="8" />
-          <circle cx="112" cy="246" r="8" />
-          <circle cx="132" cy="186" r="8" />
-        </g>
-
-        <g className="visual-program__routes">
-          <path d="M 112 222 H 170" />
-          <path d="M 270 222 H 328" />
-          <path d="M 220 122 V 154" />
-          <path d="M 220 286 V 318" />
-        </g>
-      </g>
-    </svg>
-  );
-}
-
-function NetworkGlobePanel({
-  hostCities
-}: {
-  hostCities: HostCity[];
-}) {
-  const [activeCity, setActiveCity] = useState<string | null>(hostCities[0]?.label ?? null);
-
-  const projectedCities = useMemo(
-    () =>
-      hostCities.map((city) => ({
-        ...city,
-        point: projectGlobePoint(city.longitude, city.latitude)
-      })),
-    [hostCities]
-  );
-
-  const outlinePath = useMemo(() => buildProjectedPath(lower48Outline), []);
-  const latitudePaths = useMemo(
-    () => globeGridLatitudes.map((latitude) => buildLatitudePath(latitude)),
-    []
-  );
-  const longitudePaths = useMemo(
-    () => globeGridLongitudes.map((longitude) => buildLongitudePath(longitude)),
-    []
-  );
-  const routePaths = useMemo(
-    () =>
-      projectedCities.slice(0, -1).map((city, index) =>
-        buildRoutePath(city.point, projectedCities[index + 1].point)
-      ),
-    [projectedCities]
-  );
-
-  return (
-    <svg
-      className="roles-visual-panel roles-visual-panel--globe"
-      viewBox="0 0 440 440"
-      role="presentation"
-    >
-      <defs>
-        <radialGradient id="globe-shell" cx="45%" cy="36%" r="74%">
-          <stop offset="0%" stopColor="#f0f4ef" stopOpacity="0.92" />
-          <stop offset="40%" stopColor="#dbe4dd" stopOpacity="0.52" />
-          <stop offset="100%" stopColor="#7b897f" stopOpacity="0.14" />
-        </radialGradient>
-        <clipPath id="globe-clip">
-          <circle cx={GLOBE_CENTER_X} cy={GLOBE_CENTER_Y} r={GLOBE_RADIUS} />
-        </clipPath>
-      </defs>
-
-      <g className="js-visual-enter">
-        <circle className="visual-globe__aura" cx={GLOBE_CENTER_X} cy={GLOBE_CENTER_Y} r="168" />
-        <circle className="visual-globe__sphere" cx={GLOBE_CENTER_X} cy={GLOBE_CENTER_Y} r={GLOBE_RADIUS} />
-        <circle className="visual-globe__rim" cx={GLOBE_CENTER_X} cy={GLOBE_CENTER_Y} r={GLOBE_RADIUS} />
-
-        <g className="visual-globe__grid" clipPath="url(#globe-clip)">
-          {latitudePaths.map((pathData, index) => (
-            <path key={`lat-${index}`} d={pathData} />
-          ))}
-          {longitudePaths.map((pathData, index) => (
-            <path key={`lon-${index}`} d={pathData} />
-          ))}
-          <path className="visual-globe__land" d={outlinePath} />
-        </g>
-
-        <g className="visual-globe__routes" clipPath="url(#globe-clip)">
-          {routePaths.map((pathData, index) => (
-            <path className="js-globe-route" key={`route-${index}`} d={pathData} />
-          ))}
-        </g>
-
-        <g className="visual-globe__pins">
-          {projectedCities.map((city) => (
-            <g
-              className="js-globe-pin visual-globe__pin"
-              key={`${city.label}-${city.state}`}
-              transform={`translate(${city.point.x}, ${city.point.y})`}
-              tabIndex={0}
-              role="button"
-              aria-label={`${city.label}, ${city.state}${city.year ? ` (${city.year})` : ""}`}
-              onMouseEnter={() => setActiveCity(city.label)}
-              onFocus={() => setActiveCity(city.label)}
-              onClick={() => setActiveCity((current) => (current === city.label ? null : city.label))}
-            >
-              <circle className="visual-globe__pin-ring" r="10" />
-              <circle className="visual-globe__pin-core" r="4.8" />
-              {activeCity === city.label ? (
-                <g
-                  className="visual-globe__pin-label"
-                  transform={`translate(${city.offsetX ?? 8}, ${city.offsetY ?? -14})`}
-                >
-                  <rect x="-8" y="-18" width="98" height="24" rx="10" />
-                  <text x="4" y="-3">
-                    {city.label}
-                  </text>
-                </g>
-              ) : null}
-            </g>
-          ))}
-        </g>
-      </g>
-    </svg>
-  );
+  return {
+    left: `${callout.x}%`,
+    top: `${callout.y}%`,
+    transform: `translate(${translateX}px, -50%)`,
+    opacity: active ? 1 : 0
+  };
 }
 
 function RolesVisualStage({
-  chapter,
-  reducedMotion
+  progress,
+  activeChapterId,
+  chapters
 }: RolesVisualStageProps) {
-  const stageRef = useRef<HTMLDivElement>(null);
+  const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (reducedMotion || !stageRef.current) {
-      return;
+  const labsVisibility = fadeBetween(progress, 0, 0.08, 0.28, 0.46);
+  const programVisibility = fadeBetween(progress, 0.28, 0.46, 0.64, 0.82);
+  const globeVisibility = fadeBetween(progress, 0.7, 0.86, 1.02, 1.12);
+
+  const labsCompress = smoothstep(0.28, 0.46, progress);
+  const programEnter = smoothstep(0.28, 0.46, progress);
+  const programExit = smoothstep(0.64, 0.82, progress);
+  const globeEnter = smoothstep(0.7, 0.9, progress);
+
+  const globeProjection = useMemo(() => {
+    const projection = geoOrthographic()
+      .translate([470, 340])
+      .scale(mix(170, 236, globeEnter))
+      .clipAngle(90)
+      .rotate([mix(106, 98, globeEnter), mix(-42, -36, globeEnter)]);
+
+    return projection;
+  }, [globeEnter]);
+
+  const path = useMemo(() => geoPath(globeProjection), [globeProjection]);
+  const graticule = useMemo(() => geoGraticule().step([15, 15])(), []);
+  const networkVisual = useMemo(() => {
+    const chapter = chapters.find((item) => item.id === "network");
+    if (!chapter || chapter.visual.kind !== "network-globe") {
+      return null;
     }
 
-    const ctx = gsap.context(() => {
-      const enterTargets = stageRef.current?.querySelectorAll<SVGElement>(".js-visual-enter");
-      if (enterTargets?.length) {
-        gsap.fromTo(
-          enterTargets,
-          { autoAlpha: 0, y: 14, scale: 0.985 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.55,
-            ease: "power2.out"
-          }
-        );
-      }
+    return chapter.visual;
+  }, [chapters]);
 
-      const routes = stageRef.current?.querySelectorAll<SVGPathElement>(".js-globe-route");
-      routes?.forEach((route) => {
-        const length = route.getTotalLength();
-        gsap.fromTo(
-          route,
-          { strokeDasharray: length, strokeDashoffset: length },
-          {
-            strokeDashoffset: 0,
-            duration: 1.15,
-            ease: "power2.out",
-            delay: 0.1
-          }
-        );
-      });
+  const projectedCities = useMemo(
+    () =>
+      (networkVisual?.hostCities ?? [])
+        .map((city) => projectHostCity(city, globeProjection))
+        .filter(
+          (city): city is HostCity & { x: number; y: number } => city !== null
+        ),
+    [globeProjection, networkVisual]
+  );
 
-      const pins = stageRef.current?.querySelectorAll<SVGGElement>(".js-globe-pin");
-      if (pins?.length) {
-        gsap.fromTo(
-          pins,
-          { autoAlpha: 0, y: 8, scale: 0.88, transformOrigin: "50% 50%" },
-          {
-            autoAlpha: 1,
-            y: 0,
-            scale: 1,
-            duration: 0.45,
-            ease: "power2.out",
-            stagger: 0.08
-          }
-        );
-      }
-    }, stageRef);
+  const activeCallouts =
+    chapters.find((chapter) => chapter.id === activeChapterId)?.callouts ?? [];
 
-    return () => ctx.revert();
-  }, [chapter.id, reducedMotion]);
+  const routePaths = useMemo(() => {
+    if (projectedCities.length < 2) {
+      return [];
+    }
+
+    return projectedCities.slice(0, -1).map((city, index) => {
+      const nextCity = projectedCities[index + 1];
+      const arc = {
+        type: "LineString",
+        coordinates: [
+          [city.longitude, city.latitude],
+          [nextCity.longitude, nextCity.latitude]
+        ]
+      } as LineString;
+
+      return {
+        key: `${city.label}-${nextCity.label}`,
+        d: path(arc) ?? ""
+      };
+    });
+  }, [path, projectedCities]);
 
   return (
-    <div className={`roles-visual-card roles-visual-card--${chapter.visual.kind}`} ref={stageRef}>
-      {chapter.visual.kind === "labs-schematic" ? <LabsSchematicPanel /> : null}
-      {chapter.visual.kind === "program-cycle" ? <ProgramCyclePanel /> : null}
-      {chapter.visual.kind === "network-globe" ? (
-        <NetworkGlobePanel hostCities={chapter.visual.hostCities} />
-      ) : null}
+    <div className={`roles-scene roles-scene--${activeChapterId}`}>
+      <div className="roles-scene__backdrop" />
+      <div className="roles-scene__glow" />
+
+      <div
+        className="roles-scene__layer roles-scene__layer--labs"
+        style={{
+          opacity: labsVisibility,
+          transform: `translate3d(${mix(0, -64, labsCompress)}px, ${mix(0, -24, labsCompress)}px, 0) scale(${mix(1, 0.86, labsCompress)})`
+        }}
+      >
+        <svg
+          className="roles-scene__svg"
+          viewBox="0 0 960 720"
+          role="presentation"
+        >
+          <defs>
+            <linearGradient id="labs-top-left" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#34454f" />
+              <stop offset="100%" stopColor="#1d242a" />
+            </linearGradient>
+            <linearGradient id="labs-top-right" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#3c4c57" />
+              <stop offset="100%" stopColor="#232a31" />
+            </linearGradient>
+            <linearGradient id="labs-front" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#192026" />
+              <stop offset="100%" stopColor="#0d1217" />
+            </linearGradient>
+            <linearGradient id="labs-spine" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#64887d" />
+              <stop offset="100%" stopColor="#1b2b29" />
+            </linearGradient>
+          </defs>
+
+          <ellipse className="scene-labs__shadow" cx="490" cy="578" rx="290" ry="86" />
+
+          <polygon className="scene-labs__building" points="176,188 296,134 382,192 260,246" />
+          <polygon className="scene-labs__building" points="592,188 714,134 800,192 678,246" />
+
+          <polygon className="scene-labs__deck-top" points="146,314 314,232 490,314 324,398" />
+          <polygon className="scene-labs__deck-face" points="146,314 146,462 324,548 324,398" />
+          <polygon className="scene-labs__deck-side" points="324,398 490,314 490,468 324,548" />
+
+          <polygon className="scene-labs__deck-top scene-labs__deck-top--right" points="468,314 636,232 812,314 646,398" />
+          <polygon className="scene-labs__deck-face" points="468,314 468,468 646,548 646,398" />
+          <polygon className="scene-labs__deck-side" points="646,398 812,314 812,462 646,548" />
+
+          <polygon className="scene-labs__spine-top" points="430,240 520,196 608,240 518,286" />
+          <polygon className="scene-labs__spine-face" points="430,240 430,506 518,556 518,286" />
+          <polygon className="scene-labs__spine-side" points="518,286 608,240 608,504 518,556" />
+
+          <g className="scene-labs__bridges">
+            <polygon points="282,334 438,258 452,274 296,350" />
+            <polygon points="282,408 438,332 452,348 296,424" />
+            <polygon points="508,274 664,350 648,366 494,290" />
+            <polygon points="508,348 664,424 648,440 494,364" />
+          </g>
+
+          <g className="scene-labs__modules">
+            {[
+              [198, 318],
+              [228, 392],
+              [282, 346],
+              [560, 292],
+              [612, 338],
+              [572, 410]
+            ].map(([x, y]) => (
+              <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}>
+                <polygon points="0,0 44,-20 76,0 32,20" />
+                <polygon points="0,0 0,40 32,58 32,20" />
+                <polygon points="32,20 76,0 76,40 32,58" />
+              </g>
+            ))}
+          </g>
+
+          <g
+            className="scene-labs__signals"
+            style={{ opacity: mix(0.55, 1, 1 - labsCompress) }}
+          >
+            <path d="M 300 348 L 448 278" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 1 - smoothstep(0.02, 0.14, progress) }} />
+            <path d="M 300 424 L 448 352" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 1 - smoothstep(0.08, 0.2, progress) }} />
+            <path d="M 496 282 L 644 354" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 1 - smoothstep(0.1, 0.22, progress) }} />
+            <path d="M 496 358 L 644 430" pathLength={1} style={{ strokeDasharray: 1, strokeDashoffset: 1 - smoothstep(0.14, 0.26, progress) }} />
+          </g>
+        </svg>
+      </div>
+
+      <div
+        className="roles-scene__layer roles-scene__layer--program"
+        style={{
+          opacity: programVisibility,
+          transform: `translate3d(${mix(56, -36, programExit)}px, ${mix(34, -18, programExit)}px, 0) scale(${mix(0.82, 1.03, programEnter) - programExit * 0.13})`
+        }}
+      >
+        <svg
+          className="roles-scene__svg"
+          viewBox="0 0 960 720"
+          role="presentation"
+        >
+          <defs>
+            <linearGradient id="program-track" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#6b8a7d" />
+              <stop offset="100%" stopColor="#224038" />
+            </linearGradient>
+            <linearGradient id="program-surface" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#394750" />
+              <stop offset="100%" stopColor="#20262c" />
+            </linearGradient>
+          </defs>
+
+          <ellipse className="scene-program__shadow" cx="520" cy="562" rx="266" ry="74" />
+
+          <path
+            className="scene-program__track scene-program__track--outer"
+            d="M 308 382 C 308 272, 394 198, 516 198 C 666 198, 774 296, 774 424 C 774 552, 660 636, 518 636 C 390 636, 304 556, 304 458"
+            pathLength={1}
+            style={{
+              strokeDasharray: 1,
+              strokeDashoffset: buildProgramDash(progress)
+            }}
+          />
+
+          <path
+            className="scene-program__track scene-program__track--inner"
+            d="M 352 390 C 352 304, 422 244, 518 244 C 642 244, 726 322, 726 426 C 726 530, 640 590, 518 590 C 418 590, 354 530, 354 462"
+          />
+
+          <g className="scene-program__stations">
+            <polygon points="250,262 344,218 434,262 342,308" />
+            <polygon points="604,218 718,272 616,322 502,270" />
+            <polygon points="644,470 742,422 814,470 716,520" />
+            <polygon points="238,462 346,408 434,458 326,514" />
+          </g>
+
+          <g className="scene-program__cards">
+            {[
+              [358, 224],
+              [654, 274],
+              [676, 438],
+              [330, 432]
+            ].map(([x, y]) => (
+              <g key={`${x}-${y}`} transform={`translate(${x} ${y})`}>
+                <rect x={0} y={0} width={88} height={54} rx={12} />
+                <rect x={14} y={14} width={58} height={8} rx={4} />
+                <rect x={14} y={30} width={42} height={8} rx={4} />
+              </g>
+            ))}
+          </g>
+
+          <g className="scene-program__gates">
+            <circle cx="514" cy="198" r="13" />
+            <circle cx="774" cy="424" r="13" />
+            <circle cx="520" cy="636" r="13" />
+            <circle cx="304" cy="458" r="13" />
+            <circle cx="308" cy="382" r="13" />
+          </g>
+
+          <g className="scene-program__spokes">
+            <path d="M 514 210 L 514 296" />
+            <path d="M 728 426 L 650 426" />
+            <path d="M 520 546 L 520 624" />
+            <path d="M 392 426 L 306 426" />
+          </g>
+        </svg>
+      </div>
+
+      <div
+        className="roles-scene__layer roles-scene__layer--globe"
+        style={{
+          opacity: globeVisibility,
+          transform: `translate3d(${mix(90, 0, globeEnter)}px, ${mix(24, -8, globeEnter)}px, 0) scale(${mix(0.7, 1.02, globeEnter)})`
+        }}
+      >
+        <svg
+          className="roles-scene__svg"
+          viewBox="0 0 960 720"
+          role="presentation"
+        >
+          <defs>
+            <radialGradient id="globe-sphere" cx="40%" cy="34%" r="70%">
+              <stop offset="0%" stopColor="#f5faf8" stopOpacity="0.96" />
+              <stop offset="38%" stopColor="#d7e4de" stopOpacity="0.68" />
+              <stop offset="100%" stopColor="#75867f" stopOpacity="0.16" />
+            </radialGradient>
+            <radialGradient id="globe-aura" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="rgba(112, 161, 137, 0.28)" />
+              <stop offset="100%" stopColor="rgba(112, 161, 137, 0)" />
+            </radialGradient>
+          </defs>
+
+          <circle className="scene-globe__aura" cx="470" cy="340" r="248" />
+          <circle className="scene-globe__sphere" cx="470" cy="340" r={mix(170, 236, globeEnter)} />
+
+          <path className="scene-globe__graticule" d={path(graticule) ?? ""} />
+          <path className="scene-globe__landmass" d={path(LOWER_48_LAND) ?? ""} />
+          {LOWER_48_STATES.map((stateShape) => (
+            <path
+              key={String(stateShape.id)}
+              className="scene-globe__state"
+              d={path(stateShape) ?? ""}
+            />
+          ))}
+
+          {routePaths.map((route, index) => (
+            <path
+              key={route.key}
+              className="scene-globe__route"
+              d={route.d}
+              pathLength={1}
+              style={{
+                strokeDasharray: 1,
+                strokeDashoffset: buildGlobeDash(progress) + index * 0.08
+              }}
+            />
+          ))}
+
+          {projectedCities.map((city, index) => {
+            const active = hoveredCity === city.label;
+            return (
+              <g
+                key={`${city.label}-${city.year}`}
+                className="scene-globe__pin"
+                transform={`translate(${city.x} ${city.y})`}
+                tabIndex={0}
+                role="button"
+                aria-label={`${city.label}, ${city.state}${city.year ? ` (${city.year})` : ""}`}
+                onMouseEnter={() => setHoveredCity(city.label)}
+                onMouseLeave={() => setHoveredCity(null)}
+                onFocus={() => setHoveredCity(city.label)}
+                onBlur={() => setHoveredCity(null)}
+                onClick={() =>
+                  setHoveredCity((current) => (current === city.label ? null : city.label))
+                }
+                style={{
+                  opacity: clamp01(globeEnter * 1.15 - index * 0.08),
+                  transform: `scale(${active ? 1.18 : 1})`
+                }}
+              >
+                <circle className="scene-globe__pin-ring" r="11" />
+                <circle className="scene-globe__pin-core" r="4.6" />
+                {active ? (
+                  <g className="scene-globe__pin-label" transform="translate(14 -16)">
+                    <rect x="-6" y="-17" width="128" height="26" rx="12" />
+                    <text x="8" y="0">
+                      {city.label}, {city.state}
+                    </text>
+                  </g>
+                ) : null}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      <div className="roles-scene__callouts" aria-hidden="true">
+        {activeCallouts.map((callout) => (
+          <div
+            key={callout.label}
+            className={`roles-scene__callout roles-scene__callout--${callout.align ?? "left"}`}
+            style={getCalloutStyle(callout, true)}
+          >
+            <span className="roles-scene__callout-dot" />
+            <span className="roles-scene__callout-line" />
+            <span className="roles-scene__callout-label">{callout.label}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
+export { chapterStops };
 export default RolesVisualStage;

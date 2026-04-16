@@ -14,6 +14,13 @@ export type RoleEvidence = {
   value: string;
 };
 
+export type SceneCallout = {
+  label: string;
+  x: number;
+  y: number;
+  align?: "left" | "right" | "center";
+};
+
 export type HostCity = {
   label: string;
   state: string;
@@ -21,8 +28,6 @@ export type HostCity = {
   longitude: number;
   year?: string;
   note?: string;
-  offsetX?: number;
-  offsetY?: number;
 };
 
 export type RoleVisual =
@@ -32,6 +37,7 @@ export type RoleVisual =
 
 export type RoleChapter = {
   id: "labs" | "program" | "network";
+  sceneId: "labs" | "program" | "network";
   navLabel: string;
   title: string;
   organization: string;
@@ -39,6 +45,7 @@ export type RoleChapter = {
   summary: string;
   responsibilities: string[];
   evidence: RoleEvidence[];
+  callouts?: SceneCallout[];
   link?: ActionLink;
   visual: RoleVisual;
 };
@@ -64,9 +71,7 @@ const hostCities: HostCity[] = [
     latitude: 38.9847,
     longitude: -77.0947,
     year: "2023",
-    note: "National meeting",
-    offsetX: -10,
-    offsetY: 8
+    note: "National meeting"
   },
   {
     label: "Cambridge",
@@ -74,9 +79,7 @@ const hostCities: HostCity[] = [
     latitude: 42.3736,
     longitude: -71.1097,
     year: "2024",
-    note: "Boston regional meeting",
-    offsetX: 8,
-    offsetY: -12
+    note: "Boston regional meeting"
   },
   {
     label: "Chicago",
@@ -84,9 +87,7 @@ const hostCities: HostCity[] = [
     latitude: 41.8781,
     longitude: -87.6298,
     year: "2024",
-    note: "Chicago regional meeting",
-    offsetX: 0,
-    offsetY: -14
+    note: "Chicago regional meeting"
   },
   {
     label: "Chevy Chase",
@@ -94,9 +95,7 @@ const hostCities: HostCity[] = [
     latitude: 38.9648,
     longitude: -77.0875,
     year: "2025",
-    note: "National meeting",
-    offsetX: 12,
-    offsetY: -10
+    note: "National meeting"
   }
 ];
 
@@ -152,13 +151,14 @@ export const siteContent = {
     chapters: [
       {
         id: "labs",
+        sceneId: "labs",
         navLabel: "Laboratory Operations",
         title: "Laboratory Manager",
         organization:
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "As laboratory manager for the Bernhardt and Abraham laboratories, James leads the operating model for two Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role centers on continuity across people, space, budgets, equipment, vendors, and daily execution.",
+          "As laboratory manager for the Bernhardt and Abraham laboratories, James leads the operating model for two Howard Hughes Medical Institute Investigator labs within the Department of Microbiology at Harvard Medical School. The role centers on continuity across people, space, budgets, equipment, vendors, and day-to-day execution.",
         responsibilities: [
           "Directs budgets, purchasing, facilities coordination, vendor relationships, and equipment planning across a shared laboratory footprint in two buildings.",
           "Handles hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for two active research laboratories."
@@ -175,12 +175,33 @@ export const siteContent = {
               "Staffing, facilities, equipment, budgets, vendors, onboarding, and day-to-day continuity."
           }
         ],
+        callouts: [
+          {
+            label: "Shared support spine",
+            x: 60,
+            y: 30,
+            align: "right"
+          },
+          {
+            label: "Regulated space and facilities",
+            x: 22,
+            y: 70,
+            align: "left"
+          },
+          {
+            label: "Staffing, equipment, and vendors",
+            x: 82,
+            y: 74,
+            align: "right"
+          }
+        ],
         visual: {
           kind: "labs-schematic"
         }
       },
       {
         id: "program",
+        sceneId: "program",
         navLabel: "Community Phages",
         title: "Program Operations Lead",
         organization:
@@ -204,6 +225,26 @@ export const siteContent = {
               "Planning, setup, daily execution, student support, and closeout across one repeatable annual sequence."
           }
         ],
+        callouts: [
+          {
+            label: "Planning and setup",
+            x: 24,
+            y: 28,
+            align: "left"
+          },
+          {
+            label: "Program delivery and daily support",
+            x: 82,
+            y: 48,
+            align: "right"
+          },
+          {
+            label: "Closeout and continuity",
+            x: 54,
+            y: 80,
+            align: "center"
+          }
+        ],
         link: {
           label: "Community Phages website",
           href: "https://phages.hms.harvard.edu/"
@@ -214,6 +255,7 @@ export const siteContent = {
       },
       {
         id: "network",
+        sceneId: "network",
         navLabel: "Network Leadership",
         title: "Chair, Advisory Board",
         organization:
@@ -223,7 +265,7 @@ export const siteContent = {
           "As chair of the advisory board for the Lab Management Network of Professionals, James helps set direction for a peer professional-development community of laboratory managers. The role combines board leadership, conference planning, and recurring programming across regional and national convenings.",
         responsibilities: [
           "Sets board priorities and helps plan regional and national meetings for laboratory managers and institute partners.",
-          "Supports recurring programming, peer exchange, and the practical infrastructure that helps the network stay active between convenings."
+          "Supports recurring programming, peer exchange, and the professional infrastructure that helps the network stay active between convenings."
         ],
         evidence: [
           {
@@ -235,6 +277,26 @@ export const siteContent = {
             label: "Hosted convenings",
             value:
               "Regional and national meetings hosted in Massachusetts, Illinois, and Maryland."
+          }
+        ],
+        callouts: [
+          {
+            label: "Regional hosts",
+            x: 30,
+            y: 44,
+            align: "left"
+          },
+          {
+            label: "National convenings",
+            x: 71,
+            y: 34,
+            align: "right"
+          },
+          {
+            label: "Ongoing peer network",
+            x: 78,
+            y: 74,
+            align: "right"
           }
         ],
         visual: {
