@@ -327,7 +327,7 @@ export const siteContent = {
     intro:
       "For professional conversations about research operations, scientific program leadership, or lab management, connect with James on LinkedIn.",
     portrait: {
-      src: asset("assets/images/james-m-spencer-normal-headshot.jpg"),
+      src: asset("assets/images/james-m-spencer-studio-headshot.jpg"),
       alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."
     } as PortraitAsset,
     links: [

@@ -1873,14 +1873,16 @@ button {
   position: relative;
   margin: 0;
   justify-self: end;
-  width: min(100%, 19rem);
+  align-self: start;
+  width: min(100%, 20rem);
+  aspect-ratio: 4 / 3;
   padding-top: 1rem;
 }
 
 .contact__portrait::before {
   content: "";
   position: absolute;
-  inset: 0 0 0.85rem 0.85rem;
+  inset: 1rem 0 0 1rem;
   border-radius: var(--radius);
   background:
     radial-gradient(circle at 26% 22%, rgba(70, 96, 82, 0.14), transparent 9rem),
@@ -1896,9 +1898,9 @@ button {
   z-index: 1;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: 100%;
   object-fit: cover;
-  object-position: 50% 50%;
+  object-position: 50% 38%;
   border-radius: 6px;
   box-shadow:
     0 24px 42px rgba(20, 22, 17, 0.12),
