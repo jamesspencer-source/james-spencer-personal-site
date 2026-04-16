@@ -413,7 +413,7 @@ function App() {
                 <img
                   src={siteContent.contact.portrait.src}
                   alt={siteContent.contact.portrait.alt}
-                  width={960}
+                  width={1200}
                   height={1200}
                 />
               </figure>

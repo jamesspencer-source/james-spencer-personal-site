@@ -1814,7 +1814,7 @@ button {
 .contact {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(14rem, 18rem);
+  grid-template-columns: minmax(0, 1fr) minmax(13rem, 16rem);
   gap: 1.5rem 3rem;
   max-width: 72rem;
   align-items: start;
@@ -1849,14 +1849,14 @@ button {
   position: relative;
   margin: 0;
   justify-self: end;
-  width: min(100%, 17rem);
+  width: min(100%, 15.5rem);
   padding-top: 1rem;
 }
 
 .contact__portrait::before {
   content: "";
   position: absolute;
-  inset: 0 0 1.1rem 1.1rem;
+  inset: 0 0 0.85rem 0.85rem;
   border-radius: var(--radius);
   background:
     radial-gradient(circle at 26% 22%, rgba(70, 96, 82, 0.14), transparent 9rem),
@@ -1872,9 +1872,9 @@ button {
   z-index: 1;
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1;
   object-fit: cover;
-  object-position: 50% 18%;
+  object-position: 50% 28%;
   border-radius: 6px;
   box-shadow:
     0 24px 42px rgba(20, 22, 17, 0.12),
