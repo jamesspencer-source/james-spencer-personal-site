@@ -77,6 +77,8 @@ const PROGRAM_SEQUENCE_START = 0.52;
 const PROGRAM_SEQUENCE_END = 0.8;
 const GLOBE_SEQUENCE_START = 0.84;
 const GLOBE_SEQUENCE_END = 0.96;
+const DOCUMENTARY_SEQUENCE_START = 0.94;
+const DOCUMENTARY_SEQUENCE_END = 1;
 
 const globeRouteConnections = [
   ["Washington, DC", "Boston"],
@@ -281,6 +283,13 @@ function RolesVisualStage({
     (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)
   );
   const globeEnter = smoothstep(0.78, 0.9, progress);
+  const documentaryEnter = smoothstep(
+    DOCUMENTARY_SEQUENCE_START,
+    DOCUMENTARY_SEQUENCE_END,
+    progress
+  );
+  const documentaryVisibility = globeVisibility * documentaryEnter;
+  const globeLayerVisibility = globeVisibility * mix(1, 0.16, documentaryEnter);
 
   const globeProjection = useMemo(() => {
     return geoOrthographic()
@@ -305,14 +314,20 @@ function RolesVisualStage({
   );
   const graticule = useMemo(() => geoGraticule().step([15, 15])(), []);
 
+  const networkChapter = useMemo(
+    () => chapters.find((item) => item.id === "network") ?? null,
+    [chapters]
+  );
+
   const networkVisual = useMemo(() => {
-    const chapter = chapters.find((item) => item.id === "network");
-    if (!chapter || chapter.visual.kind !== "network-globe") {
+    if (!networkChapter || networkChapter.visual.kind !== "network-globe") {
       return null;
     }
 
-    return chapter.visual;
-  }, [chapters]);
+    return networkChapter.visual;
+  }, [networkChapter]);
+
+  const documentaryBeat = networkChapter?.documentaryBeat ?? null;
 
   const projectedCities = useMemo(
     () =>
@@ -915,7 +930,7 @@ function RolesVisualStage({
       <div
         className="roles-scene__layer roles-scene__layer--globe"
         style={{
-          opacity: globeVisibility,
+          opacity: globeLayerVisibility,
           transform: `translate3d(${mix(78, -4, globeEnter)}px, ${mix(18, -10, globeEnter)}px, 0) scale(${mix(0.72, 1.08, globeEnter)})`
         }}
       >
@@ -1077,6 +1092,31 @@ function RolesVisualStage({
           </g>
         </svg>
       </div>
+
+      {documentaryBeat ? (
+        <div
+          className="roles-scene__layer roles-scene__layer--documentary"
+          style={{
+            opacity: documentaryVisibility,
+            transform: `translate3d(${mix(56, 0, documentaryEnter)}px, ${mix(26, 0, documentaryEnter)}px, 0) scale(${mix(0.96, 1, documentaryEnter)})`
+          }}
+        >
+          <figure className="roles-scene__documentary-panel">
+            <img
+              src={documentaryBeat.image.src}
+              alt={documentaryBeat.image.alt}
+              loading="lazy"
+              decoding="async"
+            />
+            <figcaption className="roles-scene__documentary-caption">
+              {documentaryBeat.caption}
+            </figcaption>
+            {documentaryBeat.credit ? (
+              <p className="roles-scene__documentary-credit">{documentaryBeat.credit}</p>
+            ) : null}
+          </figure>
+        </div>
+      ) : null}
 
       {activeCallouts.length > 0 ? (
         <div className="roles-scene__callouts" aria-hidden="true">

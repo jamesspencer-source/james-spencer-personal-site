@@ -30,6 +30,17 @@ export type HostCity = {
   note?: string;
 };
 
+export type PortraitAsset = {
+  src: string;
+  alt: string;
+};
+
+export type DocumentaryBeat = {
+  image: PortraitAsset;
+  caption: string;
+  credit?: string;
+};
+
 export type RoleVisual =
   | { kind: "roles-overview" }
   | { kind: "labs-schematic" }
@@ -49,6 +60,7 @@ export type RoleChapter = {
   callouts?: SceneCallout[];
   link?: ActionLink;
   visual: RoleVisual;
+  documentaryBeat?: DocumentaryBeat;
 };
 
 export type BackgroundEntry = {
@@ -56,11 +68,6 @@ export type BackgroundEntry = {
   organization: string;
   dates: string;
   summary: string;
-};
-
-export type PortraitAsset = {
-  src: string;
-  alt: string;
 };
 
 export type ContactContent = {
@@ -281,6 +288,15 @@ export const siteContent = {
         visual: {
           kind: "network-globe",
           hostCities
+        },
+        documentaryBeat: {
+          image: {
+            src: asset("assets/images/lmnop-conference-photo-2025.jpg"),
+            alt:
+              "James M. Spencer seated with conference participants in a professional meeting setting during a laboratory management event."
+          },
+          caption:
+            "Conference planning, speaker coordination, and peer exchange continue between the annual LMNOP events James helps lead."
         }
       }
     ] as RoleChapter[]

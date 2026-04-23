@@ -11,6 +11,7 @@ type CurrentRolesSectionProps = {
 };
 
 const PROGRAM_COPY_PROGRESS_END = 0.8;
+const NETWORK_DOCUMENTARY_PROGRESS_START = 0.94;
 
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
@@ -50,11 +51,13 @@ function getActiveChapterId(progress: number): RoleChapter["id"] {
 function RoleCopy({
   chapter,
   active,
-  chapterProgress = 0
+  chapterProgress = 0,
+  documentaryProgress = 0
 }: {
   chapter: RoleChapter;
   active: boolean;
   chapterProgress?: number;
+  documentaryProgress?: number;
 }) {
   return (
     <article
@@ -99,6 +102,26 @@ function RoleCopy({
           ))}
         </dl>
       </div>
+
+      {chapter.documentaryBeat ? (
+        <div
+          className="roles-story__documentary-note"
+          style={{
+            opacity: documentaryProgress,
+            transform: `translate3d(0, ${18 - documentaryProgress * 18}px, 0)`
+          }}
+        >
+          <p className="roles-story__documentary-label">Documentary proof</p>
+          <p className="roles-story__documentary-caption">
+            {chapter.documentaryBeat.caption}
+          </p>
+          {chapter.documentaryBeat.credit ? (
+            <p className="roles-story__documentary-credit">
+              {chapter.documentaryBeat.credit}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -122,7 +145,7 @@ function ReducedMotionRoles() {
             <article key={chapter.id} className="roles-story__card">
               <div className="roles-story__card-visual">
                 <RolesVisualStage
-                  progress={chapterStops[chapter.id] + 0.04}
+                  progress={chapter.id === "network" ? 0.985 : chapterStops[chapter.id] + 0.04}
                   activeChapterId={chapter.id}
                   chapters={chapters}
                 />
@@ -132,6 +155,7 @@ function ReducedMotionRoles() {
                   chapter={chapter}
                   active
                   chapterProgress={chapter.id === "program" ? 1 : 0}
+                  documentaryProgress={chapter.id === "network" ? 1 : 0}
                 />
               </div>
             </article>
@@ -154,6 +178,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const chapters = siteContent.rolesSection.chapters;
   const programChapterProgress = clamp01(
     (progress - chapterStops.program) / (PROGRAM_COPY_PROGRESS_END - chapterStops.program)
+  );
+  const networkDocumentaryProgress = clamp01(
+    (progress - NETWORK_DOCUMENTARY_PROGRESS_START) / (1 - NETWORK_DOCUMENTARY_PROGRESS_START)
   );
 
   const chapterVisibility = useMemo(
@@ -210,7 +237,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       start: () => `top top+=${headerHeight}`,
       end: () =>
         `+=${Math.round(
-          window.innerHeight * (window.innerWidth < 900 ? 4.1 : 5.1)
+          window.innerHeight * (window.innerWidth < 900 ? 4.6 : 5.6)
         )}`,
       scrub: 0.38,
       anticipatePin: 1,
@@ -298,6 +325,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
                         active={isActive}
                         chapterProgress={
                           chapter.id === "program" ? programChapterProgress : 0
+                        }
+                        documentaryProgress={
+                          chapter.id === "network" ? networkDocumentaryProgress : 0
                         }
                       />
                     </div>
