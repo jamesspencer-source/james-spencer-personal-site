@@ -1916,29 +1916,29 @@ button {
 .contact {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(26rem, 34rem);
-  gap: 1.8rem clamp(2.4rem, 5vw, 4.5rem);
-  max-width: 78rem;
+  grid-template-columns: minmax(18rem, 31rem) minmax(28rem, 42rem);
+  gap: 1.8rem clamp(2rem, 4vw, 4rem);
+  max-width: 82rem;
   align-items: start;
   padding: clamp(1.6rem, 3vw, 2.4rem) 0 0;
   border-top: 1px solid var(--line-strong);
 }
 
 .contact__content {
-  display: grid;
-  grid-template-columns: minmax(18rem, 24rem) minmax(18rem, 22rem);
-  gap: 1.35rem 2.4rem;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 1.45rem;
   min-width: 0;
   padding-top: 0.35rem;
+  max-width: 31rem;
 }
 
 .contact__heading {
-  max-width: 22rem;
+  max-width: 30rem;
 }
 
 .contact__heading .section-heading__title {
-  max-width: 8ch;
+  max-width: 9ch;
   margin-bottom: 0.55rem;
   font-size: clamp(2.8rem, 6vw, 5rem);
   line-height: 0.92;
@@ -1947,7 +1947,8 @@ button {
 
 .contact__actions {
   margin-top: 0;
-  width: min(100%, 24rem);
+  width: 100%;
+  max-width: 25rem;
   padding-top: 0.25rem;
 }
 
@@ -1955,7 +1956,8 @@ button {
   margin: 0;
   justify-self: end;
   align-self: start;
-  width: min(100%, 34rem);
+  width: min(100%, 42rem);
+  min-width: 0;
 }
 
 .contact__portrait img {
@@ -2249,7 +2251,7 @@ button {
 
   .contact__portrait {
     justify-self: center;
-    width: min(100%, 22rem);
+    width: min(100%, 28rem);
   }
 
   .contact-list__link {
