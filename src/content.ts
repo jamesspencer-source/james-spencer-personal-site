@@ -291,12 +291,12 @@ export const siteContent = {
         },
         documentaryBeat: {
           image: {
-            src: asset("assets/images/lmnop-conference-photo-2025.jpg"),
+            src: asset("assets/images/lmnop-conference-photo-2026-sf.jpg"),
             alt:
-              "James M. Spencer seated with conference participants in a professional meeting setting during a laboratory management event."
+              "James M. Spencer speaking into a microphone beside a laptop during an LMNOP conference session in San Francisco."
           },
           caption:
-            "Conference planning, speaker coordination, and peer exchange continue between the annual LMNOP events James helps lead."
+            "James leading LMNOP conference programming during a regional meeting in San Francisco."
         }
       }
     ] as RoleChapter[]
@@ -341,7 +341,7 @@ export const siteContent = {
     label: "Contact",
     heading: "Connect",
     intro:
-      "LinkedIn is the best way to reach James for conversations about research operations, scientific program leadership, or lab management.",
+      "LinkedIn is the best way to connect with James about research operations, scientific program leadership, and laboratory management.",
     portrait: {
       src: asset("assets/images/james-m-spencer-studio-headshot.jpg"),
       alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."

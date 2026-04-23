@@ -55,7 +55,7 @@ function getContactLinkMeta(link: ActionLink) {
   }
 
   if (link.href.includes("linkedin.com")) {
-    return "Profile";
+    return "Preferred";
   }
 
   try {
@@ -103,25 +103,29 @@ function ActionRow({ links }: { links: ActionLink[] }) {
 function ContactLinks({ links }: { links: ActionLink[] }) {
   return (
     <ul className="contact-list">
-      {links.map((link, index) => (
-        <li
-          key={link.label}
-          className={`contact-list__item${index === 0 ? " contact-list__item--primary" : ""}`}
-        >
-          <a
-            className="contact-list__link"
-            href={link.href}
-            {...(isExternalLink(link.href)
-              ? { target: "_blank", rel: "noreferrer" }
-              : {})}
-            {...(link.download ? { download: true } : {})}
+      {links.map((link, index) => {
+        const isLead = link.href.includes("linkedin.com");
+
+        return (
+          <li
+            key={link.label}
+            className={`contact-list__item${isLead ? " contact-list__item--lead" : ""}`}
           >
-            <span className="contact-list__index">{String(index + 1).padStart(2, "0")}</span>
-            <span className="contact-list__label">{link.label}</span>
-            <span className="contact-list__meta">{getContactLinkMeta(link)}</span>
-          </a>
-        </li>
-      ))}
+            <a
+              className="contact-list__link"
+              href={link.href}
+              {...(isExternalLink(link.href)
+                ? { target: "_blank", rel: "noreferrer" }
+                : {})}
+              {...(link.download ? { download: true } : {})}
+            >
+              <span className="contact-list__index">{String(index + 1).padStart(2, "0")}</span>
+              <span className="contact-list__label">{link.label}</span>
+              <span className="contact-list__meta">{getContactLinkMeta(link)}</span>
+            </a>
+          </li>
+        );
+      })}
     </ul>
   );
 }
