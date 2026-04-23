@@ -51,17 +51,17 @@ const chapterStops: Record<RoleChapter["id"], number> = {
 };
 
 const programStations = [
-  { label: "Funding", x: 142, y: 210 },
-  { label: "Hiring", x: 388, y: 108 },
-  { label: "Lab setup", x: 648, y: 210 },
-  { label: "Biosafety", x: 668, y: 386 },
-  { label: "Delivery", x: 414, y: 588 },
-  { label: "Closeout", x: 136, y: 448 }
+  { label: "Funding", detail: "Budget + partner setup", x: 96, y: 224 },
+  { label: "Hiring", detail: "Interviews + onboarding", x: 374, y: 80 },
+  { label: "Lab setup", detail: "Benches + supplies", x: 654, y: 224 },
+  { label: "Biosafety", detail: "Training + access", x: 654, y: 386 },
+  { label: "Delivery", detail: "Daily program support", x: 374, y: 574 },
+  { label: "Closeout", detail: "Space reset + wrap-up", x: 96, y: 438 }
 ];
 
 const programStationCard = {
-  width: 188,
-  height: 68
+  width: 212,
+  height: 78
 };
 
 const programConnectorPaths = [
@@ -274,6 +274,9 @@ function RolesVisualStage({
 
   const overviewCompress = smoothstep(0.18, 0.34, progress);
   const labsCompress = smoothstep(0.48, 0.62, progress);
+  const labsReveal = smoothstep(0.22, 0.38, progress);
+  const labsDetail =
+    smoothstep(0.3, 0.46, progress) * (1 - smoothstep(0.54, 0.62, progress));
   const programEnter = smoothstep(0.48, 0.62, progress);
   const programExit = smoothstep(0.84, 0.96, progress);
   const programStationsVisibility =
@@ -582,7 +585,7 @@ function RolesVisualStage({
         className="roles-scene__layer roles-scene__layer--labs"
         style={{
           opacity: labsVisibility,
-          transform: `translate3d(${mix(0, -52, labsCompress)}px, ${mix(-10, -24, labsCompress)}px, 0) scale(${mix(0.98, 0.9, labsCompress)})`
+          transform: `translate3d(${mix(0, -26, labsCompress)}px, ${mix(-8, -18, labsCompress)}px, 0) scale(${mix(0.99, 0.94, labsCompress)})`
         }}
       >
         <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
@@ -607,10 +610,26 @@ function RolesVisualStage({
 
           <ellipse className="scene-labs__shadow" cx="488" cy="586" rx="294" ry="58" />
 
-          <path className="scene-labs__ground" d="M 132 568 L 836 568" />
-          <path className="scene-labs__ground scene-labs__ground--minor" d="M 178 596 L 794 596" />
+          <g
+            className="scene-labs__site-context"
+            style={{
+              opacity: mix(0.5, 1, labsReveal),
+              transform: `translate3d(0, ${mix(16, 0, labsReveal)}px, 0)`
+            }}
+          >
+            <polygon className="scene-labs__street" points="142,562 840,562 896,594 198,594" />
+            <polygon className="scene-labs__service-yard" points="430,514 766,514 824,548 488,548" />
+            <path className="scene-labs__street-line" d="M 186 579 L 842 579" />
+            <path className="scene-labs__street-line scene-labs__street-line--soft" d="M 260 608 L 756 608" />
+          </g>
 
-          <g className="scene-labs__structure">
+          <g
+            className="scene-labs__structure"
+            style={{
+              opacity: labsReveal,
+              transform: `translate3d(0, ${mix(20, 0, labsReveal)}px, 0)`
+            }}
+          >
             <polygon className="scene-labs__him-roof" points="246,148 372,148 420,180 294,180" />
             <polygon className="scene-labs__him-side" points="246,148 294,180 294,518 246,486" />
             <polygon className="scene-labs__him-main" points="294,180 420,180 420,548 294,518" />
@@ -633,7 +652,13 @@ function RolesVisualStage({
             <polygon className="scene-labs__auditorium-side" points="442,396 490,428 490,542 442,510" />
           </g>
 
-          <g className="scene-labs__rooftop">
+          <g
+            className="scene-labs__rooftop"
+            style={{
+              opacity: labsDetail,
+              transform: `translate3d(0, ${mix(-8, 0, labsDetail)}px, 0)`
+            }}
+          >
             {[
               { x: 294, y: 188, width: 22, height: 14 },
               { x: 320, y: 188, width: 22, height: 14 },
@@ -671,7 +696,7 @@ function RolesVisualStage({
             })}
           </g>
 
-          <g className="scene-labs__roof-grid">
+          <g className="scene-labs__roof-grid" style={{ opacity: mix(0.2, 1, labsDetail) }}>
             {Array.from({ length: 5 }).map((_, index) => {
               const y = 408 + index * 24;
               return (
@@ -694,10 +719,10 @@ function RolesVisualStage({
             })}
           </g>
 
-          <g className="scene-labs__floors">
-            {Array.from({ length: 9 }).map((_, index) => {
-              const himY = 214 + index * 34;
-              const veritasY = 210 + index * 34;
+          <g className="scene-labs__floors" style={{ opacity: mix(0.18, 0.72, labsDetail) }}>
+            {Array.from({ length: 10 }).map((_, index) => {
+              const himY = 204 + index * 32;
+              const veritasY = 198 + index * 32;
               return (
                 <g key={index}>
                   <path className="scene-labs__floor-line" d={`M 300 ${himY} L 416 ${himY}`} />
@@ -707,7 +732,7 @@ function RolesVisualStage({
             })}
           </g>
 
-          <g className="scene-labs__podium-lines">
+          <g className="scene-labs__podium-lines" style={{ opacity: mix(0.12, 0.5, labsDetail) }}>
             {Array.from({ length: 4 }).map((_, index) => {
               const y = 414 + index * 24;
               return (
@@ -720,7 +745,7 @@ function RolesVisualStage({
             })}
           </g>
 
-          <g className="scene-labs__windows">
+          <g className="scene-labs__windows" style={{ opacity: mix(0.18, 0.68, labsDetail) }}>
             {Array.from({ length: 6 }).map((_, column) => {
               const x = 310 + column * 18;
               return <path key={x} className="scene-labs__window-line" d={`M ${x} 186 L ${x} 514`} />;
@@ -731,11 +756,17 @@ function RolesVisualStage({
             })}
           </g>
 
-          <g className="scene-labs__highlight-bands">
+          <g className="scene-labs__highlight-bands" style={{ opacity: mix(0.62, 1, labsDetail) }}>
             <polygon points="294,214 420,214 420,226 294,226" />
             <polygon points="246,182 294,214 294,226 246,194" />
             <polygon points="578,250 804,250 804,262 578,262" />
             <polygon points="500,200 578,250 578,262 500,212" />
+            <path
+              className="scene-labs__lab-band-sweep"
+              d="M 300 220 L 416 220 M 588 256 L 800 256"
+              pathLength={1}
+              style={{ strokeDashoffset: 1 - labsDetail }}
+            />
           </g>
 
           <g className="scene-labs__bridges">
@@ -780,7 +811,7 @@ function RolesVisualStage({
         className="roles-scene__layer roles-scene__layer--program"
         style={{
           opacity: programVisibility,
-          transform: `translate3d(${mix(54, -28, programExit)}px, ${mix(28, -10, programExit)}px, 0) scale(${mix(0.84, 1.02, programEnter) - programExit * 0.1})`
+          transform: `translate3d(${mix(28, -12, programExit)}px, ${mix(18, -8, programExit)}px, 0) scale(${mix(0.9, 1.02, programEnter) - programExit * 0.06})`
         }}
       >
         <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
@@ -792,6 +823,11 @@ function RolesVisualStage({
           </defs>
 
           <ellipse className="scene-program__shadow" cx="520" cy="586" rx="290" ry="62" />
+
+          <g className="scene-program__workplane" style={{ opacity: mix(0.3, 1, programEnter) }}>
+            <path d="M 218 432 C 242 270, 360 154, 520 154 C 706 154, 826 300, 814 468" />
+            <path d="M 236 506 C 330 644, 560 688, 710 566" />
+          </g>
 
           <path
             className="scene-program__track scene-program__track--outer"
@@ -841,10 +877,28 @@ function RolesVisualStage({
           </g>
 
           <g className="scene-program__gates">
-            <circle cx="504" cy="192" r="12" />
-            <circle cx="750" cy="426" r="12" />
-            <circle cx="500" cy="632" r="12" />
-            <circle cx="282" cy="430" r="12" />
+            {[
+              { x: 504, y: 192, at: 0.12 },
+              { x: 750, y: 426, at: 0.38 },
+              { x: 500, y: 632, at: 0.64 },
+              { x: 282, y: 430, at: 0.86 }
+            ].map((gate) => {
+              const gateEmphasis = smoothstep(
+                gate.at - 0.08,
+                gate.at + 0.06,
+                programSequenceProgress
+              );
+
+              return (
+                <circle
+                  key={`${gate.x}-${gate.y}`}
+                  cx={gate.x}
+                  cy={gate.y}
+                  r={mix(9, 14, gateEmphasis)}
+                  style={{ opacity: mix(0.42, 1, gateEmphasis) }}
+                />
+              );
+            })}
           </g>
 
           <g className="scene-program__stations">
@@ -887,6 +941,7 @@ function RolesVisualStage({
                     style={{ opacity: emphasis * 0.9 }}
                   />
                   <rect
+                    className="scene-program__station-card"
                     width={programStationCard.width}
                     height={programStationCard.height}
                     rx={14}
@@ -894,15 +949,18 @@ function RolesVisualStage({
                   <circle
                     className="scene-program__station-dot"
                     cx={25}
-                    cy={43}
+                    cy={50}
                     r={mix(4, 6.5, emphasis)}
                     style={{ opacity: mix(0.54, 1, emphasis) }}
                   />
-                  <text className="scene-program__station-index" x={20} y={21}>
+                  <text className="scene-program__station-index" x={20} y={22}>
                     {String(index + 1).padStart(2, "0")}
                   </text>
-                  <text className="scene-program__station-label" x={46} y={47}>
+                  <text className="scene-program__station-label" x={46} y={43}>
                     {station.label}
+                  </text>
+                  <text className="scene-program__station-detail" x={46} y={61}>
+                    {station.detail}
                   </text>
                 </g>
               );
@@ -931,7 +989,7 @@ function RolesVisualStage({
         className="roles-scene__layer roles-scene__layer--globe"
         style={{
           opacity: globeLayerVisibility,
-          transform: `translate3d(${mix(78, -4, globeEnter)}px, ${mix(18, -10, globeEnter)}px, 0) scale(${mix(0.72, 1.08, globeEnter)})`
+          transform: `translate3d(${mix(42, -4, globeEnter)}px, ${mix(14, -8, globeEnter)}px, 0) scale(${mix(0.78, 1.08, globeEnter)})`
         }}
       >
         <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
@@ -1000,18 +1058,30 @@ function RolesVisualStage({
               );
 
               return (
-                <path
-                  key={route.key}
-                  className="scene-globe__route"
-                  d={route.d}
-                  pathLength={1}
-                  style={{
-                    opacity: reveal * 0.95,
-                    strokeWidth: mix(2.4, 4.1, reveal),
-                    strokeDasharray: 1,
-                    strokeDashoffset: 1 - reveal
-                  }}
-                />
+                <g key={route.key} className="scene-globe__route-group">
+                  <path
+                    className="scene-globe__route scene-globe__route--glow"
+                    d={route.d}
+                    pathLength={1}
+                    style={{
+                      opacity: reveal * 0.32,
+                      strokeWidth: mix(8, 13, reveal),
+                      strokeDasharray: 1,
+                      strokeDashoffset: 1 - reveal
+                    }}
+                  />
+                  <path
+                    className="scene-globe__route"
+                    d={route.d}
+                    pathLength={1}
+                    style={{
+                      opacity: reveal * 0.95,
+                      strokeWidth: mix(2.4, 4.3, reveal),
+                      strokeDasharray: 1,
+                      strokeDashoffset: 1 - reveal
+                    }}
+                  />
+                </g>
               );
             })()
           ))}

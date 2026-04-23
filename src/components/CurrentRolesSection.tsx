@@ -237,9 +237,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       start: () => `top top+=${headerHeight}`,
       end: () =>
         `+=${Math.round(
-          window.innerHeight * (window.innerWidth < 900 ? 4.6 : 5.6)
+          window.innerHeight * (window.innerWidth < 900 ? 5 : 6.2)
         )}`,
-      scrub: 0.38,
+      scrub: 0.52,
       anticipatePin: 1,
       invalidateOnRefresh: true
     });
