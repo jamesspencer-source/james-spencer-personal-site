@@ -53,17 +53,17 @@ const chapterStops: Record<RoleChapter["id"], number> = {
 };
 
 const programStations = [
-  { label: "Funding", detail: "Budget + partner setup", x: 96, y: 224 },
-  { label: "Hiring", detail: "Interviews + onboarding", x: 374, y: 80 },
-  { label: "Lab setup", detail: "Benches + supplies", x: 654, y: 224 },
-  { label: "Biosafety", detail: "Training + access", x: 654, y: 386 },
-  { label: "Delivery", detail: "Daily program support", x: 374, y: 574 },
-  { label: "Closeout", detail: "Space reset + wrap-up", x: 96, y: 438 }
+  { label: "Funding", detail: "Budget + partner setup", x: 72, y: 208 },
+  { label: "Hiring", detail: "Interviews + onboarding", x: 350, y: 70 },
+  { label: "Lab setup", detail: "Benches + supplies", x: 644, y: 196 },
+  { label: "Biosafety", detail: "Training + access", x: 644, y: 374 },
+  { label: "Delivery", detail: "Daily program support", x: 350, y: 548 },
+  { label: "Closeout", detail: "Space reset + wrap-up", x: 72, y: 432 }
 ];
 
 const programStationCard = {
-  width: 212,
-  height: 78
+  width: 244,
+  height: 92
 };
 
 const programConnectorPaths = [
@@ -80,8 +80,8 @@ const LAB_SEQUENCE_END = 0.5;
 const PROGRAM_SEQUENCE_START = 0.52;
 const PROGRAM_SEQUENCE_END = 0.76;
 const GLOBE_SEQUENCE_START = 0.8;
-const GLOBE_SEQUENCE_END = 0.94;
-const DOCUMENTARY_SEQUENCE_START = 0.94;
+const GLOBE_SEQUENCE_END = 0.9;
+const DOCUMENTARY_SEQUENCE_START = 0.9;
 const DOCUMENTARY_SEQUENCE_END = 1;
 
 const globeRouteConnections = [
@@ -90,19 +90,8 @@ const globeRouteConnections = [
   ["San Francisco", "New York City"]
 ] as const;
 
-const GLOBE_VIEWBOX_WIDTH = 960;
-const GLOBE_VIEWBOX_HEIGHT = 720;
-const GLOBE_LABEL_TOP = -34;
-const GLOBE_LABEL_BOTTOM = 18;
-const GLOBE_LABEL_MAX_SCALE = 1.08;
-const GLOBE_LABEL_PADDING = 22;
-
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
 }
 
 function normalizeProgress(value: number, start: number, end: number) {
@@ -168,6 +157,20 @@ function getHostRegionRadius(label: HostCity["label"]) {
   }
 }
 
+function getGlobeAnnotationDetail(city: HostCity) {
+  switch (city.label) {
+    case "Washington, DC":
+      return "2023 + 2025 national conferences";
+    case "Boston":
+      return "2024 regional conference";
+    case "San Francisco":
+    case "New York City":
+      return "2026 regional conference";
+    default:
+      return city.note ?? "Conference host site";
+  }
+}
+
 function getSequenceEmphasis(sequenceProgress: number, index: number, total: number) {
   const center = total <= 1 ? 0.5 : index / (total - 1);
   return fadeBetween(sequenceProgress, center - 0.2, center - 0.08, center + 0.08, center + 0.2);
@@ -181,58 +184,6 @@ function getSequenceReveal(sequenceProgress: number, index: number, total: numbe
 function getChronologicalReveal(sequenceProgress: number, index: number, total: number) {
   const start = total <= 1 ? 0 : index / total;
   return smoothstep(start - 0.04, start + 0.1, sequenceProgress);
-}
-
-function getGlobeAnnotation(city: HostCity & { x: number; y: number }) {
-  const preferred = (() => {
-    switch (city.label) {
-      case "Washington, DC":
-        return {
-          x: -252,
-          y: 38,
-          width: 232,
-          detail: "2023 + 2025 national conferences"
-        };
-      case "Boston":
-        return {
-          x: 36,
-          y: -78,
-          width: 210,
-          detail: "2024 regional conference"
-        };
-      case "New York City":
-        return {
-          x: 42,
-          y: 40,
-          width: 212,
-          detail: "2026 regional conference"
-        };
-      case "San Francisco":
-        return {
-          x: -246,
-          y: -64,
-          width: 226,
-          detail: "2026 regional conference"
-        };
-      default:
-        return { x: 28, y: -52, width: 188, detail: "Conference host site" };
-    }
-  })();
-
-  const scaledWidth = preferred.width * GLOBE_LABEL_MAX_SCALE;
-  const scaledTop = GLOBE_LABEL_TOP * GLOBE_LABEL_MAX_SCALE;
-  const scaledBottom = GLOBE_LABEL_BOTTOM * GLOBE_LABEL_MAX_SCALE;
-
-  const minX = GLOBE_LABEL_PADDING - city.x;
-  const maxX = GLOBE_VIEWBOX_WIDTH - GLOBE_LABEL_PADDING - scaledWidth - city.x;
-  const minY = GLOBE_LABEL_PADDING - city.y - scaledTop;
-  const maxY = GLOBE_VIEWBOX_HEIGHT - GLOBE_LABEL_PADDING - scaledBottom - city.y;
-
-  return {
-    ...preferred,
-    x: clamp(preferred.x, minX, maxX),
-    y: clamp(preferred.y, minY, maxY)
-  };
 }
 
 function getCalloutStyle(
@@ -620,18 +571,23 @@ function RolesVisualStage({
               <stop offset="0%" stopColor="#86ab97" />
               <stop offset="100%" stopColor="#2a4940" />
             </linearGradient>
+            <radialGradient id="program-core" cx="42%" cy="34%" r="72%">
+              <stop offset="0%" stopColor="rgba(232, 244, 237, 0.16)" />
+              <stop offset="100%" stopColor="rgba(9, 14, 18, 0.02)" />
+            </radialGradient>
           </defs>
 
-          <ellipse className="scene-program__shadow" cx="520" cy="586" rx="290" ry="62" />
+          <ellipse className="scene-program__shadow" cx="520" cy="592" rx="326" ry="72" />
 
           <g className="scene-program__workplane" style={{ opacity: mix(0.3, 1, programEnter) }}>
-            <path d="M 218 432 C 242 270, 360 154, 520 154 C 706 154, 826 300, 814 468" />
-            <path d="M 236 506 C 330 644, 560 688, 710 566" />
+            <path d="M 192 430 C 220 248, 354 128, 520 128 C 718 128, 850 286, 838 468" />
+            <path d="M 214 518 C 322 664, 574 704, 744 572" />
+            <path d="M 300 332 C 420 238, 586 236, 714 336" />
           </g>
 
           <path
             className="scene-program__track scene-program__track--outer"
-            d="M 286 378 C 286 270, 378 192, 504 192 C 650 192, 750 292, 750 426 C 750 554, 640 632, 500 632 C 368 632, 282 544, 282 430"
+            d="M 260 376 C 260 254, 368 170, 508 170 C 674 170, 786 284, 782 426 C 778 566, 654 656, 502 656 C 358 656, 252 552, 252 430"
             pathLength={1}
             style={{
               strokeDasharray: 1,
@@ -641,13 +597,13 @@ function RolesVisualStage({
 
           <path
             className="scene-program__track-arrow"
-            d="M 740 393 L 759 426 L 724 422"
-            style={{ opacity: smoothstep(0.6, 0.72, progress) }}
+            d="M 772 386 L 794 426 L 752 420"
+            style={{ opacity: smoothstep(0.56, 0.66, progress) }}
           />
 
           <path
             className="scene-program__track scene-program__track--inner"
-            d="M 330 388 C 330 304, 402 248, 504 248 C 624 248, 704 326, 704 428 C 704 528, 622 578, 504 578 C 404 578, 330 516, 330 436"
+            d="M 326 390 C 326 302, 402 242, 508 242 C 632 242, 714 324, 714 428 C 714 532, 626 586, 504 586 C 398 586, 326 518, 326 438"
           />
 
           <g className="scene-program__connectors">
@@ -748,18 +704,18 @@ function RolesVisualStage({
                   />
                   <circle
                     className="scene-program__station-dot"
-                    cx={25}
-                    cy={50}
-                    r={mix(4, 6.5, emphasis)}
+                    cx={29}
+                    cy={58}
+                    r={mix(5, 7.5, emphasis)}
                     style={{ opacity: mix(0.54, 1, emphasis) }}
                   />
-                  <text className="scene-program__station-index" x={20} y={22}>
+                  <text className="scene-program__station-index" x={22} y={26}>
                     {String(index + 1).padStart(2, "0")}
                   </text>
-                  <text className="scene-program__station-label" x={46} y={43}>
+                  <text className="scene-program__station-label" x={54} y={50}>
                     {station.label}
                   </text>
-                  <text className="scene-program__station-detail" x={46} y={61}>
+                  <text className="scene-program__station-detail" x={54} y={70}>
                     {station.detail}
                   </text>
                 </g>
@@ -768,6 +724,7 @@ function RolesVisualStage({
           </g>
 
           <g className="scene-program__core-labels">
+            <ellipse className="scene-program__core-panel" cx="504" cy="398" rx="142" ry="78" />
             <text x="504" y="388">Annual operating cycle</text>
             <text x="504" y="416">Community Phages</text>
             <g className="scene-program__header-progress">
@@ -893,10 +850,7 @@ function RolesVisualStage({
               projectedCities.length
             );
             const active = globeFocusLabel === city.label;
-            const annotation = getGlobeAnnotation(city);
-            const labelScale = mix(0.96, active ? 1.06 : 1, active ? 1 : reveal);
-            const leaderX = annotation.x < 0 ? annotation.x + annotation.width : annotation.x;
-            const leaderY = annotation.y - 8;
+
             return (
               <g
                 key={`${city.label}-${city.year}`}
@@ -923,32 +877,50 @@ function RolesVisualStage({
                 />
                 <circle className="scene-globe__pin-ring" r="15" />
                 <circle className="scene-globe__pin-core" r="6.5" />
-                <line
-                  className="scene-globe__pin-label-leader"
-                  x1="0"
-                  y1="0"
-                  x2={leaderX}
-                  y2={leaderY}
-                  style={{ opacity: reveal }}
-                />
-                <g
-                  className="scene-globe__pin-label"
-                  transform={`translate(${annotation.x} ${annotation.y}) scale(${labelScale})`}
-                  style={{
-                    opacity: reveal
-                  }}
-                >
-                  <rect x="0" y="-34" width={annotation.width} height="52" rx="12" />
-                  <text className="scene-globe__pin-label-city" x="14" y="-13">
-                    {city.label}
-                  </text>
-                  <text className="scene-globe__pin-label-detail" x="14" y="4">
-                    {annotation.detail}
-                  </text>
-                </g>
               </g>
             );
           })}
+
+          <g
+            className="scene-globe__annotation-rail"
+            transform="translate(62 76)"
+            style={{ opacity: clamp01(globeEnter * 1.18) }}
+          >
+            <rect className="scene-globe__annotation-frame" width="324" height="220" rx="18" />
+            <text className="scene-globe__annotation-title" x="22" y="31">
+              Conference locations
+            </text>
+            <text className="scene-globe__annotation-subtitle" x="22" y="52">
+              Hosted sites appear in sequence and remain active.
+            </text>
+            {projectedCities.map((city, index) => {
+              const reveal = getChronologicalReveal(
+                globeSequenceProgress,
+                index,
+                projectedCities.length
+              );
+              const active = globeFocusLabel === city.label;
+              const rowY = 74 + index * 34;
+
+              return (
+                <g
+                  key={`annotation-${city.label}`}
+                  className={`scene-globe__annotation-row${active ? " scene-globe__annotation-row--active" : ""}`}
+                  transform={`translate(18 ${rowY})`}
+                  style={{ opacity: reveal * mix(0.58, 1, active ? 1 : reveal) }}
+                >
+                  <rect width="288" height="28" rx="10" />
+                  <circle cx="15" cy="14" r={active ? 5.5 : 4.2} />
+                  <text className="scene-globe__annotation-city" x="30" y="12">
+                    {city.label}
+                  </text>
+                  <text className="scene-globe__annotation-detail" x="30" y="24">
+                    {getGlobeAnnotationDetail(city)}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
 
           <g
             className="scene-globe__legend"

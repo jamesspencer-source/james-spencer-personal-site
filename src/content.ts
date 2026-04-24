@@ -74,6 +74,7 @@ export type ContactContent = {
   label: string;
   heading: string;
   intro: string;
+  contextTags?: string[];
   portrait?: PortraitAsset | null;
   links: ActionLink[];
 };
@@ -343,13 +344,18 @@ export const siteContent = {
     heading: "Connect",
     intro:
       "LinkedIn is the best way to connect with James about research operations, scientific program leadership, and laboratory management.",
+    contextTags: [
+      "Research operations",
+      "Scientific program leadership",
+      "Laboratory management"
+    ],
     portrait: {
       src: asset("assets/images/james-m-spencer-studio-headshot.jpg"),
       alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."
     } as PortraitAsset,
     links: [
       {
-        label: "LinkedIn",
+        label: "Connect on LinkedIn",
         href: "https://www.linkedin.com/in/jamesmspencer/"
       },
       {

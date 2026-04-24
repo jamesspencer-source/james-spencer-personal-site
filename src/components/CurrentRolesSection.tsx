@@ -11,7 +11,7 @@ type CurrentRolesSectionProps = {
 };
 
 const PROGRAM_COPY_PROGRESS_END = 0.76;
-const NETWORK_DOCUMENTARY_PROGRESS_START = 0.94;
+const NETWORK_DOCUMENTARY_PROGRESS_START = 0.9;
 
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));

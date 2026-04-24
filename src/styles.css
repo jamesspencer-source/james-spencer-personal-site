@@ -1492,29 +1492,30 @@ button {
 
 .scene-program__workplane path {
   fill: none;
-  stroke: rgba(222, 236, 228, 0.08);
-  stroke-width: 2;
+  stroke: rgba(222, 236, 228, 0.12);
+  stroke-width: 2.4;
   stroke-linecap: round;
   stroke-dasharray: 12 16;
 }
 
 .scene-program__track--outer {
   stroke: url(#program-track);
-  stroke-width: 20;
+  stroke-width: 26;
+  filter: drop-shadow(0 0 18px rgba(150, 205, 176, 0.16));
 }
 
 .scene-program__track--inner {
-  stroke: rgba(191, 205, 198, 0.16);
-  stroke-width: 7;
+  stroke: rgba(207, 223, 214, 0.2);
+  stroke-width: 8;
 }
 
 .scene-program__track-arrow {
   fill: none;
-  stroke: rgba(197, 228, 211, 0.84);
-  stroke-width: 7;
+  stroke: rgba(210, 239, 224, 0.92);
+  stroke-width: 8;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 8px rgba(156, 208, 181, 0.24));
+  filter: drop-shadow(0 0 12px rgba(156, 208, 181, 0.34));
 }
 
 .scene-program__stations polygon {
@@ -1525,22 +1526,23 @@ button {
 
 .scene-program__connectors path {
   fill: none;
-  stroke: rgba(206, 218, 212, 0.22);
-  stroke-width: 3;
+  stroke: rgba(218, 234, 226, 0.32);
+  stroke-width: 3.5;
   stroke-linecap: round;
 }
 
 .scene-program__stations .scene-program__station-accent {
-  fill: rgba(163, 208, 184, 0.16);
-  stroke: rgba(223, 239, 231, 0.26);
-  stroke-width: 1.2;
+  fill: rgba(163, 208, 184, 0.22);
+  stroke: rgba(226, 244, 235, 0.34);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 18px rgba(150, 205, 176, 0.22));
 }
 
 .scene-program__station-card {
-  fill: rgba(10, 15, 19, 0.92);
-  stroke: rgba(216, 231, 223, 0.24);
-  stroke-width: 1;
-  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.22));
+  fill: rgba(10, 15, 19, 0.94);
+  stroke: rgba(222, 238, 230, 0.32);
+  stroke-width: 1.15;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.3));
 }
 
 .scene-program__stations text {
@@ -1550,19 +1552,19 @@ button {
 
 .scene-program__stations .scene-program__station-index {
   fill: rgba(167, 203, 184, 0.82);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
 .scene-program__stations .scene-program__station-label {
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 700;
 }
 
 .scene-program__stations .scene-program__station-detail {
-  fill: rgba(205, 222, 212, 0.76);
-  font-size: 10.5px;
+  fill: rgba(216, 232, 223, 0.82);
+  font-size: 12.5px;
   font-weight: 650;
 }
 
@@ -1572,6 +1574,13 @@ button {
 
 .scene-program__gates circle {
   fill: rgba(165, 204, 182, 0.94);
+  filter: drop-shadow(0 0 12px rgba(149, 202, 174, 0.28));
+}
+
+.scene-program__core-panel {
+  fill: url(#program-core);
+  stroke: rgba(221, 237, 229, 0.14);
+  stroke-width: 1;
 }
 
 .scene-program__core-labels text {
@@ -1579,13 +1588,13 @@ button {
   text-anchor: middle;
 }
 
-.scene-program__core-labels text:first-child {
-  font-size: 17px;
+.scene-program__core-labels text:first-of-type {
+  font-size: 19px;
   font-weight: 700;
 }
 
-.scene-program__core-labels text:last-child {
-  font-size: 13px;
+.scene-program__core-labels text:nth-of-type(2) {
+  font-size: 14px;
   font-weight: 600;
   fill: rgba(193, 214, 201, 0.82);
 }
@@ -1683,6 +1692,63 @@ button {
 
 .scene-globe__pin-core {
   fill: rgba(35, 73, 55, 0.98);
+}
+
+.scene-globe__annotation-frame {
+  fill: rgba(8, 11, 14, 0.68);
+  stroke: rgba(226, 240, 233, 0.18);
+  filter: drop-shadow(0 18px 34px rgba(0, 0, 0, 0.24));
+}
+
+.scene-globe__annotation-title,
+.scene-globe__annotation-subtitle,
+.scene-globe__annotation-row text {
+  font-family: "Inter", sans-serif;
+}
+
+.scene-globe__annotation-title {
+  fill: rgba(245, 250, 247, 0.98);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.scene-globe__annotation-subtitle {
+  fill: rgba(215, 229, 222, 0.78);
+  font-size: 10.5px;
+  font-weight: 650;
+}
+
+.scene-globe__annotation-row rect {
+  fill: rgba(244, 250, 247, 0.055);
+  stroke: rgba(226, 240, 233, 0.12);
+  transition: fill 180ms ease, stroke 180ms ease;
+}
+
+.scene-globe__annotation-row circle {
+  fill: rgba(179, 229, 204, 0.82);
+  filter: drop-shadow(0 0 10px rgba(151, 211, 179, 0.24));
+}
+
+.scene-globe__annotation-row--active rect {
+  fill: rgba(156, 205, 180, 0.18);
+  stroke: rgba(226, 240, 233, 0.28);
+}
+
+.scene-globe__annotation-row--active circle {
+  fill: rgba(231, 248, 239, 0.98);
+}
+
+.scene-globe__annotation-city {
+  fill: rgba(245, 248, 246, 0.98);
+  font-size: 11.5px;
+  font-weight: 800;
+}
+
+.scene-globe__annotation-detail {
+  fill: rgba(207, 226, 216, 0.82);
+  font-size: 9.5px;
+  font-weight: 650;
 }
 
 .scene-globe__pin-label-leader {
@@ -1963,10 +2029,30 @@ button {
   text-wrap: balance;
 }
 
+.contact__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.05rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact__tags li {
+  padding: 0.42rem 0.62rem;
+  color: rgba(51, 62, 49, 0.78);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: rgba(70, 96, 82, 0.08);
+  border: 1px solid rgba(70, 96, 82, 0.16);
+  border-radius: 999px;
+}
+
 .contact__actions {
   margin-top: 0;
   width: 100%;
-  max-width: 23rem;
+  max-width: 26rem;
   padding-top: 0.25rem;
 }
 
@@ -2016,6 +2102,7 @@ button {
   grid-template-columns: 2.8rem minmax(0, 1fr) auto;
   gap: 0.8rem 1rem;
   align-items: center;
+  min-height: 4.45rem;
   padding: 1rem 0;
   color: var(--ink);
   text-decoration: none;
@@ -2037,9 +2124,9 @@ button {
 }
 
 .contact-list__label {
-  font-size: clamp(1.18rem, 2vw, 1.48rem);
+  font-size: clamp(1.12rem, 1.6vw, 1.34rem);
   font-weight: 600;
-  line-height: 1.08;
+  line-height: 1.12;
   text-wrap: balance;
 }
 

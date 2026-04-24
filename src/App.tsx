@@ -409,6 +409,13 @@ function App() {
                 />
                 <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
                 <SectionIntro body={siteContent.contact.intro} />
+                {siteContent.contact.contextTags?.length ? (
+                  <ul className="contact__tags" aria-label="Conversation topics">
+                    {siteContent.contact.contextTags.map((tag) => (
+                      <li key={tag}>{tag}</li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
 
               <div className="contact__actions">
