@@ -75,9 +75,9 @@ const programConnectorPaths = [
 
 const PROGRAM_SEQUENCE_START = 0.52;
 const PROGRAM_SEQUENCE_END = 0.8;
-const GLOBE_SEQUENCE_START = 0.84;
-const GLOBE_SEQUENCE_END = 0.96;
-const DOCUMENTARY_SEQUENCE_START = 0.92;
+const GLOBE_SEQUENCE_START = 0.78;
+const GLOBE_SEQUENCE_END = 0.91;
+const DOCUMENTARY_SEQUENCE_START = 0.91;
 const DOCUMENTARY_SEQUENCE_END = 1;
 
 const globeRouteConnections = [
@@ -269,8 +269,8 @@ function RolesVisualStage({
 
   const overviewVisibility = fadeBetween(progress, 0, 0.08, 0.2, 0.34);
   const labsVisibility = fadeBetween(progress, 0.2, 0.34, 0.48, 0.62);
-  const programVisibility = fadeBetween(progress, 0.48, 0.62, 0.84, 0.96);
-  const globeVisibility = fadeBetween(progress, 0.78, 0.9, 1.08, 1.18);
+  const programVisibility = fadeBetween(progress, 0.48, 0.62, 0.82, 0.92);
+  const globeVisibility = fadeBetween(progress, 0.76, 0.88, 1.08, 1.18);
 
   const overviewCompress = smoothstep(0.18, 0.34, progress);
   const labsCompress = smoothstep(0.48, 0.62, progress);
@@ -278,21 +278,21 @@ function RolesVisualStage({
   const labsDetail =
     smoothstep(0.3, 0.46, progress) * (1 - smoothstep(0.54, 0.62, progress));
   const programEnter = smoothstep(0.48, 0.62, progress);
-  const programExit = smoothstep(0.84, 0.96, progress);
+  const programExit = smoothstep(0.82, 0.92, progress);
   const programStationsVisibility =
     smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.94, 0.99, progress));
   const programSequenceProgress = getProgramSequenceProgress(progress);
   const globeSequenceProgress = clamp01(
     (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)
   );
-  const globeEnter = smoothstep(0.78, 0.9, progress);
+  const globeEnter = smoothstep(0.76, 0.88, progress);
   const documentaryEnter = smoothstep(
     DOCUMENTARY_SEQUENCE_START,
     DOCUMENTARY_SEQUENCE_END,
     progress
   );
   const documentaryVisibility = globeVisibility * documentaryEnter;
-  const globeLayerVisibility = globeVisibility * mix(1, 0.16, documentaryEnter);
+  const globeLayerVisibility = globeVisibility * mix(1, 0.24, documentaryEnter);
 
   const globeProjection = useMemo(() => {
     return geoOrthographic()

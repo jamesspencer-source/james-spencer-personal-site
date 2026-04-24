@@ -11,7 +11,7 @@ type CurrentRolesSectionProps = {
 };
 
 const PROGRAM_COPY_PROGRESS_END = 0.8;
-const NETWORK_DOCUMENTARY_PROGRESS_START = 0.92;
+const NETWORK_DOCUMENTARY_PROGRESS_START = 0.91;
 
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
@@ -33,7 +33,7 @@ function fadeBetween(
 }
 
 function getActiveChapterId(progress: number): RoleChapter["id"] {
-  if (progress >= 0.86) {
+  if (progress >= 0.8) {
     return "network";
   }
 
@@ -111,7 +111,7 @@ function RoleCopy({
             transform: `translate3d(0, ${18 - documentaryProgress * 18}px, 0)`
           }}
         >
-          <p className="roles-story__documentary-label">Documentary proof</p>
+          <p className="roles-story__documentary-label">Conference leadership</p>
           <p className="roles-story__documentary-caption">
             {chapter.documentaryBeat.caption}
           </p>
@@ -187,8 +187,8 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
     () => ({
       overview: fadeBetween(progress, 0, 0.08, 0.24, 0.36),
       labs: fadeBetween(progress, 0.2, 0.32, 0.58, 0.7),
-      program: fadeBetween(progress, 0.52, 0.64, 0.9, 1.02),
-      network: fadeBetween(progress, 0.82, 0.92, 1.08, 1.18)
+      program: fadeBetween(progress, 0.52, 0.64, 0.82, 0.92),
+      network: fadeBetween(progress, 0.78, 0.88, 1.08, 1.18)
     }),
     [progress]
   );
@@ -237,7 +237,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       start: () => `top top+=${headerHeight}`,
       end: () =>
         `+=${Math.round(
-          window.innerHeight * (window.innerWidth < 900 ? 5 : 6.2)
+          window.innerHeight * (window.innerWidth < 900 ? 5.8 : 7.2)
         )}`,
       scrub: 0.52,
       anticipatePin: 1,
