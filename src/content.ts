@@ -74,6 +74,7 @@ export type ContactContent = {
   label: string;
   heading: string;
   intro: string;
+  supportLine?: string;
   contextTags?: string[];
   portrait?: PortraitAsset | null;
   links: ActionLink[];
@@ -343,7 +344,9 @@ export const siteContent = {
     label: "Contact",
     heading: "Connect",
     intro:
-      "LinkedIn is the best way to connect with James about research operations, scientific program leadership, and laboratory management.",
+      "For conversations about research operations, scientific program leadership, or laboratory management, LinkedIn is the best way to reach James.",
+    supportLine:
+      "His work sits where people, space, equipment, funding, and programming have to come together reliably.",
     contextTags: [
       "Research operations",
       "Scientific program leadership",

@@ -2000,25 +2000,34 @@ button {
 .contact {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(19rem, 0.95fr) minmax(17rem, 24rem);
-  gap: 1.8rem clamp(2.4rem, 5vw, 5rem);
-  max-width: 72rem;
+  grid-template-columns: minmax(22rem, 1fr) minmax(20rem, 27rem);
+  gap: clamp(2.4rem, 5.5vw, 6rem);
+  max-width: 78rem;
   align-items: center;
-  padding: clamp(1.6rem, 3vw, 2.4rem) 0 0;
+  padding: clamp(1.35rem, 3vw, 2.1rem) clamp(1rem, 2.8vw, 2rem) 0;
   border-top: 1px solid var(--line-strong);
+}
+
+.contact::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: clamp(1rem, 2.8vw, 2rem);
+  width: min(11rem, 32%);
+  height: 3px;
+  background: linear-gradient(90deg, var(--forest), rgba(70, 96, 82, 0));
 }
 
 .contact__content {
   display: flex;
   flex-direction: column;
-  gap: 1.45rem;
+  gap: 1.6rem;
   min-width: 0;
-  padding-top: 0.35rem;
-  max-width: 31rem;
+  max-width: 38rem;
 }
 
 .contact__heading {
-  max-width: 30rem;
+  max-width: 36rem;
 }
 
 .contact__heading .section-heading__title {
@@ -2029,98 +2038,126 @@ button {
   text-wrap: balance;
 }
 
+.contact__support {
+  max-width: 31rem;
+  margin: 1rem 0 0;
+  color: rgba(20, 22, 17, 0.84);
+  font-size: clamp(1.02rem, 1.35vw, 1.16rem);
+  line-height: 1.58;
+  text-wrap: pretty;
+}
+
+.contact__topics {
+  margin-top: 1.25rem;
+}
+
+.contact__topics p {
+  margin: 0 0 0.55rem;
+  color: var(--forest);
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .contact__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.45rem;
-  margin: 1.05rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .contact__tags li {
-  padding: 0.42rem 0.62rem;
+  padding: 0.44rem 0.66rem;
   color: rgba(51, 62, 49, 0.78);
+  font-family: "Inter", sans-serif;
   font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  background: rgba(70, 96, 82, 0.08);
-  border: 1px solid rgba(70, 96, 82, 0.16);
+  letter-spacing: 0.01em;
+  background: rgba(246, 241, 232, 0.72);
+  border: 1px solid rgba(70, 96, 82, 0.18);
   border-radius: 999px;
+  box-shadow: 0 8px 16px rgba(20, 22, 17, 0.035);
 }
 
 .contact__actions {
   margin-top: 0;
   width: 100%;
-  max-width: 26rem;
-  padding-top: 0.25rem;
+  max-width: 34rem;
+  padding-top: 0.15rem;
 }
 
 .contact__portrait {
   margin: 0;
   justify-self: end;
   align-self: center;
-  width: min(100%, 23rem);
+  width: min(100%, 27rem);
   min-width: 0;
-  padding: 0.45rem;
+  max-height: min(72vh, 42rem);
+  padding: 0.5rem;
   border: 1px solid rgba(20, 22, 17, 0.09);
   border-radius: 8px;
-  background: rgba(246, 241, 232, 0.68);
-  box-shadow: 0 18px 38px rgba(20, 22, 17, 0.1);
+  background:
+    linear-gradient(180deg, rgba(246, 241, 232, 0.92), rgba(225, 217, 203, 0.48));
+  box-shadow: 0 24px 48px rgba(20, 22, 17, 0.12);
 }
 
 .contact__portrait img {
   display: block;
   width: 100%;
+  max-height: calc(min(72vh, 42rem) - 1rem);
   height: auto;
+  object-fit: contain;
   border-radius: 6px;
 }
 
 .contact-list {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 0;
+  gap: 0.65rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .contact-list__item {
-  border-bottom: 1px solid var(--line);
-}
-
-.contact-list__item:first-child {
-  border-top: 1px solid var(--line-strong);
+  min-width: 0;
 }
 
 .contact-list__item--lead {
-  border-color: rgba(70, 96, 82, 0.3);
+  color: var(--forest);
 }
 
 .contact-list__link {
   display: grid;
-  grid-template-columns: 2.8rem minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.8rem 1rem;
   align-items: center;
-  min-height: 4.45rem;
-  padding: 1rem 0;
+  min-height: 5rem;
+  padding: 1rem 1.1rem;
   color: var(--ink);
   text-decoration: none;
-  transition: color 180ms ease, transform 180ms ease;
+  background: rgba(246, 241, 232, 0.5);
+  border: 1px solid rgba(20, 22, 17, 0.12);
+  border-radius: 8px;
+  transition: border-color 180ms ease, color 180ms ease, transform 180ms ease, background 180ms ease;
 }
 
 .contact-list__item--lead .contact-list__link {
-  padding: 1rem 0 1rem 0.9rem;
-  border-radius: 0 10px 10px 0;
-  background: linear-gradient(90deg, rgba(70, 96, 82, 0.09), rgba(70, 96, 82, 0.02));
-  box-shadow: inset 3px 0 0 rgba(70, 96, 82, 0.58);
+  background:
+    linear-gradient(90deg, rgba(70, 96, 82, 0.13), rgba(70, 96, 82, 0.035)),
+    rgba(246, 241, 232, 0.72);
+  border-color: rgba(70, 96, 82, 0.34);
+  box-shadow: inset 3px 0 0 rgba(70, 96, 82, 0.62);
 }
 
-.contact-list__index {
-  color: var(--forest);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.contact-list__copy {
+  display: grid;
+  gap: 0.24rem;
+  min-width: 0;
 }
 
 .contact-list__label {
@@ -2133,6 +2170,14 @@ button {
 .contact-list__item--lead .contact-list__label {
   color: var(--forest);
   font-weight: 650;
+}
+
+.contact-list__description {
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: pretty;
 }
 
 .contact-list__meta {
@@ -2150,6 +2195,8 @@ button {
 
 .contact-list__link:hover,
 .contact-list__link:focus-visible {
+  background: rgba(246, 241, 232, 0.86);
+  border-color: rgba(70, 96, 82, 0.36);
   color: var(--forest);
   transform: translateX(4px);
 }
@@ -2177,6 +2224,15 @@ button {
   .background-layout,
   .contact {
     grid-template-columns: 1fr;
+  }
+
+  .contact {
+    max-width: 46rem;
+  }
+
+  .contact__portrait {
+    justify-self: start;
+    width: min(100%, 26rem);
   }
 
   .hero-proof-panel,
@@ -2252,21 +2308,20 @@ button {
   }
 
   .contact__content {
-    grid-template-columns: 1fr;
     gap: 1rem;
   }
 
   .contact__heading {
-    max-width: 22rem;
+    max-width: 34rem;
   }
 
-  .contact__actions,
-  .contact__portrait {
-    width: min(100%, 23rem);
+  .contact__actions {
+    max-width: 34rem;
   }
 
   .contact__portrait {
     justify-self: center;
+    width: min(100%, 25rem);
   }
 
   .roles-story__layout {
@@ -2355,7 +2410,9 @@ button {
 
   .contact {
     grid-template-columns: 1fr;
-    gap: 1.2rem;
+    gap: 1.5rem;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .contact__portrait {
@@ -2364,15 +2421,14 @@ button {
   }
 
   .contact-list__link {
-    grid-template-columns: 2.4rem minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .contact-list__item--lead .contact-list__link {
-    padding-left: 0.75rem;
+    padding-left: 1rem;
   }
 
   .contact-list__meta {
-    grid-column: 2;
     justify-self: start;
     margin-top: 0.2rem;
   }

@@ -103,9 +103,12 @@ function ActionRow({ links }: { links: ActionLink[] }) {
 function ContactLinks({ links }: { links: ActionLink[] }) {
   return (
     <ul className="contact-list">
-      {links.map((link, index) => {
+      {links.map((link) => {
         const isLead = link.href.includes("linkedin.com");
         const meta = getContactLinkMeta(link);
+        const description = isLead
+          ? "Best for professional conversations and follow-up."
+          : "A current PDF summary of experience and roles.";
 
         return (
           <li
@@ -120,8 +123,10 @@ function ContactLinks({ links }: { links: ActionLink[] }) {
                 : {})}
               {...(link.download ? { download: true } : {})}
             >
-              <span className="contact-list__index">{String(index + 1).padStart(2, "0")}</span>
-              <span className="contact-list__label">{link.label}</span>
+              <span className="contact-list__copy">
+                <span className="contact-list__label">{link.label}</span>
+                <span className="contact-list__description">{description}</span>
+              </span>
               {meta ? <span className="contact-list__meta">{meta}</span> : null}
             </a>
           </li>
@@ -409,12 +414,18 @@ function App() {
                 />
                 <h2 className="section-heading__title">{siteContent.contact.heading}</h2>
                 <SectionIntro body={siteContent.contact.intro} />
+                {siteContent.contact.supportLine ? (
+                  <p className="contact__support">{siteContent.contact.supportLine}</p>
+                ) : null}
                 {siteContent.contact.contextTags?.length ? (
-                  <ul className="contact__tags" aria-label="Conversation topics">
-                    {siteContent.contact.contextTags.map((tag) => (
-                      <li key={tag}>{tag}</li>
-                    ))}
-                  </ul>
+                  <div className="contact__topics">
+                    <p>Open to conversations about</p>
+                    <ul className="contact__tags" aria-label="Conversation topics">
+                      {siteContent.contact.contextTags.map((tag) => (
+                        <li key={tag}>{tag}</li>
+                      ))}
+                    </ul>
+                  </div>
                 ) : null}
               </div>
 
