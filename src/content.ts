@@ -206,7 +206,7 @@ export const siteContent = {
         summary:
           "James's core role is laboratory operations leadership for the Bernhardt and Abraham laboratories: two distinct Howard Hughes Medical Institute Investigator labs in Harvard Medical School's Department of Microbiology, with separate scientific programs and locations. He keeps the administrative, facilities, equipment, vendor, staffing, and daily coordination work moving so the labs can stay focused on science.",
         responsibilities: [
-          "Coordinates budgets, purchasing, facilities, vendor relationships, and equipment planning for laboratory space in the Veritas Science Center and the building formerly known as the Harvard Institutes of Medicine.",
+          "Coordinates budgets, purchasing, facilities, vendor relationships, and equipment planning for laboratory space in Veritas Science Center and 4 Blackfan Circle.",
           "Manages hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
         ],
         evidence: [
@@ -223,7 +223,7 @@ export const siteContent = {
         ],
         callouts: [
           {
-            label: "4 Blackfan Circle / formerly HIM",
+            label: "4 Blackfan Circle",
             x: 18,
             y: 27
           },
@@ -233,7 +233,7 @@ export const siteContent = {
             y: 47
           },
           {
-            label: "Veritas Science Center / formerly NRB",
+            label: "Veritas Science Center",
             x: 67,
             y: 23,
             align: "right"

@@ -1191,14 +1191,21 @@ button {
   stroke-width: 1;
 }
 
-.lab-buildings-scene__fallback-him-roof,
-.lab-buildings-scene__fallback-him-front {
-  fill: url(#fallback-him);
+.lab-buildings-scene__fallback-street {
+  fill: rgba(220, 231, 225, 0.08);
+  stroke: rgba(236, 244, 240, 0.12);
+  stroke-width: 1;
+}
+
+.lab-buildings-scene__fallback-blackfan-roof,
+.lab-buildings-scene__fallback-blackfan-front,
+.lab-buildings-scene__fallback-blackfan-penthouse {
+  fill: url(#fallback-blackfan);
   stroke: rgba(245, 250, 247, 0.13);
   stroke-width: 1.1;
 }
 
-.lab-buildings-scene__fallback-him-side {
+.lab-buildings-scene__fallback-blackfan-side {
   fill: rgba(92, 96, 94, 0.92);
   stroke: rgba(245, 250, 247, 0.1);
   stroke-width: 1.1;
