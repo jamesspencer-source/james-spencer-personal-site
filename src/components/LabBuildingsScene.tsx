@@ -325,6 +325,13 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     transparent: true,
     opacity: 0.58
   });
+  const contextBuildingMaterial = new THREE.MeshStandardMaterial({
+    color: 0x435057,
+    roughness: 0.88,
+    metalness: 0.02,
+    transparent: true,
+    opacity: 0.42
+  });
   const concreteMaterial = new THREE.MeshStandardMaterial({
     color: 0xb6b1a6,
     roughness: 0.86,
@@ -362,6 +369,13 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     metalness: 0.03,
     transparent: true,
     opacity: 0.76
+  });
+  const bridgeMaterial = new THREE.MeshStandardMaterial({
+    color: 0x8fb2b2,
+    roughness: 0.5,
+    metalness: 0.04,
+    transparent: true,
+    opacity: 0.62
   });
   const glassPanelMaterial = new THREE.MeshStandardMaterial({
     color: 0xa8c9ca,
@@ -431,13 +445,30 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     opacity: 0
   });
 
-  const ground = createBox(root, groundMaterial, [8.8, 0.08, 5.8], [0.18, -0.06, 0.18]);
+  const ground = createBox(root, groundMaterial, [10.6, 0.08, 7.2], [0.08, -0.06, 0.12]);
   addEdges(root, ground, edgeMaterial);
 
-  createBox(root, streetMaterial, [7.6, 0.045, 0.48], [0.2, 0.015, 2.84], [0, -0.09, 0]);
-  createBox(root, streetMaterial, [0.44, 0.045, 4.4], [3.62, 0.018, 0.38], [0, 0.04, 0]);
-  createBox(root, sidewalkMaterial, [7.3, 0.035, 0.13], [0.08, 0.045, 2.54], [0, -0.09, 0]);
-  createBox(root, sidewalkMaterial, [0.13, 0.035, 4.1], [3.28, 0.045, 0.33], [0, 0.04, 0]);
+  createBox(root, streetMaterial, [9.4, 0.045, 0.52], [0.12, 0.015, 3.08], [0, -0.1, 0]);
+  createBox(root, streetMaterial, [0.48, 0.045, 5.7], [3.98, 0.018, 0.34], [0, 0.04, 0]);
+  createBox(root, streetMaterial, [5.4, 0.04, 0.34], [-2.82, 0.012, -2.58], [0, 0.06, 0]);
+  createBox(root, sidewalkMaterial, [8.9, 0.035, 0.13], [0.04, 0.045, 2.72], [0, -0.1, 0]);
+  createBox(root, sidewalkMaterial, [0.13, 0.035, 5.35], [3.58, 0.045, 0.3], [0, 0.04, 0]);
+  createBox(root, sidewalkMaterial, [5.1, 0.032, 0.1], [-2.72, 0.042, -2.34], [0, 0.06, 0]);
+
+  [
+    { size: [1.25, 0.55, 0.92], position: [-3.8, 0.28, 1.5] },
+    { size: [1.55, 0.72, 1.1], position: [-3.52, 0.36, -1.75] },
+    { size: [1.25, 0.44, 0.85], position: [3.42, 0.22, -1.95] },
+    { size: [1.65, 0.5, 0.88], position: [2.96, 0.25, 2.2] }
+  ].forEach((block) => {
+    const mesh = createBox(
+      root,
+      contextBuildingMaterial,
+      block.size as [number, number, number],
+      block.position as [number, number, number]
+    );
+    addEdges(root, mesh, edgeMaterial);
+  });
 
   // 4 Blackfan Circle: beige ten-floor tower with heavier concrete massing.
   const himTower = createBox(root, concreteMaterial, [1.55, 3.66, 1.58], [-1.48, 1.83, -0.48]);
@@ -460,6 +491,8 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   createBox(root, roofMaterial, [3.14, 0.1, 1.48], [0.72, 1.15, 1.27]);
   createBox(root, glassDarkMaterial, [1.18, 0.62, 0.5], [-0.52, 0.74, 0.68]);
   createBox(root, glassDarkMaterial, [0.54, 1.18, 0.6], [0.12, 0.68, 0.68]);
+  const skyBridge = createBox(root, bridgeMaterial, [1.34, 0.2, 0.34], [-0.48, 1.18, 0.44]);
+  addEdges(root, skyBridge, edgeMaterial);
 
   addWindowGrid(detailGroup, {
     x: -1.48,
@@ -533,15 +566,18 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   createBox(detailGroup, roofUnitMaterial, [0.78, 0.12, 0.22], [1.34, 4.36, -0.98]);
 
   [
-    [-3.2, 2.48],
-    [-2.6, 2.58],
-    [-0.9, 2.62],
-    [0.4, 2.56],
-    [1.55, 2.5],
-    [2.5, 2.44],
-    [3.08, 1.68],
-    [3.18, 0.86],
-    [3.08, 0.1]
+    [-4.15, 2.76],
+    [-3.48, 2.86],
+    [-2.6, 2.88],
+    [-0.9, 2.8],
+    [0.4, 2.74],
+    [1.55, 2.66],
+    [2.5, 2.58],
+    [3.18, 1.68],
+    [3.3, 0.86],
+    [3.18, 0.1],
+    [-3.74, -2.28],
+    [2.98, -2.22]
   ].forEach(([x, z], index) => {
     addTree(detailGroup, treeTrunkMaterial, treeCanopyMaterial, x, z, index % 3 === 0 ? 1.08 : 0.9);
   });
@@ -640,14 +676,14 @@ function updateScene(
 ) {
   const settle = smoothstep(0.0, 0.2, progress);
   const detailReveal = smoothstep(0.2, 0.45, progress) * detail;
-  const himEmphasis = smoothstep(0.42, 0.5, progress) * (1 - smoothstep(0.62, 0.68, progress));
-  const vscEmphasis = smoothstep(0.74, 0.82, progress) * (1 - smoothstep(0.93, 0.98, progress));
+  const himEmphasis = smoothstep(0.36, 0.44, progress) * (1 - smoothstep(0.6, 0.68, progress));
+  const vscEmphasis = smoothstep(0.58, 0.68, progress) * (1 - smoothstep(0.82, 0.9, progress));
   const floorSequence = Math.max(
-    smoothstep(0.45, 0.62, progress),
-    smoothstep(0.74, 0.88, progress) * 0.92
+    smoothstep(0.36, 0.58, progress),
+    smoothstep(0.58, 0.78, progress) * 0.95
   );
   const connectorDraw = Math.floor(
-    mix(2, handles.connectorPointCount, smoothstep(0.56, 0.78, progress))
+    mix(2, handles.connectorPointCount, smoothstep(0.48, 0.68, progress))
   );
   const pulse = 0.5 + Math.sin(elapsed * 0.0025) * 0.5;
 
@@ -655,17 +691,17 @@ function updateScene(
   handles.root.rotation.x = mix(0.17, 0.06, settle);
   handles.root.position.set(
     mix(0.14, 0.02, settle),
-    mix(-0.36, -0.12, reveal),
+    mix(-0.48, -0.24, reveal),
     mix(0.04, 0, settle)
   );
-  handles.root.scale.setScalar(mix(0.82, 1.02, reveal) * mix(1, 0.94, compress));
+  handles.root.scale.setScalar(mix(0.68, 0.86, reveal) * mix(1, 0.95, compress));
 
   handles.camera.position.set(
-    mix(-5.35, -4.45, settle),
-    mix(5.7, 4.55, settle),
-    mix(7.25, 6.05, settle)
+    mix(-6.8, -5.75, settle),
+    mix(6.6, 5.4, settle),
+    mix(9.1, 7.6, settle)
   );
-  handles.camera.lookAt(0.02, 1.82, 0.18);
+  handles.camera.lookAt(0.02, 1.62, 0.2);
 
   handles.detailGroup.visible = detailReveal > 0.02;
   handles.detailMaterials.forEach((material) => {
@@ -689,16 +725,16 @@ function updateScene(
     mix(0.28, 1.12, vscEmphasis + detailReveal * 0.22)
   );
   handles.connector.geometry.setDrawRange(0, connectorDraw);
-  handles.connector.material.opacity = mix(0.12, 0.78, smoothstep(0.56, 0.78, progress));
+  handles.connector.material.opacity = mix(0.12, 0.78, smoothstep(0.48, 0.68, progress));
 
-  const markerTravel = smoothstep(0.56, 0.78, progress);
-  const markerVisible = progress > 0.54 && progress < 0.98;
+  const markerTravel = smoothstep(0.48, 0.68, progress);
+  const markerVisible = progress > 0.46 && progress < 0.9;
   const markerPosition = handles.connectorCurve.getPoint(markerTravel);
   handles.signalMarker.position.copy(markerPosition);
   handles.signalMarker.scale.setScalar(mix(0.72, 1.2, pulse));
   handles.signalMarker.visible = markerVisible;
   handles.signalMarker.material.opacity = markerVisible
-    ? mix(0.35, 0.95, smoothstep(0.56, 0.64, progress)) * (1 - smoothstep(0.94, 1, progress) * 0.25)
+    ? mix(0.35, 0.95, smoothstep(0.48, 0.56, progress)) * (1 - smoothstep(0.84, 0.92, progress) * 0.25)
     : 0;
 }
 
@@ -731,6 +767,9 @@ function LabBuildingsFallback() {
       <ellipse className="lab-buildings-scene__fallback-shadow" cx="490" cy="604" rx="328" ry="68" />
       <polygon className="lab-buildings-scene__fallback-ground" points="96,558 812,558 914,612 200,628" />
       <polygon className="lab-buildings-scene__fallback-street" points="92,590 864,574 930,612 164,646" />
+      <polygon className="lab-buildings-scene__fallback-context" points="116,438 196,430 238,458 158,468" />
+      <polygon className="lab-buildings-scene__fallback-context" points="762,404 866,392 906,420 802,436" />
+      <polygon className="lab-buildings-scene__fallback-context" points="136,226 236,216 288,246 188,258" />
 
       <polygon className="lab-buildings-scene__fallback-blackfan-roof" points="214,136 382,130 444,174 276,184" />
       <polygon className="lab-buildings-scene__fallback-blackfan-side" points="214,136 276,184 276,530 214,486" />
@@ -741,6 +780,7 @@ function LabBuildingsFallback() {
       <polygon className="lab-buildings-scene__fallback-vsc-front" points="594,176 856,152 856,520 594,542" />
       <polygon className="lab-buildings-scene__fallback-vsc-side" points="856,152 904,192 904,560 856,520" />
       <polygon className="lab-buildings-scene__fallback-podium" points="410,360 730,344 824,398 502,418 502,542 730,530 824,584 502,598 410,536" />
+      <polygon className="lab-buildings-scene__fallback-skybridge" points="400,390 532,378 548,396 416,410" />
 
       {Array.from({ length: 10 }).map((_, index) => {
         const blackfanY = 210 + index * 31;

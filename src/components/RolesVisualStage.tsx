@@ -271,16 +271,16 @@ function RolesVisualStage({
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   const overviewVisibility = fadeBetween(progress, 0, 0.08, 0.2, 0.34);
-  const labsVisibility = fadeBetween(progress, 0.2, 0.34, 0.48, 0.62);
-  const programVisibility = fadeBetween(progress, 0.48, 0.62, 0.82, 0.92);
+  const labsVisibility = fadeBetween(progress, 0.2, 0.34, 0.62, 0.74);
+  const programVisibility = fadeBetween(progress, 0.58, 0.7, 0.82, 0.92);
   const globeVisibility = fadeBetween(progress, 0.76, 0.88, 1.08, 1.18);
 
   const overviewCompress = smoothstep(0.18, 0.34, progress);
-  const labsCompress = smoothstep(0.48, 0.62, progress);
+  const labsCompress = smoothstep(0.62, 0.74, progress);
   const labsReveal = smoothstep(0.22, 0.38, progress);
   const labsDetail =
-    smoothstep(0.3, 0.46, progress) * (1 - smoothstep(0.54, 0.62, progress));
-  const programEnter = smoothstep(0.48, 0.62, progress);
+    smoothstep(0.3, 0.46, progress) * (1 - smoothstep(0.68, 0.76, progress));
+  const programEnter = smoothstep(0.58, 0.7, progress);
   const programExit = smoothstep(0.82, 0.92, progress);
   const programStationsVisibility =
     smoothstep(0.6, 0.72, progress) * (1 - smoothstep(0.94, 0.99, progress));
