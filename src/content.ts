@@ -223,25 +223,14 @@ export const siteContent = {
         ],
         callouts: [
           {
-            label: "4 Blackfan Circle",
-            x: 18,
-            y: 27
+            label: "Bernhardt Lab - 10th floor, 4 Blackfan Circle",
+            x: 22,
+            y: 34
           },
           {
-            label: "Bernhardt Lab - 10th floor",
-            x: 25,
-            y: 47
-          },
-          {
-            label: "Veritas Science Center",
-            x: 67,
-            y: 23,
-            align: "right"
-          },
-          {
-            label: "Abraham Lab - 9th floor",
-            x: 76,
-            y: 47,
+            label: "Abraham Lab - 9th floor, Veritas Science Center",
+            x: 78,
+            y: 42,
             align: "right"
           }
         ],

@@ -19,7 +19,9 @@ type SceneHandles = {
   himBand: any;
   vscBand: any;
   connector: any;
+  connectorCurve: any;
   connectorPointCount: number;
+  signalMarker: any;
   facadeMaterials: any[];
   detailMaterials: any[];
   resizeObserver: ResizeObserver;
@@ -423,6 +425,11 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     opacity: 0.62
   });
   const bandMaterialAlt = bandMaterial.clone();
+  const signalMaterial = new THREE.MeshBasicMaterial({
+    color: 0xd9f7e7,
+    transparent: true,
+    opacity: 0
+  });
 
   const ground = createBox(root, groundMaterial, [8.8, 0.08, 5.8], [0.18, -0.06, 0.18]);
   addEdges(root, ground, edgeMaterial);
@@ -575,6 +582,13 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   );
   root.add(connector);
 
+  const signalMarker = new THREE.Mesh(
+    new THREE.SphereGeometry(0.075, 24, 16),
+    signalMaterial
+  );
+  signalMarker.visible = false;
+  root.add(signalMarker);
+
   const resize = () => {
     const width = Math.max(1, container.clientWidth);
     const height = Math.max(1, container.clientHeight);
@@ -596,7 +610,9 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     himBand,
     vscBand,
     connector,
+    connectorCurve,
     connectorPointCount: connectorPoints.length,
+    signalMarker,
     facadeMaterials: [
       concreteWindowMaterial,
       concreteMullionMaterial,
@@ -624,32 +640,32 @@ function updateScene(
 ) {
   const settle = smoothstep(0.0, 0.2, progress);
   const detailReveal = smoothstep(0.2, 0.45, progress) * detail;
-  const himEmphasis = smoothstep(0.45, 0.54, progress) * (1 - smoothstep(0.64, 0.7, progress));
-  const vscEmphasis = smoothstep(0.65, 0.74, progress) * (1 - smoothstep(0.82, 0.88, progress));
+  const himEmphasis = smoothstep(0.42, 0.5, progress) * (1 - smoothstep(0.62, 0.68, progress));
+  const vscEmphasis = smoothstep(0.74, 0.82, progress) * (1 - smoothstep(0.93, 0.98, progress));
   const floorSequence = Math.max(
     smoothstep(0.45, 0.62, progress),
-    smoothstep(0.65, 0.82, progress) * 0.92
+    smoothstep(0.74, 0.88, progress) * 0.92
   );
   const connectorDraw = Math.floor(
-    mix(2, handles.connectorPointCount, smoothstep(0.82, 1, progress))
+    mix(2, handles.connectorPointCount, smoothstep(0.56, 0.78, progress))
   );
   const pulse = 0.5 + Math.sin(elapsed * 0.0025) * 0.5;
 
-  handles.root.rotation.y = mix(-0.64, -0.4, settle);
-  handles.root.rotation.x = mix(0.18, 0.07, settle);
+  handles.root.rotation.y = mix(0.52, 0.34, settle);
+  handles.root.rotation.x = mix(0.17, 0.06, settle);
   handles.root.position.set(
-    mix(-0.12, 0.06, settle),
+    mix(0.14, 0.02, settle),
     mix(-0.36, -0.12, reveal),
-    mix(0.08, 0, settle)
+    mix(0.04, 0, settle)
   );
   handles.root.scale.setScalar(mix(0.82, 1.02, reveal) * mix(1, 0.94, compress));
 
   handles.camera.position.set(
-    mix(4.8, 4.15, settle),
-    mix(5.8, 4.6, settle),
-    mix(7.4, 6.15, settle)
+    mix(-5.35, -4.45, settle),
+    mix(5.7, 4.55, settle),
+    mix(7.25, 6.05, settle)
   );
-  handles.camera.lookAt(0.14, 1.82, 0.28);
+  handles.camera.lookAt(0.02, 1.82, 0.18);
 
   handles.detailGroup.visible = detailReveal > 0.02;
   handles.detailMaterials.forEach((material) => {
@@ -673,7 +689,17 @@ function updateScene(
     mix(0.28, 1.12, vscEmphasis + detailReveal * 0.22)
   );
   handles.connector.geometry.setDrawRange(0, connectorDraw);
-  handles.connector.material.opacity = mix(0.12, 0.78, smoothstep(0.82, 1, progress));
+  handles.connector.material.opacity = mix(0.12, 0.78, smoothstep(0.56, 0.78, progress));
+
+  const markerTravel = smoothstep(0.56, 0.78, progress);
+  const markerVisible = progress > 0.54 && progress < 0.98;
+  const markerPosition = handles.connectorCurve.getPoint(markerTravel);
+  handles.signalMarker.position.copy(markerPosition);
+  handles.signalMarker.scale.setScalar(mix(0.72, 1.2, pulse));
+  handles.signalMarker.visible = markerVisible;
+  handles.signalMarker.material.opacity = markerVisible
+    ? mix(0.35, 0.95, smoothstep(0.56, 0.64, progress)) * (1 - smoothstep(0.94, 1, progress) * 0.25)
+    : 0;
 }
 
 function disposeScene(handles: SceneHandles) {
