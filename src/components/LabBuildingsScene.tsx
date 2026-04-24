@@ -95,7 +95,7 @@ function addWindowGrid(
     height: number;
     floors: number;
     columns: number;
-    orientation: "front" | "right";
+    orientation: "front" | "right" | "left";
     windowMaterial: any;
     mullionMaterial: any;
     bayScale?: number;
@@ -122,7 +122,11 @@ function addWindowGrid(
           parent,
           options.windowMaterial,
           [0.018, floorHeight * 0.26, (options.depth / options.columns) * bayScale],
-          [options.x + options.width / 2 + 0.018, y, z]
+          [
+            options.x + (options.orientation === "right" ? options.width / 2 + 0.018 : -options.width / 2 - 0.018),
+            y,
+            z
+          ]
         );
       }
     }
@@ -141,7 +145,11 @@ function addWindowGrid(
           parent,
           options.mullionMaterial,
           [0.018, 0.012, options.depth * 0.96],
-          [options.x + options.width / 2 + 0.025, lineY, options.z]
+          [
+            options.x + (options.orientation === "right" ? options.width / 2 + 0.025 : -options.width / 2 - 0.025),
+            lineY,
+            options.z
+          ]
         );
       }
     }
@@ -158,7 +166,7 @@ function addCurtainWall(
     height: number;
     floors: number;
     columns: number;
-    orientation: "front" | "right";
+    orientation: "front" | "right" | "left";
     panelMaterial: any;
     mullionMaterial: any;
   }
@@ -183,7 +191,11 @@ function addCurtainWall(
           parent,
           options.panelMaterial,
           [0.014, floorHeight * 0.68, (options.depth / options.columns) * 0.82],
-          [options.x + options.width / 2 + 0.02, y, z]
+          [
+            options.x + (options.orientation === "right" ? options.width / 2 + 0.02 : -options.width / 2 - 0.02),
+            y,
+            z
+          ]
         );
       }
     }
@@ -203,8 +215,54 @@ function addCurtainWall(
         parent,
         options.mullionMaterial,
         [0.018, 0.014, options.depth * 0.98],
-        [options.x + options.width / 2 + 0.03, y, options.z]
+        [
+          options.x + (options.orientation === "right" ? options.width / 2 + 0.03 : -options.width / 2 - 0.03),
+          y,
+          options.z
+        ]
       );
+    }
+  }
+}
+
+function addVerticalFacadeRibs(
+  parent: any,
+  options: {
+    x: number;
+    z: number;
+    width: number;
+    depth: number;
+    height: number;
+    count: number;
+    orientation: "front" | "right" | "left";
+    material: any;
+  }
+) {
+  const count = Math.max(2, options.count);
+  for (let index = 0; index < count; index += 1) {
+    const amount = count === 1 ? 0.5 : index / (count - 1);
+    if (options.orientation === "front") {
+      const x = options.x - options.width / 2 + options.width * amount;
+      const rib = createBox(
+        parent,
+        options.material,
+        [0.015, options.height * 0.94, 0.02],
+        [x, options.height * 0.5, options.z + options.depth / 2 + 0.036]
+      );
+      rib.renderOrder = 1;
+    } else {
+      const z = options.z - options.depth / 2 + options.depth * amount;
+      const rib = createBox(
+        parent,
+        options.material,
+        [0.02, options.height * 0.94, 0.015],
+        [
+          options.x + (options.orientation === "right" ? options.width / 2 + 0.036 : -options.width / 2 - 0.036),
+          options.height * 0.5,
+          z
+        ]
+      );
+      rib.renderOrder = 1;
     }
   }
 }
@@ -634,6 +692,39 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     windowMaterial: concreteWindowMaterial,
     mullionMaterial: concreteMullionMaterial
   });
+  addWindowGrid(detailGroup, {
+    x: -1.85,
+    z: -0.5,
+    width: 1.55,
+    depth: 1.58,
+    height: 3.66,
+    floors: 10,
+    columns: 5,
+    orientation: "left",
+    windowMaterial: concreteWindowMaterial,
+    mullionMaterial: concreteMullionMaterial,
+    bayScale: 0.52
+  });
+  addVerticalFacadeRibs(detailGroup, {
+    x: -1.85,
+    z: -0.5,
+    width: 1.55,
+    depth: 1.58,
+    height: 3.66,
+    count: 5,
+    orientation: "left",
+    material: concreteMullionMaterial
+  });
+  addVerticalFacadeRibs(detailGroup, {
+    x: -1.85,
+    z: -0.5,
+    width: 1.55,
+    depth: 1.58,
+    height: 3.66,
+    count: 6,
+    orientation: "front",
+    material: concreteMullionMaterial
+  });
   addCurtainWall(detailGroup, {
     x: 1.78,
     z: -0.32,
@@ -657,6 +748,38 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     orientation: "right",
     panelMaterial: glassPanelMaterial,
     mullionMaterial: vscMullionMaterial
+  });
+  addCurtainWall(detailGroup, {
+    x: 1.78,
+    z: -0.32,
+    width: 2.45,
+    depth: 2.02,
+    height: 3.58,
+    floors: 10,
+    columns: 8,
+    orientation: "left",
+    panelMaterial: glassPanelMaterial,
+    mullionMaterial: vscMullionMaterial
+  });
+  addVerticalFacadeRibs(detailGroup, {
+    x: 1.78,
+    z: -0.32,
+    width: 2.45,
+    depth: 2.02,
+    height: 3.58,
+    count: 9,
+    orientation: "right",
+    material: vscMullionMaterial
+  });
+  addVerticalFacadeRibs(detailGroup, {
+    x: 1.78,
+    z: -0.32,
+    width: 2.45,
+    depth: 2.02,
+    height: 3.58,
+    count: 10,
+    orientation: "front",
+    material: vscMullionMaterial
   });
 
   addRoofArray(detailGroup, roofPanelMaterial, -2.39, 3.86, -0.3);
@@ -924,10 +1047,14 @@ function LabBuildingsFallback() {
       {Array.from({ length: 10 }).map((_, index) => {
         const blackfanY = 210 + index * 31;
         const vscY = 204 + index * 31;
+        const blackfanSideY = 156 + index * 33;
+        const vscSideY = 174 + index * 34;
         return (
           <g key={index}>
             <path className="lab-buildings-scene__fallback-floor" d={`M 248 ${blackfanY} L 388 ${blackfanY - 8}`} />
             <path className="lab-buildings-scene__fallback-floor" d={`M 668 ${vscY} L 900 ${vscY - 18}`} />
+            <path className="lab-buildings-scene__fallback-floor" d={`M 176 ${blackfanSideY} L 230 ${blackfanSideY + 38}`} />
+            <path className="lab-buildings-scene__fallback-floor" d={`M 916 ${vscSideY} L 938 ${vscSideY + 34}`} />
           </g>
         );
       })}
@@ -943,6 +1070,20 @@ function LabBuildingsFallback() {
           key={`vsc-column-${index}`}
           className="lab-buildings-scene__fallback-floor"
           d={`M ${682 + index * 25} 176 L ${682 + index * 25} 532`}
+        />
+      ))}
+      {Array.from({ length: 4 }).map((_, index) => (
+        <path
+          key={`blackfan-side-column-${index}`}
+          className="lab-buildings-scene__fallback-floor"
+          d={`M ${184 + index * 13} ${146 + index * 10} L ${184 + index * 13} ${486 + index * 9}`}
+        />
+      ))}
+      {Array.from({ length: 3 }).map((_, index) => (
+        <path
+          key={`vsc-side-column-${index}`}
+          className="lab-buildings-scene__fallback-floor"
+          d={`M ${920 + index * 7} ${162 + index * 11} L ${920 + index * 7} ${522 + index * 12}`}
         />
       ))}
       <polygon className="lab-buildings-scene__fallback-band lab-buildings-scene__fallback-band--glow" points="224,190 408,178 408,232 224,244" />
