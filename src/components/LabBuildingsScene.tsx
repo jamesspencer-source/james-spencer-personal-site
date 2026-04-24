@@ -471,32 +471,43 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   });
 
   // 4 Blackfan Circle: beige ten-floor tower with heavier concrete massing.
-  const himTower = createBox(root, concreteMaterial, [1.55, 3.66, 1.58], [-1.48, 1.83, -0.48]);
+  const himTower = createBox(root, concreteMaterial, [1.55, 3.66, 1.58], [-1.85, 1.83, -0.5]);
   addEdges(root, himTower, edgeMaterial);
-  createBox(root, concreteSideMaterial, [0.18, 3.66, 1.62], [-2.35, 1.83, -0.48]);
-  createBox(root, roofMaterial, [1.62, 0.12, 1.64], [-1.48, 3.72, -0.48]);
-  createBox(root, concreteMaterial, [1.0, 0.34, 0.55], [-1.48, 3.95, -0.9]);
-  createBox(root, darkRoofMaterial, [1.25, 0.06, 1.2], [-1.48, 3.8, -0.43]);
+  createBox(root, concreteSideMaterial, [0.18, 3.66, 1.62], [-2.72, 1.83, -0.5]);
+  createBox(root, roofMaterial, [1.62, 0.12, 1.64], [-1.85, 3.72, -0.5]);
+  createBox(root, concreteMaterial, [1.0, 0.34, 0.55], [-1.85, 3.95, -0.92]);
+  createBox(root, darkRoofMaterial, [1.25, 0.06, 1.2], [-1.85, 3.8, -0.45]);
 
   // Veritas Science Center: glass research tower with lower podium facing Avenue Louis Pasteur.
-  const vscTower = createBox(root, glassMaterial, [2.45, 3.58, 2.02], [1.26, 1.79, -0.34]);
+  const vscTower = createBox(root, glassMaterial, [2.45, 3.58, 2.02], [1.78, 1.79, -0.32]);
   addEdges(root, vscTower, edgeMaterial);
-  createBox(root, glassDarkMaterial, [0.22, 3.58, 2.08], [2.6, 1.79, -0.34]);
-  createBox(root, roofMaterial, [2.55, 0.12, 2.12], [1.26, 3.65, -0.34]);
-  createBox(root, glassDarkMaterial, [1.32, 0.52, 1.0], [1.36, 3.96, -0.5]);
-  createBox(root, roofMaterial, [1.38, 0.08, 1.06], [1.36, 4.25, -0.5]);
+  createBox(root, glassDarkMaterial, [0.22, 3.58, 2.08], [3.12, 1.79, -0.32]);
+  createBox(root, roofMaterial, [2.55, 0.12, 2.12], [1.78, 3.65, -0.32]);
+  createBox(root, glassDarkMaterial, [1.32, 0.52, 1.0], [1.88, 3.96, -0.48]);
+  createBox(root, roofMaterial, [1.38, 0.08, 1.06], [1.88, 4.25, -0.48]);
 
-  const vscPodium = createBox(root, glassDarkMaterial, [3.08, 1.1, 1.42], [0.72, 0.55, 1.27]);
+  const vscPodium = createBox(root, glassDarkMaterial, [2.35, 1.05, 1.3], [1.54, 0.53, 1.34]);
   addEdges(root, vscPodium, edgeMaterial);
-  createBox(root, roofMaterial, [3.14, 0.1, 1.48], [0.72, 1.15, 1.27]);
-  createBox(root, glassDarkMaterial, [1.18, 0.62, 0.5], [-0.52, 0.74, 0.68]);
-  createBox(root, glassDarkMaterial, [0.54, 1.18, 0.6], [0.12, 0.68, 0.68]);
-  const skyBridge = createBox(root, bridgeMaterial, [1.34, 0.2, 0.34], [-0.48, 1.18, 0.44]);
+  createBox(root, roofMaterial, [2.42, 0.1, 1.36], [1.54, 1.1, 1.34]);
+  createBox(root, glassDarkMaterial, [0.62, 0.78, 0.48], [0.25, 0.7, 0.78]);
+  const conferenceCenter = createBox(root, glassDarkMaterial, [1.18, 0.58, 0.92], [0.2, 0.29, 1.9]);
+  addEdges(root, conferenceCenter, edgeMaterial);
+  const conferenceRoof = createCylinder(
+    root,
+    roofMaterial,
+    0.32,
+    0.1,
+    [0.2, 0.66, 1.9],
+    [0, 0, 0],
+    36
+  );
+  conferenceRoof.scale.set(1.42, 1, 0.58);
+  const skyBridge = createBox(root, bridgeMaterial, [1.18, 0.16, 0.24], [-0.72, 1.18, 0.42]);
   addEdges(root, skyBridge, edgeMaterial);
 
   addWindowGrid(detailGroup, {
-    x: -1.48,
-    z: -0.48,
+    x: -1.85,
+    z: -0.5,
     width: 1.55,
     depth: 1.58,
     height: 3.66,
@@ -507,8 +518,8 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     mullionMaterial: concreteMullionMaterial
   });
   addWindowGrid(detailGroup, {
-    x: -1.48,
-    z: -0.48,
+    x: -1.85,
+    z: -0.5,
     width: 1.55,
     depth: 1.58,
     height: 3.66,
@@ -519,8 +530,8 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     mullionMaterial: concreteMullionMaterial
   });
   addCurtainWall(detailGroup, {
-    x: 1.26,
-    z: -0.34,
+    x: 1.78,
+    z: -0.32,
     width: 2.45,
     depth: 2.02,
     height: 3.58,
@@ -531,8 +542,8 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     mullionMaterial: vscMullionMaterial
   });
   addCurtainWall(detailGroup, {
-    x: 1.26,
-    z: -0.34,
+    x: 1.78,
+    z: -0.32,
     width: 2.45,
     depth: 2.02,
     height: 3.58,
@@ -543,27 +554,27 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     mullionMaterial: vscMullionMaterial
   });
 
-  addRoofArray(detailGroup, roofPanelMaterial, -2.02, 3.86, -0.28);
-  addRoofArray(detailGroup, roofPanelMaterial, 0.02, 1.23, 1.03);
-  addRoofArray(detailGroup, roofPanelMaterial, 0.96, 1.23, 1.03);
+  addRoofArray(detailGroup, roofPanelMaterial, -2.39, 3.86, -0.3);
+  addRoofArray(detailGroup, roofPanelMaterial, 0.84, 1.17, 1.12);
+  addRoofArray(detailGroup, roofPanelMaterial, 1.54, 1.17, 1.12);
 
   [
-    [-1.93, 3.98, -0.12],
-    [-1.58, 3.98, -0.12],
-    [-1.23, 3.98, -0.12],
-    [-1.82, 3.98, -0.72],
-    [-1.43, 3.98, -0.72],
-    [0.52, 4.35, -0.42],
-    [0.86, 4.35, -0.42],
-    [1.2, 4.35, -0.42],
-    [1.54, 4.35, -0.42],
-    [1.88, 4.35, -0.42],
-    [2.22, 4.35, -0.42]
+    [-2.3, 3.98, -0.14],
+    [-1.95, 3.98, -0.14],
+    [-1.6, 3.98, -0.14],
+    [-2.18, 3.98, -0.74],
+    [-1.79, 3.98, -0.74],
+    [1.04, 4.35, -0.4],
+    [1.38, 4.35, -0.4],
+    [1.72, 4.35, -0.4],
+    [2.06, 4.35, -0.4],
+    [2.4, 4.35, -0.4],
+    [2.74, 4.35, -0.4]
   ].forEach(([x, y, z]) => {
     createCylinder(detailGroup, roofUnitMaterial, 0.055, 0.34, [x, y, z]);
   });
-  createBox(detailGroup, roofUnitMaterial, [0.96, 0.12, 0.25], [-1.46, 4.08, -1.2]);
-  createBox(detailGroup, roofUnitMaterial, [0.78, 0.12, 0.22], [1.34, 4.36, -0.98]);
+  createBox(detailGroup, roofUnitMaterial, [0.96, 0.12, 0.25], [-1.83, 4.08, -1.22]);
+  createBox(detailGroup, roofUnitMaterial, [0.78, 0.12, 0.22], [1.86, 4.36, -0.96]);
 
   [
     [-4.15, 2.76],
@@ -583,16 +594,16 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   });
 
   const himBand = createFloorBand(root, bandMaterial, {
-    x: -1.48,
-    z: -0.48,
+    x: -1.85,
+    z: -0.5,
     width: 1.55,
     depth: 1.58,
     height: 3.66,
     floor: 10
   });
   const vscBand = createFloorBand(root, bandMaterialAlt, {
-    x: 1.26,
-    z: -0.34,
+    x: 1.78,
+    z: -0.32,
     width: 2.45,
     depth: 2.02,
     height: 3.58,
@@ -600,10 +611,10 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   });
 
   const connectorCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-0.64, 3.48, 0.36),
-    new THREE.Vector3(-0.08, 3.43, 0.66),
-    new THREE.Vector3(0.55, 3.25, 0.72),
-    new THREE.Vector3(1.02, 3.02, 0.72)
+    new THREE.Vector3(-1.02, 3.48, 0.36),
+    new THREE.Vector3(-0.28, 3.44, 0.68),
+    new THREE.Vector3(0.72, 3.25, 0.74),
+    new THREE.Vector3(1.54, 3.02, 0.74)
   ]);
   const connectorPoints = connectorCurve.getPoints(40);
   const connectorGeometry = new THREE.BufferGeometry().setFromPoints(connectorPoints);
@@ -771,24 +782,26 @@ function LabBuildingsFallback() {
       <polygon className="lab-buildings-scene__fallback-context" points="762,404 866,392 906,420 802,436" />
       <polygon className="lab-buildings-scene__fallback-context" points="136,226 236,216 288,246 188,258" />
 
-      <polygon className="lab-buildings-scene__fallback-blackfan-roof" points="214,136 382,130 444,174 276,184" />
-      <polygon className="lab-buildings-scene__fallback-blackfan-side" points="214,136 276,184 276,530 214,486" />
-      <polygon className="lab-buildings-scene__fallback-blackfan-front" points="276,184 444,174 444,548 276,530" />
-      <polygon className="lab-buildings-scene__fallback-blackfan-penthouse" points="284,120 386,118 424,144 322,150" />
+      <polygon className="lab-buildings-scene__fallback-blackfan-roof" points="170,136 338,130 400,174 232,184" />
+      <polygon className="lab-buildings-scene__fallback-blackfan-side" points="170,136 232,184 232,530 170,486" />
+      <polygon className="lab-buildings-scene__fallback-blackfan-front" points="232,184 400,174 400,548 232,530" />
+      <polygon className="lab-buildings-scene__fallback-blackfan-penthouse" points="240,120 342,118 380,144 278,150" />
 
-      <polygon className="lab-buildings-scene__fallback-vsc-roof" points="496,110 760,92 856,152 594,176" />
-      <polygon className="lab-buildings-scene__fallback-vsc-front" points="594,176 856,152 856,520 594,542" />
-      <polygon className="lab-buildings-scene__fallback-vsc-side" points="856,152 904,192 904,560 856,520" />
-      <polygon className="lab-buildings-scene__fallback-podium" points="410,360 730,344 824,398 502,418 502,542 730,530 824,584 502,598 410,536" />
-      <polygon className="lab-buildings-scene__fallback-skybridge" points="400,390 532,378 548,396 416,410" />
+      <polygon className="lab-buildings-scene__fallback-vsc-roof" points="554,110 818,92 914,152 652,176" />
+      <polygon className="lab-buildings-scene__fallback-vsc-front" points="652,176 914,152 914,520 652,542" />
+      <polygon className="lab-buildings-scene__fallback-vsc-side" points="914,152 940,192 940,560 914,520" />
+      <polygon className="lab-buildings-scene__fallback-podium" points="512,360 770,346 850,396 592,412 592,540 770,530 850,580 592,594 512,536" />
+      <polygon className="lab-buildings-scene__fallback-conference" points="404,472 518,460 568,492 454,506 454,564 518,556 568,588 454,604 404,568" />
+      <ellipse className="lab-buildings-scene__fallback-conference-roof" cx="478" cy="462" rx="52" ry="18" />
+      <polygon className="lab-buildings-scene__fallback-skybridge" points="360,390 482,378 496,394 374,408" />
 
       {Array.from({ length: 10 }).map((_, index) => {
         const blackfanY = 210 + index * 31;
         const vscY = 204 + index * 31;
         return (
           <g key={index}>
-            <path className="lab-buildings-scene__fallback-floor" d={`M 292 ${blackfanY} L 432 ${blackfanY - 8}`} />
-            <path className="lab-buildings-scene__fallback-floor" d={`M 610 ${vscY} L 842 ${vscY - 18}`} />
+            <path className="lab-buildings-scene__fallback-floor" d={`M 248 ${blackfanY} L 388 ${blackfanY - 8}`} />
+            <path className="lab-buildings-scene__fallback-floor" d={`M 668 ${vscY} L 900 ${vscY - 18}`} />
           </g>
         );
       })}
@@ -796,19 +809,19 @@ function LabBuildingsFallback() {
         <path
           key={`blackfan-column-${index}`}
           className="lab-buildings-scene__fallback-floor"
-          d={`M ${304 + index * 28} 192 L ${304 + index * 28} 526`}
+          d={`M ${260 + index * 28} 192 L ${260 + index * 28} 526`}
         />
       ))}
       {Array.from({ length: 9 }).map((_, index) => (
         <path
           key={`vsc-column-${index}`}
           className="lab-buildings-scene__fallback-floor"
-          d={`M ${624 + index * 25} 176 L ${624 + index * 25} 532`}
+          d={`M ${682 + index * 25} 176 L ${682 + index * 25} 532`}
         />
       ))}
-      <polygon className="lab-buildings-scene__fallback-band" points="276,204 444,194 444,212 276,222" />
-      <polygon className="lab-buildings-scene__fallback-band" points="594,252 856,228 856,248 594,272" />
-      <path className="lab-buildings-scene__fallback-link" d="M 446 203 C 508 210 544 242 592 262" />
+      <polygon className="lab-buildings-scene__fallback-band" points="232,204 400,194 400,212 232,222" />
+      <polygon className="lab-buildings-scene__fallback-band" points="652,252 914,228 914,248 652,272" />
+      <path className="lab-buildings-scene__fallback-link" d="M 402 203 C 488 214 568 244 650 262" />
     </svg>
   );
 }
