@@ -221,6 +221,30 @@ export const siteContent = {
               "Staffing support, facilities coordination, equipment planning, budgets, purchasing, vendor relationships, onboarding, access, and daily continuity."
           }
         ],
+        callouts: [
+          {
+            label: "4 Blackfan Circle / formerly HIM",
+            x: 18,
+            y: 27
+          },
+          {
+            label: "Bernhardt Lab - 10th floor",
+            x: 25,
+            y: 47
+          },
+          {
+            label: "Veritas Science Center / formerly NRB",
+            x: 67,
+            y: 23,
+            align: "right"
+          },
+          {
+            label: "Abraham Lab - 9th floor",
+            x: 76,
+            y: 47,
+            align: "right"
+          }
+        ],
         visual: {
           kind: "labs-schematic"
         }

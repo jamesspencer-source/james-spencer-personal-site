@@ -5,11 +5,13 @@ import { feature, merge } from "topojson-client";
 import usAtlasData from "us-atlas/states-10m.json";
 import worldLandData from "world-atlas/land-110m.json";
 import { type HostCity, type RoleChapter } from "../content";
+import LabBuildingsScene from "./LabBuildingsScene";
 
 type RolesVisualStageProps = {
   progress: number;
   activeChapterId: RoleChapter["id"];
   chapters: RoleChapter[];
+  staticMode?: boolean;
 };
 
 type TopologyShape = {
@@ -263,7 +265,8 @@ function getCalloutStyle(
 function RolesVisualStage({
   progress,
   activeChapterId,
-  chapters
+  chapters,
+  staticMode = false
 }: RolesVisualStageProps) {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
@@ -588,223 +591,13 @@ function RolesVisualStage({
           transform: `translate3d(${mix(0, -26, labsCompress)}px, ${mix(-8, -18, labsCompress)}px, 0) scale(${mix(0.99, 0.94, labsCompress)})`
         }}
       >
-        <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
-          <defs>
-            <linearGradient id="labs-glass" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#4f6776" />
-              <stop offset="100%" stopColor="#1b232a" />
-            </linearGradient>
-            <linearGradient id="labs-glass-side" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#394954" />
-              <stop offset="100%" stopColor="#11171c" />
-            </linearGradient>
-            <linearGradient id="labs-concrete" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#343d46" />
-              <stop offset="100%" stopColor="#171c21" />
-            </linearGradient>
-            <linearGradient id="labs-highlight" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#a6d5bf" />
-              <stop offset="100%" stopColor="#5d7e72" />
-            </linearGradient>
-          </defs>
-
-          <ellipse className="scene-labs__shadow" cx="488" cy="586" rx="294" ry="58" />
-
-          <g
-            className="scene-labs__site-context"
-            style={{
-              opacity: mix(0.5, 1, labsReveal),
-              transform: `translate3d(0, ${mix(16, 0, labsReveal)}px, 0)`
-            }}
-          >
-            <polygon className="scene-labs__street" points="142,562 840,562 896,594 198,594" />
-            <polygon className="scene-labs__service-yard" points="430,514 766,514 824,548 488,548" />
-            <path className="scene-labs__street-line" d="M 186 579 L 842 579" />
-            <path className="scene-labs__street-line scene-labs__street-line--soft" d="M 260 608 L 756 608" />
-          </g>
-
-          <g
-            className="scene-labs__structure"
-            style={{
-              opacity: labsReveal,
-              transform: `translate3d(0, ${mix(20, 0, labsReveal)}px, 0)`
-            }}
-          >
-            <polygon className="scene-labs__him-roof" points="246,148 372,148 420,180 294,180" />
-            <polygon className="scene-labs__him-side" points="246,148 294,180 294,518 246,486" />
-            <polygon className="scene-labs__him-main" points="294,180 420,180 420,548 294,518" />
-
-            <polygon className="scene-labs__connector-roof" points="404,300 522,300 570,332 452,332" />
-            <polygon className="scene-labs__connector-front" points="452,332 570,332 570,422 452,422" />
-            <polygon className="scene-labs__connector-side" points="570,332 620,366 620,456 570,422" />
-
-            <polygon className="scene-labs__veritas-roof" points="500,126 726,126 804,176 578,176" />
-            <polygon className="scene-labs__veritas-edge" points="500,126 578,176 578,518 500,470" />
-            <polygon className="scene-labs__veritas-front" points="578,176 804,176 804,520 578,518" />
-            <polygon className="scene-labs__veritas-side" points="804,176 874,222 874,566 804,520" />
-
-            <polygon className="scene-labs__podium-roof" points="388,332 648,332 734,386 474,386" />
-            <polygon className="scene-labs__podium-front" points="474,386 734,386 734,530 474,530" />
-            <polygon className="scene-labs__podium-side" points="734,386 820,440 820,584 734,530" />
-
-            <polygon className="scene-labs__auditorium-roof" points="280,368 398,368 442,396 324,396" />
-            <polygon className="scene-labs__auditorium-front" points="324,396 442,396 442,510 324,510" />
-            <polygon className="scene-labs__auditorium-side" points="442,396 490,428 490,542 442,510" />
-          </g>
-
-          <g
-            className="scene-labs__rooftop"
-            style={{
-              opacity: labsDetail,
-              transform: `translate3d(0, ${mix(-8, 0, labsDetail)}px, 0)`
-            }}
-          >
-            {[
-              { x: 294, y: 188, width: 22, height: 14 },
-              { x: 320, y: 188, width: 22, height: 14 },
-              { x: 346, y: 188, width: 22, height: 14 },
-              { x: 372, y: 188, width: 22, height: 14 }
-            ].map((unit) => (
-              <rect
-                key={`${unit.x}-${unit.y}`}
-                className="scene-labs__roof-unit"
-                x={unit.x}
-                y={unit.y - 30}
-                width={unit.width}
-                height={unit.height}
-                rx="3"
-              />
-            ))}
-            <circle className="scene-labs__roof-fan" cx="302" cy="174" r="10" />
-            <circle className="scene-labs__roof-fan" cx="336" cy="174" r="10" />
-            <path className="scene-labs__roof-rail" d="M 288 160 L 406 160" />
-            <path className="scene-labs__roof-arch" d="M 354 180 Q 388 134 420 180" />
-
-            {Array.from({ length: 10 }).map((_, index) => {
-              const x = 602 + index * 18;
-              return (
-                <rect
-                  key={`stack-${x}`}
-                  className="scene-labs__roof-stack"
-                  x={x}
-                  y="140"
-                  width="7"
-                  height="28"
-                  rx="3"
-                />
-              );
-            })}
-          </g>
-
-          <g className="scene-labs__roof-grid" style={{ opacity: mix(0.2, 1, labsDetail) }}>
-            {Array.from({ length: 5 }).map((_, index) => {
-              const y = 408 + index * 24;
-              return (
-                <path
-                  key={`podium-grid-${y}`}
-                  d={`M 488 ${y} L 726 ${y}`}
-                  className="scene-labs__roof-grid-line"
-                />
-              );
-            })}
-            {Array.from({ length: 6 }).map((_, index) => {
-              const x = 516 + index * 34;
-              return (
-                <path
-                  key={`podium-grid-v-${x}`}
-                  d={`M ${x} 392 L ${x} 522`}
-                  className="scene-labs__roof-grid-line scene-labs__roof-grid-line--soft"
-                />
-              );
-            })}
-          </g>
-
-          <g className="scene-labs__floors" style={{ opacity: mix(0.18, 0.72, labsDetail) }}>
-            {Array.from({ length: 10 }).map((_, index) => {
-              const himY = 204 + index * 32;
-              const veritasY = 198 + index * 32;
-              return (
-                <g key={index}>
-                  <path className="scene-labs__floor-line" d={`M 300 ${himY} L 416 ${himY}`} />
-                  <path className="scene-labs__floor-line" d={`M 590 ${veritasY} L 800 ${veritasY}`} />
-                </g>
-              );
-            })}
-          </g>
-
-          <g className="scene-labs__podium-lines" style={{ opacity: mix(0.12, 0.5, labsDetail) }}>
-            {Array.from({ length: 4 }).map((_, index) => {
-              const y = 414 + index * 24;
-              return (
-                <path
-                  key={y}
-                  className="scene-labs__podium-line"
-                  d={`M 486 ${y} L 726 ${y}`}
-                />
-              );
-            })}
-          </g>
-
-          <g className="scene-labs__windows" style={{ opacity: mix(0.18, 0.68, labsDetail) }}>
-            {Array.from({ length: 6 }).map((_, column) => {
-              const x = 310 + column * 18;
-              return <path key={x} className="scene-labs__window-line" d={`M ${x} 186 L ${x} 514`} />;
-            })}
-            {Array.from({ length: 9 }).map((_, column) => {
-              const x = 600 + column * 22;
-              return <path key={x} className="scene-labs__window-line" d={`M ${x} 182 L ${x} 518`} />;
-            })}
-          </g>
-
-          <g className="scene-labs__highlight-bands" style={{ opacity: mix(0.62, 1, labsDetail) }}>
-            <polygon points="294,214 420,214 420,226 294,226" />
-            <polygon points="246,182 294,214 294,226 246,194" />
-            <polygon points="578,250 804,250 804,262 578,262" />
-            <polygon points="500,200 578,250 578,262 500,212" />
-            <path
-              className="scene-labs__lab-band-sweep"
-              d="M 300 220 L 416 220 M 588 256 L 800 256"
-              pathLength={1}
-              style={{ strokeDashoffset: 1 - labsDetail }}
-            />
-          </g>
-
-          <g className="scene-labs__bridges">
-            <polygon points="448,322 560,322 560,336 448,336" />
-          </g>
-
-          <g className="scene-labs__floor-markers">
-            <text x="442" y="223">10</text>
-            <text x="666" y="261">09</text>
-          </g>
-
-          <g
-            className="scene-labs__signals"
-            style={{ opacity: mix(0.6, 1, 1 - labsCompress) }}
-          >
-            <path
-              d="M 424 220 L 560 256"
-              pathLength={1}
-              style={{
-                strokeDasharray: 1,
-                strokeDashoffset: 1 - smoothstep(0.04, 0.16, progress)
-              }}
-            />
-            <path
-              d="M 430 226 L 572 262"
-              pathLength={1}
-              style={{
-                strokeDasharray: 1,
-                strokeDashoffset: 1 - smoothstep(0.1, 0.22, progress)
-              }}
-            />
-          </g>
-
-          <g className="scene-labs__labels">
-            <text x="322" y="606">Harvard Institutes of Medicine</text>
-            <text x="636" y="606">Veritas Science Center</text>
-          </g>
-        </svg>
+        <LabBuildingsScene
+          progress={progress}
+          reveal={labsReveal}
+          detail={labsDetail}
+          compress={labsCompress}
+          staticMode={staticMode}
+        />
       </div>
 
       <div

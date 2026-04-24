@@ -148,6 +148,7 @@ function ReducedMotionRoles() {
                   progress={chapter.id === "network" ? 0.985 : chapterStops[chapter.id] + 0.04}
                   activeChapterId={chapter.id}
                   chapters={chapters}
+                  staticMode
                 />
               </div>
               <div className="roles-story__card-copy">

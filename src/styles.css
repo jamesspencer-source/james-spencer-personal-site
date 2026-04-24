@@ -1130,6 +1130,10 @@ button {
   will-change: opacity, transform;
 }
 
+.roles-scene__layer--labs {
+  place-items: stretch;
+}
+
 .roles-scene__layer--documentary {
   z-index: 2;
   align-items: end;
@@ -1142,6 +1146,97 @@ button {
   width: 100%;
   height: 100%;
   overflow: visible;
+}
+
+.lab-buildings-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  isolation: isolate;
+}
+
+.lab-buildings-scene::before {
+  content: "";
+  position: absolute;
+  inset: 7% 6% 8%;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 56% 40%, rgba(222, 238, 229, 0.14), transparent 17rem),
+    linear-gradient(180deg, rgba(245, 250, 247, 0.04), rgba(245, 250, 247, 0));
+  filter: blur(2px);
+}
+
+.lab-buildings-scene__canvas,
+.lab-buildings-scene__fallback {
+  width: 100%;
+  height: 100%;
+}
+
+.lab-buildings-scene__canvas {
+  display: block;
+}
+
+.lab-buildings-scene__fallback {
+  overflow: visible;
+}
+
+.lab-buildings-scene__fallback-shadow {
+  fill: rgba(0, 0, 0, 0.36);
+}
+
+.lab-buildings-scene__fallback-ground {
+  fill: rgba(220, 231, 225, 0.055);
+  stroke: rgba(236, 244, 240, 0.1);
+  stroke-width: 1;
+}
+
+.lab-buildings-scene__fallback-him-roof,
+.lab-buildings-scene__fallback-him-front {
+  fill: url(#fallback-him);
+  stroke: rgba(245, 250, 247, 0.13);
+  stroke-width: 1.1;
+}
+
+.lab-buildings-scene__fallback-him-side {
+  fill: rgba(92, 96, 94, 0.92);
+  stroke: rgba(245, 250, 247, 0.1);
+  stroke-width: 1.1;
+}
+
+.lab-buildings-scene__fallback-vsc-roof,
+.lab-buildings-scene__fallback-vsc-front {
+  fill: url(#fallback-vsc);
+  stroke: rgba(245, 250, 247, 0.13);
+  stroke-width: 1.1;
+}
+
+.lab-buildings-scene__fallback-vsc-side,
+.lab-buildings-scene__fallback-podium {
+  fill: rgba(56, 72, 82, 0.92);
+  stroke: rgba(245, 250, 247, 0.1);
+  stroke-width: 1.1;
+}
+
+.lab-buildings-scene__fallback-floor {
+  fill: none;
+  stroke: rgba(239, 246, 242, 0.16);
+  stroke-width: 1;
+}
+
+.lab-buildings-scene__fallback-band {
+  fill: rgba(160, 213, 184, 0.58);
+  stroke: rgba(229, 248, 238, 0.75);
+  stroke-width: 1;
+  filter: drop-shadow(0 0 12px rgba(160, 213, 184, 0.22));
+}
+
+.lab-buildings-scene__fallback-link {
+  fill: none;
+  stroke: rgba(219, 246, 231, 0.78);
+  stroke-width: 3;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 12px rgba(160, 213, 184, 0.2));
 }
 
 .roles-scene__documentary-panel {
@@ -1346,194 +1441,8 @@ button {
   }
 }
 
-.scene-labs__shadow,
 .scene-program__shadow {
   fill: rgba(0, 0, 0, 0.34);
-}
-
-.scene-labs__ground {
-  fill: none;
-  stroke: rgba(233, 240, 236, 0.16);
-  stroke-width: 2;
-}
-
-.scene-labs__ground--minor {
-  stroke-width: 1.2;
-  stroke: rgba(233, 240, 236, 0.08);
-}
-
-.scene-labs__street {
-  fill: rgba(225, 233, 229, 0.055);
-  stroke: rgba(233, 241, 237, 0.08);
-  stroke-width: 1.1;
-}
-
-.scene-labs__service-yard {
-  fill: rgba(153, 177, 168, 0.075);
-  stroke: rgba(225, 236, 230, 0.09);
-  stroke-width: 1;
-}
-
-.scene-labs__street-line {
-  fill: none;
-  stroke: rgba(238, 244, 241, 0.16);
-  stroke-width: 1.2;
-}
-
-.scene-labs__street-line--soft {
-  stroke: rgba(238, 244, 241, 0.08);
-}
-
-.scene-labs__veritas-roof,
-.scene-labs__veritas-front,
-.scene-labs__podium-roof,
-.scene-labs__connector-roof,
-.scene-labs__auditorium-roof {
-  fill: url(#labs-glass);
-}
-
-.scene-labs__veritas-side,
-.scene-labs__veritas-edge,
-.scene-labs__podium-front,
-.scene-labs__podium-side,
-.scene-labs__connector-front,
-.scene-labs__connector-side,
-.scene-labs__auditorium-front,
-.scene-labs__auditorium-side {
-  fill: url(#labs-glass-side);
-  stroke: rgba(231, 239, 235, 0.08);
-  stroke-width: 1.1;
-}
-
-.scene-labs__him-roof,
-.scene-labs__him-main,
-.scene-labs__him-front,
-.scene-labs__him-side {
-  fill: url(#labs-concrete);
-}
-
-.scene-labs__him-roof,
-.scene-labs__him-main,
-.scene-labs__him-front,
-.scene-labs__him-side {
-  stroke: rgba(231, 239, 235, 0.08);
-  stroke-width: 1.1;
-}
-
-.scene-labs__auditorium-dome {
-  fill: rgba(215, 226, 221, 0.74);
-  stroke: rgba(241, 246, 243, 0.18);
-  stroke-width: 1;
-}
-
-.scene-labs__podium-front,
-.scene-labs__podium-side,
-.scene-labs__connector-front,
-.scene-labs__connector-side,
-.scene-labs__auditorium-front,
-.scene-labs__auditorium-side {
-  opacity: 0.78;
-}
-
-.scene-labs__podium-roof,
-.scene-labs__connector-roof,
-.scene-labs__auditorium-roof {
-  opacity: 0.84;
-}
-
-.scene-labs__roof-unit,
-.scene-labs__roof-stack {
-  fill: rgba(190, 205, 198, 0.42);
-  stroke: rgba(241, 246, 243, 0.12);
-  stroke-width: 1;
-}
-
-.scene-labs__roof-fan {
-  fill: rgba(178, 193, 186, 0.54);
-  stroke: rgba(241, 246, 243, 0.12);
-  stroke-width: 1;
-}
-
-.scene-labs__roof-rail,
-.scene-labs__roof-arch {
-  fill: none;
-  stroke: rgba(223, 233, 228, 0.28);
-  stroke-width: 2.2;
-}
-
-.scene-labs__roof-grid-line {
-  fill: none;
-  stroke: rgba(232, 240, 236, 0.12);
-  stroke-width: 1.2;
-}
-
-.scene-labs__roof-grid-line--soft {
-  stroke: rgba(232, 240, 236, 0.08);
-}
-
-.scene-labs__floors,
-.scene-labs__windows {
-  opacity: 0.55;
-}
-
-.scene-labs__podium-lines {
-  opacity: 0.42;
-}
-
-.scene-labs__floor-line,
-.scene-labs__window-line {
-  fill: none;
-  stroke: rgba(233, 239, 235, 0.12);
-  stroke-width: 1;
-}
-
-.scene-labs__podium-line {
-  fill: none;
-  stroke: rgba(233, 239, 235, 0.12);
-  stroke-width: 1.2;
-}
-
-.scene-labs__highlight-bands polygon {
-  fill: rgba(222, 235, 229, 0.34);
-  stroke: rgba(233, 241, 237, 0.18);
-  stroke-width: 0.8;
-}
-
-.scene-labs__lab-band-sweep {
-  fill: none;
-  stroke: rgba(230, 249, 239, 0.88);
-  stroke-width: 2.4;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  filter: drop-shadow(0 0 10px rgba(158, 213, 184, 0.32));
-}
-
-.scene-labs__bridges polygon {
-  fill: rgba(176, 197, 188, 0.22);
-  stroke: rgba(228, 236, 232, 0.16);
-  stroke-width: 0.8;
-}
-
-.scene-labs__floor-markers text,
-.scene-labs__labels text {
-  fill: rgba(246, 249, 247, 0.94);
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-
-.scene-labs__labels text {
-  font-size: 13px;
-  font-weight: 600;
-  fill: rgba(221, 233, 226, 0.86);
-  text-anchor: middle;
-}
-
-.scene-labs__signals path {
-  fill: none;
-  stroke: rgba(168, 203, 186, 0.78);
-  stroke-width: 2.6;
-  stroke-linecap: round;
 }
 
 .scene-program__track {
