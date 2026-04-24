@@ -19,6 +19,7 @@ type SceneHandles = {
   himBand: any;
   vscBand: any;
   connector: any;
+  connectorGlow: any;
   connectorCurve: any;
   connectorPointCount: number;
   signalMarker: any;
@@ -208,9 +209,10 @@ function addCurtainWall(
   }
 }
 
-function createFloorBand(
+function createFloorHighlight(
   parent: any,
   material: any,
+  glowMaterial: any,
   options: {
     x: number;
     z: number;
@@ -221,27 +223,78 @@ function createFloorBand(
   }
 ) {
   const group = new THREE.Group();
-  const y = ((options.floor - 0.52) / 10) * options.height;
-  createBox(
+  const floorHeight = options.height / 10;
+  const y = (options.floor - 0.5) * floorHeight;
+  const frontPanel = createBox(
     group,
-    material,
-    [options.width * 1.02, 0.12, 0.045],
-    [options.x, y, options.z + options.depth / 2 + 0.05]
+    material.clone(),
+    [options.width * 1.04, floorHeight * 0.68, 0.052],
+    [options.x, y, options.z + options.depth / 2 + 0.06]
   );
-  createBox(
+  frontPanel.userData.opacityMultiplier = 0.92;
+  frontPanel.userData.emissiveMultiplier = 0.86;
+
+  const sidePanel = createBox(
     group,
-    material,
-    [0.045, 0.12, options.depth * 1.02],
-    [options.x + options.width / 2 + 0.05, y, options.z]
+    material.clone(),
+    [0.052, floorHeight * 0.68, options.depth * 1.04],
+    [options.x + options.width / 2 + 0.06, y, options.z]
   );
+  sidePanel.userData.opacityMultiplier = 0.76;
+  sidePanel.userData.emissiveMultiplier = 0.74;
+
+  const frontGlow = createBox(
+    group,
+    glowMaterial.clone(),
+    [options.width * 1.16, floorHeight * 0.95, 0.032],
+    [options.x, y, options.z + options.depth / 2 + 0.095]
+  );
+  frontGlow.userData.opacityMultiplier = 0.42;
+
+  const sideGlow = createBox(
+    group,
+    glowMaterial.clone(),
+    [0.032, floorHeight * 0.95, options.depth * 1.16],
+    [options.x + options.width / 2 + 0.095, y, options.z]
+  );
+  sideGlow.userData.opacityMultiplier = 0.32;
+
+  const edgeY = floorHeight * 0.39;
+  [
+    y + edgeY,
+    y - edgeY
+  ].forEach((edgeCenterY) => {
+    const frontEdge = createBox(
+      group,
+      material.clone(),
+      [options.width * 1.08, 0.036, 0.075],
+      [options.x, edgeCenterY, options.z + options.depth / 2 + 0.085]
+    );
+    frontEdge.userData.opacityMultiplier = 1.22;
+    frontEdge.userData.emissiveMultiplier = 1.25;
+
+    const sideEdge = createBox(
+      group,
+      material.clone(),
+      [0.075, 0.036, options.depth * 1.08],
+      [options.x + options.width / 2 + 0.085, edgeCenterY, options.z]
+    );
+    sideEdge.userData.opacityMultiplier = 1;
+    sideEdge.userData.emissiveMultiplier = 1.1;
+  });
+
   parent.add(group);
   return group;
 }
 
 function setGroupMaterial(group: any, opacity: number, emissiveIntensity: number) {
   group.children.forEach((child: any) => {
-    child.material.opacity = opacity;
-    child.material.emissiveIntensity = emissiveIntensity;
+    const opacityMultiplier = child.userData?.opacityMultiplier ?? 1;
+    const emissiveMultiplier = child.userData?.emissiveMultiplier ?? 1;
+    child.material.opacity = clamp01(opacity * opacityMultiplier);
+    if ("emissiveIntensity" in child.material) {
+      child.material.emissiveIntensity = emissiveIntensity * emissiveMultiplier;
+    }
   });
 }
 
@@ -446,13 +499,20 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   const bandMaterial = new THREE.MeshStandardMaterial({
     color: floorBandColor,
     emissive: floorBandColor,
-    emissiveIntensity: 0.7,
+    emissiveIntensity: 0.85,
     roughness: 0.48,
     metalness: 0,
     transparent: true,
-    opacity: 0.62
+    opacity: 0.72
   });
   const bandMaterialAlt = bandMaterial.clone();
+  const bandGlowMaterial = new THREE.MeshBasicMaterial({
+    color: floorBandColor,
+    transparent: true,
+    opacity: 0.22,
+    depthWrite: false
+  });
+  const bandGlowMaterialAlt = bandGlowMaterial.clone();
   const signalMaterial = new THREE.MeshBasicMaterial({
     color: 0xd9f7e7,
     transparent: true,
@@ -638,7 +698,7 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     addTree(detailGroup, treeTrunkMaterial, treeCanopyMaterial, x, z, index % 3 === 0 ? 1.08 : 0.9);
   });
 
-  const himBand = createFloorBand(root, bandMaterial, {
+  const himBand = createFloorHighlight(root, bandMaterial, bandGlowMaterial, {
     x: -1.85,
     z: -0.5,
     width: 1.55,
@@ -646,7 +706,7 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     height: 3.66,
     floor: 10
   });
-  const vscBand = createFloorBand(root, bandMaterialAlt, {
+  const vscBand = createFloorHighlight(root, bandMaterialAlt, bandGlowMaterialAlt, {
     x: 1.78,
     z: -0.32,
     width: 2.45,
@@ -667,15 +727,26 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   const connector = new THREE.Line(
     connectorGeometry,
     new THREE.LineBasicMaterial({
-      color: floorBandColor,
+      color: 0xd8f7e7,
       transparent: true,
-      opacity: 0.72
+      opacity: 0.84
     })
   );
   root.add(connector);
 
+  const connectorGlow = new THREE.Mesh(
+    new THREE.TubeGeometry(connectorCurve, 44, 0.035, 12, false),
+    new THREE.MeshBasicMaterial({
+      color: 0x9fd5b8,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false
+    })
+  );
+  root.add(connectorGlow);
+
   const signalMarker = new THREE.Mesh(
-    new THREE.SphereGeometry(0.075, 24, 16),
+    new THREE.SphereGeometry(0.105, 24, 16),
     signalMaterial
   );
   signalMarker.visible = false;
@@ -702,6 +773,7 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     himBand,
     vscBand,
     connector,
+    connectorGlow,
     connectorCurve,
     connectorPointCount: connectorPoints.length,
     signalMarker,
@@ -731,33 +803,38 @@ function updateScene(
   elapsed: number
 ) {
   const settle = smoothstep(0.0, 0.2, progress);
-  const detailReveal = smoothstep(0.2, 0.45, progress) * detail;
-  const himEmphasis = smoothstep(0.36, 0.44, progress) * (1 - smoothstep(0.6, 0.68, progress));
-  const vscEmphasis = smoothstep(0.58, 0.68, progress) * (1 - smoothstep(0.82, 0.9, progress));
-  const floorSequence = Math.max(
-    smoothstep(0.36, 0.58, progress),
-    smoothstep(0.58, 0.78, progress) * 0.95
-  );
+  const detailReveal = smoothstep(0.32, 0.44, progress) * detail;
+  const himReveal = smoothstep(0.4, 0.58, progress);
+  const connectorReveal = smoothstep(0.54, 0.7, progress);
+  const vscReveal = smoothstep(0.66, 0.84, progress);
+  const arrivalPulse = smoothstep(0.66, 0.72, progress) * (1 - smoothstep(0.82, 0.9, progress));
+  const himEmphasis = himReveal * (1 - smoothstep(0.82, 0.96, progress) * 0.25);
+  const vscEmphasis = vscReveal + arrivalPulse * 0.35;
   const connectorDraw = Math.floor(
-    mix(2, handles.connectorPointCount, smoothstep(0.48, 0.68, progress))
+    mix(2, handles.connectorPointCount, connectorReveal)
   );
   const pulse = 0.5 + Math.sin(elapsed * 0.0025) * 0.5;
 
   handles.root.rotation.y = mix(0.52, 0.34, settle);
-  handles.root.rotation.x = mix(0.17, 0.06, settle);
+  handles.root.rotation.x = mix(0.2, 0.035, settle);
   handles.root.position.set(
-    mix(0.08, -0.04, settle),
-    mix(-0.58, -0.34, reveal),
+    mix(0.02, -0.16, settle),
+    mix(-0.62, -0.38, reveal),
     mix(-0.02, -0.12, settle)
   );
-  handles.root.scale.setScalar(mix(0.56, 0.72, reveal) * mix(1, 0.96, compress));
+  handles.root.scale.setScalar(mix(0.56, 0.74, reveal) * mix(1, 0.96, compress));
 
   handles.camera.position.set(
-    mix(-7.9, -6.85, settle),
-    mix(8.1, 6.9, settle),
-    mix(10.2, 8.95, settle)
+    mix(-8.5, -7.2, settle),
+    mix(8.2, 6.1, settle),
+    mix(10.6, 8.6, settle)
   );
-  handles.camera.lookAt(0.25, 1.35, 0.15);
+  const lookTarget = new THREE.Vector3(
+    mix(0.1, 0.85, settle),
+    mix(1.45, 1.12, settle),
+    mix(0.1, 0.2, settle)
+  );
+  handles.camera.lookAt(lookTarget);
 
   handles.detailGroup.visible = detailReveal > 0.02;
   handles.detailMaterials.forEach((material) => {
@@ -772,25 +849,26 @@ function updateScene(
 
   setGroupMaterial(
     handles.himBand,
-    mix(0.18, 0.72, floorSequence) + himEmphasis * pulse * 0.2,
-    mix(0.35, 1.22, himEmphasis + detailReveal * 0.24)
+    mix(0.2, 0.78, himReveal) + himEmphasis * pulse * 0.16,
+    mix(0.45, 1.45, himEmphasis + detailReveal * 0.24)
   );
   setGroupMaterial(
     handles.vscBand,
-    mix(0.14, 0.68, floorSequence) + vscEmphasis * pulse * 0.2,
-    mix(0.28, 1.12, vscEmphasis + detailReveal * 0.22)
+    mix(0.16, 0.76, vscReveal) + vscEmphasis * pulse * 0.18,
+    mix(0.36, 1.38, vscEmphasis + detailReveal * 0.22)
   );
   handles.connector.geometry.setDrawRange(0, connectorDraw);
-  handles.connector.material.opacity = mix(0.12, 0.78, smoothstep(0.48, 0.68, progress));
+  handles.connector.material.opacity = mix(0.08, 0.96, connectorReveal);
+  handles.connectorGlow.material.opacity = mix(0, 0.34, connectorReveal) * (1 - smoothstep(0.96, 1, progress) * 0.18);
 
-  const markerTravel = smoothstep(0.48, 0.68, progress);
-  const markerVisible = progress > 0.46 && progress < 0.9;
+  const markerTravel = connectorReveal;
+  const markerVisible = progress > 0.52 && progress < 0.88;
   const markerPosition = handles.connectorCurve.getPoint(markerTravel);
   handles.signalMarker.position.copy(markerPosition);
-  handles.signalMarker.scale.setScalar(mix(0.72, 1.2, pulse));
+  handles.signalMarker.scale.setScalar(mix(0.82, 1.28, pulse));
   handles.signalMarker.visible = markerVisible;
   handles.signalMarker.material.opacity = markerVisible
-    ? mix(0.35, 0.95, smoothstep(0.48, 0.56, progress)) * (1 - smoothstep(0.84, 0.92, progress) * 0.25)
+    ? mix(0.38, 0.95, smoothstep(0.54, 0.62, progress)) * (1 - smoothstep(0.84, 0.92, progress) * 0.25)
     : 0;
 }
 
@@ -867,8 +945,10 @@ function LabBuildingsFallback() {
           d={`M ${682 + index * 25} 176 L ${682 + index * 25} 532`}
         />
       ))}
-      <polygon className="lab-buildings-scene__fallback-band" points="232,204 400,194 400,212 232,222" />
-      <polygon className="lab-buildings-scene__fallback-band" points="652,252 914,228 914,248 652,272" />
+      <polygon className="lab-buildings-scene__fallback-band lab-buildings-scene__fallback-band--glow" points="224,190 408,178 408,232 224,244" />
+      <polygon className="lab-buildings-scene__fallback-band" points="232,196 400,186 400,226 232,236" />
+      <polygon className="lab-buildings-scene__fallback-band lab-buildings-scene__fallback-band--glow" points="640,238 924,210 924,270 640,298" />
+      <polygon className="lab-buildings-scene__fallback-band" points="652,244 914,220 914,258 652,282" />
       <path className="lab-buildings-scene__fallback-link" d="M 402 203 C 488 214 568 244 650 262" />
     </svg>
   );
