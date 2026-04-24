@@ -451,11 +451,11 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     opacity: 0.58
   });
   const brickContextMaterial = new THREE.MeshStandardMaterial({
-    color: 0x775f55,
+    color: 0x465458,
     roughness: 0.9,
     metalness: 0.01,
     transparent: true,
-    opacity: 0.42
+    opacity: 0.28
   });
   const concreteMaterial = new THREE.MeshStandardMaterial({
     color: 0xb6b1a6,

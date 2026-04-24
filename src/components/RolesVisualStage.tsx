@@ -76,9 +76,9 @@ const programConnectorPaths = [
 ] as const;
 
 const LAB_SEQUENCE_START = 0.22;
-const LAB_SEQUENCE_END = 0.58;
-const PROGRAM_SEQUENCE_START = 0.54;
-const PROGRAM_SEQUENCE_END = 0.78;
+const LAB_SEQUENCE_END = 0.5;
+const PROGRAM_SEQUENCE_START = 0.52;
+const PROGRAM_SEQUENCE_END = 0.76;
 const GLOBE_SEQUENCE_START = 0.8;
 const GLOBE_SEQUENCE_END = 0.94;
 const DOCUMENTARY_SEQUENCE_START = 0.94;
@@ -277,20 +277,20 @@ function RolesVisualStage({
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   const overviewVisibility = fadeBetween(progress, 0, 0.08, 0.2, 0.32);
-  const labsVisibility = fadeBetween(progress, 0.2, 0.3, 0.57, 0.65);
-  const programVisibility = fadeBetween(progress, 0.5, 0.6, 0.76, 0.84);
+  const labsVisibility = fadeBetween(progress, 0.2, 0.3, 0.48, 0.56);
+  const programVisibility = fadeBetween(progress, 0.48, 0.54, 0.76, 0.84);
   const globeVisibility = fadeBetween(progress, 0.76, 0.84, 1.08, 1.18);
 
   const overviewCompress = smoothstep(0.18, 0.32, progress);
   const labsLocalProgress = normalizeProgress(progress, LAB_SEQUENCE_START, LAB_SEQUENCE_END);
-  const labsCompress = smoothstep(0.58, 0.65, progress);
+  const labsCompress = smoothstep(0.48, 0.56, progress);
   const labsReveal = smoothstep(0, 0.16, labsLocalProgress);
   const labsDetail =
     smoothstep(0.16, 0.3, labsLocalProgress) * (1 - smoothstep(0.92, 1, labsLocalProgress));
-  const programEnter = smoothstep(0.5, 0.6, progress);
+  const programEnter = smoothstep(0.48, 0.54, progress);
   const programExit = smoothstep(0.76, 0.84, progress);
   const programStationsVisibility =
-    smoothstep(0.54, 0.62, progress) * (1 - smoothstep(0.86, 0.94, progress));
+    smoothstep(0.52, 0.6, progress) * (1 - smoothstep(0.86, 0.94, progress));
   const programSequenceProgress = getProgramSequenceProgress(progress);
   const globeSequenceProgress = clamp01(
     (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)

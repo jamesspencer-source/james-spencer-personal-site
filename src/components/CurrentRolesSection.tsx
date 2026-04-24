@@ -10,7 +10,7 @@ type CurrentRolesSectionProps = {
   reducedMotion: boolean;
 };
 
-const PROGRAM_COPY_PROGRESS_END = 0.78;
+const PROGRAM_COPY_PROGRESS_END = 0.76;
 const NETWORK_DOCUMENTARY_PROGRESS_START = 0.94;
 
 function clamp01(value: number) {
@@ -187,8 +187,8 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const chapterVisibility = useMemo(
     () => ({
       overview: fadeBetween(progress, 0, 0.08, 0.24, 0.36),
-      labs: fadeBetween(progress, 0.2, 0.3, 0.52, 0.62),
-      program: fadeBetween(progress, 0.5, 0.58, 0.78, 0.88),
+      labs: fadeBetween(progress, 0.2, 0.3, 0.48, 0.58),
+      program: fadeBetween(progress, 0.48, 0.56, 0.78, 0.88),
       network: fadeBetween(progress, 0.76, 0.84, 1.08, 1.18)
     }),
     [progress]
