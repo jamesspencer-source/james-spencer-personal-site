@@ -1203,6 +1203,12 @@ button {
   stroke-width: 1;
 }
 
+.lab-buildings-scene__fallback-background {
+  fill: rgba(64, 83, 90, 0.26);
+  stroke: rgba(236, 244, 240, 0.08);
+  stroke-width: 1;
+}
+
 .lab-buildings-scene__fallback-blackfan-roof,
 .lab-buildings-scene__fallback-blackfan-front,
 .lab-buildings-scene__fallback-blackfan-penthouse {

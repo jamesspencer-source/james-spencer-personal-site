@@ -332,6 +332,20 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     transparent: true,
     opacity: 0.42
   });
+  const backgroundGlassMaterial = new THREE.MeshStandardMaterial({
+    color: 0x26383f,
+    roughness: 0.64,
+    metalness: 0.05,
+    transparent: true,
+    opacity: 0.58
+  });
+  const brickContextMaterial = new THREE.MeshStandardMaterial({
+    color: 0x775f55,
+    roughness: 0.9,
+    metalness: 0.01,
+    transparent: true,
+    opacity: 0.42
+  });
   const concreteMaterial = new THREE.MeshStandardMaterial({
     color: 0xb6b1a6,
     roughness: 0.86,
@@ -445,25 +459,56 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     opacity: 0
   });
 
-  const ground = createBox(root, groundMaterial, [10.6, 0.08, 7.2], [0.08, -0.06, 0.12]);
+  const ground = createBox(root, groundMaterial, [11.8, 0.08, 8.3], [0.05, -0.06, 0.02]);
   addEdges(root, ground, edgeMaterial);
 
-  createBox(root, streetMaterial, [9.4, 0.045, 0.52], [0.12, 0.015, 3.08], [0, -0.1, 0]);
-  createBox(root, streetMaterial, [0.48, 0.045, 5.7], [3.98, 0.018, 0.34], [0, 0.04, 0]);
-  createBox(root, streetMaterial, [5.4, 0.04, 0.34], [-2.82, 0.012, -2.58], [0, 0.06, 0]);
-  createBox(root, sidewalkMaterial, [8.9, 0.035, 0.13], [0.04, 0.045, 2.72], [0, -0.1, 0]);
-  createBox(root, sidewalkMaterial, [0.13, 0.035, 5.35], [3.58, 0.045, 0.3], [0, 0.04, 0]);
-  createBox(root, sidewalkMaterial, [5.1, 0.032, 0.1], [-2.72, 0.042, -2.34], [0, 0.06, 0]);
+  createBox(root, streetMaterial, [10.4, 0.045, 0.54], [0.05, 0.015, 3.2], [0, -0.12, 0]);
+  createBox(root, streetMaterial, [0.5, 0.045, 6.5], [4.3, 0.018, 0.4], [0, 0.04, 0]);
+  createBox(root, streetMaterial, [6.2, 0.04, 0.36], [-3.02, 0.012, -2.78], [0, 0.08, 0]);
+  createBox(root, streetMaterial, [4.2, 0.04, 0.34], [-4.08, 0.012, 0.12], [0, -0.96, 0]);
+  createBox(root, sidewalkMaterial, [9.8, 0.035, 0.13], [0, 0.045, 2.82], [0, -0.12, 0]);
+  createBox(root, sidewalkMaterial, [0.13, 0.035, 6.08], [3.86, 0.045, 0.34], [0, 0.04, 0]);
+  createBox(root, sidewalkMaterial, [5.8, 0.032, 0.1], [-2.92, 0.042, -2.52], [0, 0.08, 0]);
 
   [
     { size: [1.25, 0.55, 0.92], position: [-3.8, 0.28, 1.5] },
-    { size: [1.55, 0.72, 1.1], position: [-3.52, 0.36, -1.75] },
-    { size: [1.25, 0.44, 0.85], position: [3.42, 0.22, -1.95] },
-    { size: [1.65, 0.5, 0.88], position: [2.96, 0.25, 2.2] }
+    { size: [1.38, 0.72, 1.1], position: [-3.66, 0.36, -1.54] },
+    { size: [1.25, 0.44, 0.85], position: [3.5, 0.22, -2.12] },
+    { size: [1.65, 0.5, 0.88], position: [3.28, 0.25, 2.34] },
+    { size: [1.4, 0.42, 0.82], position: [-4.58, 0.21, -0.35] }
   ].forEach((block) => {
     const mesh = createBox(
       root,
       contextBuildingMaterial,
+      block.size as [number, number, number],
+      block.position as [number, number, number]
+    );
+    addEdges(root, mesh, edgeMaterial);
+  });
+
+  [
+    { size: [1.25, 2.85, 1.2], position: [-3.9, 1.42, -2.88] },
+    { size: [1.45, 3.2, 1.28], position: [-2.46, 1.6, -3.02] },
+    { size: [2.8, 2.5, 1.12], position: [0.98, 1.25, -3.18] },
+    { size: [1.58, 2.3, 1.0], position: [3.28, 1.15, -2.82] }
+  ].forEach((block) => {
+    const mesh = createBox(
+      root,
+      backgroundGlassMaterial,
+      block.size as [number, number, number],
+      block.position as [number, number, number]
+    );
+    addEdges(root, mesh, edgeMaterial);
+  });
+
+  [
+    { size: [1.5, 0.58, 0.86], position: [4.05, 0.29, 1.52] },
+    { size: [1.92, 0.5, 0.82], position: [3.44, 0.25, 3.12] },
+    { size: [1.28, 0.48, 0.7], position: [-4.75, 0.24, 2.4] }
+  ].forEach((block) => {
+    const mesh = createBox(
+      root,
+      brickContextMaterial,
       block.size as [number, number, number],
       block.position as [number, number, number]
     );
@@ -701,18 +746,18 @@ function updateScene(
   handles.root.rotation.y = mix(0.52, 0.34, settle);
   handles.root.rotation.x = mix(0.17, 0.06, settle);
   handles.root.position.set(
-    mix(0.14, 0.02, settle),
-    mix(-0.48, -0.24, reveal),
-    mix(0.04, 0, settle)
+    mix(0.08, -0.04, settle),
+    mix(-0.58, -0.34, reveal),
+    mix(-0.02, -0.12, settle)
   );
-  handles.root.scale.setScalar(mix(0.68, 0.86, reveal) * mix(1, 0.95, compress));
+  handles.root.scale.setScalar(mix(0.56, 0.72, reveal) * mix(1, 0.96, compress));
 
   handles.camera.position.set(
-    mix(-6.8, -5.75, settle),
-    mix(6.6, 5.4, settle),
-    mix(9.1, 7.6, settle)
+    mix(-7.9, -6.85, settle),
+    mix(8.1, 6.9, settle),
+    mix(10.2, 8.95, settle)
   );
-  handles.camera.lookAt(0.02, 1.62, 0.2);
+  handles.camera.lookAt(0.25, 1.35, 0.15);
 
   handles.detailGroup.visible = detailReveal > 0.02;
   handles.detailMaterials.forEach((material) => {
@@ -781,6 +826,9 @@ function LabBuildingsFallback() {
       <polygon className="lab-buildings-scene__fallback-context" points="116,438 196,430 238,458 158,468" />
       <polygon className="lab-buildings-scene__fallback-context" points="762,404 866,392 906,420 802,436" />
       <polygon className="lab-buildings-scene__fallback-context" points="136,226 236,216 288,246 188,258" />
+      <polygon className="lab-buildings-scene__fallback-background" points="90,112 176,102 226,134 140,146 140,348 226,334 226,134 176,102" />
+      <polygon className="lab-buildings-scene__fallback-background" points="206,92 322,80 382,116 266,132 266,336 382,318 382,116 322,80" />
+      <polygon className="lab-buildings-scene__fallback-background" points="438,74 716,52 818,114 540,140 540,330 818,300 818,114 716,52" />
 
       <polygon className="lab-buildings-scene__fallback-blackfan-roof" points="170,136 338,130 400,174 232,184" />
       <polygon className="lab-buildings-scene__fallback-blackfan-side" points="170,136 232,184 232,530 170,486" />
