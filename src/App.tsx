@@ -55,7 +55,7 @@ function getContactLinkMeta(link: ActionLink) {
   }
 
   if (link.href.includes("linkedin.com")) {
-    return "Profile";
+    return "";
   }
 
   try {
@@ -105,6 +105,7 @@ function ContactLinks({ links }: { links: ActionLink[] }) {
     <ul className="contact-list">
       {links.map((link, index) => {
         const isLead = link.href.includes("linkedin.com");
+        const meta = getContactLinkMeta(link);
 
         return (
           <li
@@ -121,7 +122,7 @@ function ContactLinks({ links }: { links: ActionLink[] }) {
             >
               <span className="contact-list__index">{String(index + 1).padStart(2, "0")}</span>
               <span className="contact-list__label">{link.label}</span>
-              <span className="contact-list__meta">{getContactLinkMeta(link)}</span>
+              {meta ? <span className="contact-list__meta">{meta}</span> : null}
             </a>
           </li>
         );
@@ -420,8 +421,10 @@ function App() {
                 <img
                   src={siteContent.contact.portrait.src}
                   alt={siteContent.contact.portrait.alt}
-                  width={1400}
-                  height={1052}
+                  width={1996}
+                  height={3000}
+                  loading="lazy"
+                  decoding="async"
                 />
               </figure>
             ) : null}

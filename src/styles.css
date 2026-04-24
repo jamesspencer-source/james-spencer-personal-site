@@ -1940,10 +1940,8 @@ button {
 
 .background-portrait img {
   width: 100%;
-  aspect-ratio: 4 / 5;
+  height: auto;
   border-radius: 4px;
-  object-fit: cover;
-  object-position: 50% 22%;
 }
 
 .background-education {
@@ -1964,10 +1962,10 @@ button {
 .contact {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(18rem, 31rem) minmax(28rem, 42rem);
-  gap: 1.8rem clamp(2rem, 4vw, 4rem);
-  max-width: 82rem;
-  align-items: start;
+  grid-template-columns: minmax(19rem, 0.95fr) minmax(17rem, 24rem);
+  gap: 1.8rem clamp(2.4rem, 5vw, 5rem);
+  max-width: 72rem;
+  align-items: center;
   padding: clamp(1.6rem, 3vw, 2.4rem) 0 0;
   border-top: 1px solid var(--line-strong);
 }
@@ -1996,24 +1994,28 @@ button {
 .contact__actions {
   margin-top: 0;
   width: 100%;
-  max-width: 25rem;
+  max-width: 23rem;
   padding-top: 0.25rem;
 }
 
 .contact__portrait {
   margin: 0;
   justify-self: end;
-  align-self: start;
-  width: min(100%, 42rem);
+  align-self: center;
+  width: min(100%, 23rem);
   min-width: 0;
+  padding: 0.45rem;
+  border: 1px solid rgba(20, 22, 17, 0.09);
+  border-radius: 8px;
+  background: rgba(246, 241, 232, 0.68);
+  box-shadow: 0 18px 38px rgba(20, 22, 17, 0.1);
 }
 
 .contact__portrait img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 8px;
-  box-shadow: 0 24px 42px rgba(20, 22, 17, 0.12);
+  border-radius: 6px;
 }
 
 .contact-list {
@@ -2201,7 +2203,7 @@ button {
 
   .contact__actions,
   .contact__portrait {
-    width: min(100%, 30rem);
+    width: min(100%, 23rem);
   }
 
   .contact__portrait {
@@ -2299,7 +2301,7 @@ button {
 
   .contact__portrait {
     justify-self: center;
-    width: min(100%, 28rem);
+    width: min(100%, 22rem);
   }
 
   .contact-list__link {
