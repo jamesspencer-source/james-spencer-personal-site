@@ -634,103 +634,92 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   });
 
   // 4 Blackfan Circle: beige ten-floor tower with heavier concrete massing.
-  const himTower = createBox(root, concreteMaterial, [1.55, 3.66, 1.58], [-1.85, 1.83, -0.5]);
+  const himTower = createBox(root, concreteMaterial, [1.34, 3.78, 1.32], [-1.95, 1.89, -0.24]);
   addEdges(root, himTower, edgeMaterial);
-  createBox(root, concreteSideMaterial, [0.18, 3.66, 1.62], [-2.72, 1.83, -0.5]);
-  createBox(root, roofMaterial, [1.62, 0.12, 1.64], [-1.85, 3.72, -0.5]);
-  createBox(root, concreteMaterial, [1.0, 0.34, 0.55], [-1.85, 3.95, -0.92]);
-  createBox(root, darkRoofMaterial, [1.25, 0.06, 1.2], [-1.85, 3.8, -0.45]);
+  createBox(root, concreteSideMaterial, [0.14, 3.78, 1.36], [-2.69, 1.89, -0.24]);
+  createBox(root, roofMaterial, [1.42, 0.12, 1.4], [-1.95, 3.84, -0.24]);
+  createBox(root, concreteMaterial, [0.88, 0.32, 0.5], [-1.95, 4.06, -0.62]);
+  createBox(root, darkRoofMaterial, [1.08, 0.06, 1.02], [-1.95, 3.92, -0.2]);
 
   // Veritas Science Center: glass research tower with lower podium facing Avenue Louis Pasteur.
-  const vscTower = createBox(root, glassMaterial, [2.45, 3.58, 2.02], [1.78, 1.79, -0.32]);
+  const vscTower = createBox(root, glassMaterial, [2.72, 3.52, 1.78], [1.86, 1.76, -0.58]);
   addEdges(root, vscTower, edgeMaterial);
-  createBox(root, glassDarkMaterial, [0.22, 3.58, 2.08], [3.12, 1.79, -0.32]);
-  createBox(root, roofMaterial, [2.55, 0.12, 2.12], [1.78, 3.65, -0.32]);
-  createBox(root, glassDarkMaterial, [1.32, 0.52, 1.0], [1.88, 3.96, -0.48]);
-  createBox(root, roofMaterial, [1.38, 0.08, 1.06], [1.88, 4.25, -0.48]);
+  createBox(root, glassDarkMaterial, [0.2, 3.52, 1.84], [3.32, 1.76, -0.58]);
+  createBox(root, roofMaterial, [2.82, 0.12, 1.88], [1.86, 3.58, -0.58]);
+  createBox(root, glassDarkMaterial, [1.42, 0.46, 0.86], [1.96, 3.86, -0.74]);
+  createBox(root, roofMaterial, [1.48, 0.08, 0.92], [1.96, 4.1, -0.74]);
 
-  const vscPodium = createBox(root, glassDarkMaterial, [2.35, 1.05, 1.3], [1.54, 0.53, 1.34]);
+  const vscPodium = createBox(root, glassDarkMaterial, [2.7, 0.98, 1.22], [1.58, 0.49, 1.18]);
   addEdges(root, vscPodium, edgeMaterial);
-  createBox(root, roofMaterial, [2.42, 0.1, 1.36], [1.54, 1.1, 1.34]);
-  createBox(root, glassDarkMaterial, [0.62, 0.78, 0.48], [0.25, 0.7, 0.78]);
-  const conferenceCenter = createBox(root, glassDarkMaterial, [1.18, 0.58, 0.92], [0.2, 0.29, 1.9]);
+  createBox(root, roofMaterial, [2.78, 0.1, 1.28], [1.58, 1.03, 1.18]);
+  createBox(root, glassDarkMaterial, [0.58, 0.72, 0.44], [0.18, 0.66, 0.66]);
+  const conferenceCenter = createBox(root, glassDarkMaterial, [1.18, 0.56, 0.82], [0.04, 0.28, 1.78]);
   addEdges(root, conferenceCenter, edgeMaterial);
   const conferenceRoof = createCylinder(
     root,
     roofMaterial,
     0.32,
     0.1,
-    [0.2, 0.66, 1.9],
+    [0.04, 0.64, 1.78],
     [0, 0, 0],
     36
   );
   conferenceRoof.scale.set(1.42, 1, 0.58);
-  const skyBridge = createBox(root, bridgeMaterial, [1.18, 0.16, 0.24], [-0.72, 1.18, 0.42]);
+  const skyBridge = createBox(root, bridgeMaterial, [1.28, 0.16, 0.22], [-0.64, 1.18, 0.38]);
   addEdges(root, skyBridge, edgeMaterial);
 
   addWindowGrid(detailGroup, {
-    x: -1.85,
-    z: -0.5,
-    width: 1.55,
-    depth: 1.58,
-    height: 3.66,
+    x: -1.95,
+    z: -0.24,
+    width: 1.34,
+    depth: 1.32,
+    height: 3.78,
     floors: 10,
-    columns: 5,
+    columns: 6,
     orientation: "front",
     windowMaterial: concreteWindowMaterial,
-    mullionMaterial: concreteMullionMaterial
+    mullionMaterial: concreteMullionMaterial,
+    bayScale: 0.42
   });
   addWindowGrid(detailGroup, {
-    x: -1.85,
-    z: -0.5,
-    width: 1.55,
-    depth: 1.58,
-    height: 3.66,
+    x: -1.95,
+    z: -0.24,
+    width: 1.34,
+    depth: 1.32,
+    height: 3.78,
     floors: 10,
     columns: 4,
     orientation: "right",
     windowMaterial: concreteWindowMaterial,
-    mullionMaterial: concreteMullionMaterial
-  });
-  addWindowGrid(detailGroup, {
-    x: -1.85,
-    z: -0.5,
-    width: 1.55,
-    depth: 1.58,
-    height: 3.66,
-    floors: 10,
-    columns: 5,
-    orientation: "left",
-    windowMaterial: concreteWindowMaterial,
     mullionMaterial: concreteMullionMaterial,
-    bayScale: 0.52
+    bayScale: 0.44
   });
   addVerticalFacadeRibs(detailGroup, {
-    x: -1.85,
-    z: -0.5,
-    width: 1.55,
-    depth: 1.58,
-    height: 3.66,
-    count: 5,
-    orientation: "left",
+    x: -1.95,
+    z: -0.24,
+    width: 1.34,
+    depth: 1.32,
+    height: 3.78,
+    count: 4,
+    orientation: "right",
     material: concreteMullionMaterial
   });
   addVerticalFacadeRibs(detailGroup, {
-    x: -1.85,
-    z: -0.5,
-    width: 1.55,
-    depth: 1.58,
-    height: 3.66,
+    x: -1.95,
+    z: -0.24,
+    width: 1.34,
+    depth: 1.32,
+    height: 3.78,
     count: 6,
     orientation: "front",
     material: concreteMullionMaterial
   });
   addCurtainWall(detailGroup, {
-    x: 1.78,
-    z: -0.32,
-    width: 2.45,
-    depth: 2.02,
-    height: 3.58,
+    x: 1.86,
+    z: -0.58,
+    width: 2.72,
+    depth: 1.78,
+    height: 3.52,
     floors: 10,
     columns: 10,
     orientation: "front",
@@ -738,71 +727,59 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
     mullionMaterial: vscMullionMaterial
   });
   addCurtainWall(detailGroup, {
-    x: 1.78,
-    z: -0.32,
-    width: 2.45,
-    depth: 2.02,
-    height: 3.58,
+    x: 1.86,
+    z: -0.58,
+    width: 2.72,
+    depth: 1.78,
+    height: 3.52,
     floors: 10,
     columns: 8,
     orientation: "right",
     panelMaterial: glassPanelMaterial,
     mullionMaterial: vscMullionMaterial
   });
-  addCurtainWall(detailGroup, {
-    x: 1.78,
-    z: -0.32,
-    width: 2.45,
-    depth: 2.02,
-    height: 3.58,
-    floors: 10,
-    columns: 8,
-    orientation: "left",
-    panelMaterial: glassPanelMaterial,
-    mullionMaterial: vscMullionMaterial
-  });
   addVerticalFacadeRibs(detailGroup, {
-    x: 1.78,
-    z: -0.32,
-    width: 2.45,
-    depth: 2.02,
-    height: 3.58,
+    x: 1.86,
+    z: -0.58,
+    width: 2.72,
+    depth: 1.78,
+    height: 3.52,
     count: 9,
     orientation: "right",
     material: vscMullionMaterial
   });
   addVerticalFacadeRibs(detailGroup, {
-    x: 1.78,
-    z: -0.32,
-    width: 2.45,
-    depth: 2.02,
-    height: 3.58,
+    x: 1.86,
+    z: -0.58,
+    width: 2.72,
+    depth: 1.78,
+    height: 3.52,
     count: 10,
     orientation: "front",
     material: vscMullionMaterial
   });
 
-  addRoofArray(detailGroup, roofPanelMaterial, -2.39, 3.86, -0.3);
-  addRoofArray(detailGroup, roofPanelMaterial, 0.84, 1.17, 1.12);
-  addRoofArray(detailGroup, roofPanelMaterial, 1.54, 1.17, 1.12);
+  addRoofArray(detailGroup, roofPanelMaterial, -2.36, 3.98, -0.2);
+  addRoofArray(detailGroup, roofPanelMaterial, 0.72, 1.1, 0.98);
+  addRoofArray(detailGroup, roofPanelMaterial, 1.54, 1.1, 0.98);
 
   [
-    [-2.3, 3.98, -0.14],
-    [-1.95, 3.98, -0.14],
-    [-1.6, 3.98, -0.14],
-    [-2.18, 3.98, -0.74],
-    [-1.79, 3.98, -0.74],
-    [1.04, 4.35, -0.4],
-    [1.38, 4.35, -0.4],
-    [1.72, 4.35, -0.4],
-    [2.06, 4.35, -0.4],
-    [2.4, 4.35, -0.4],
-    [2.74, 4.35, -0.4]
+    [-2.36, 4.1, -0.05],
+    [-2.05, 4.1, -0.05],
+    [-1.74, 4.1, -0.05],
+    [-2.28, 4.1, -0.54],
+    [-1.92, 4.1, -0.54],
+    [0.96, 4.2, -0.6],
+    [1.32, 4.2, -0.6],
+    [1.68, 4.2, -0.6],
+    [2.04, 4.2, -0.6],
+    [2.4, 4.2, -0.6],
+    [2.76, 4.2, -0.6]
   ].forEach(([x, y, z]) => {
     createCylinder(detailGroup, roofUnitMaterial, 0.055, 0.34, [x, y, z]);
   });
-  createBox(detailGroup, roofUnitMaterial, [0.96, 0.12, 0.25], [-1.83, 4.08, -1.22]);
-  createBox(detailGroup, roofUnitMaterial, [0.78, 0.12, 0.22], [1.86, 4.36, -0.96]);
+  createBox(detailGroup, roofUnitMaterial, [0.88, 0.12, 0.24], [-1.95, 4.2, -0.9]);
+  createBox(detailGroup, roofUnitMaterial, [0.86, 0.12, 0.22], [1.96, 4.18, -1.12]);
 
   [
     [-4.15, 2.76],
@@ -822,27 +799,27 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
   });
 
   const himBand = createFloorHighlight(root, bandMaterial, bandGlowMaterial, {
-    x: -1.85,
-    z: -0.5,
-    width: 1.55,
-    depth: 1.58,
-    height: 3.66,
+    x: -1.95,
+    z: -0.24,
+    width: 1.34,
+    depth: 1.32,
+    height: 3.78,
     floor: 10
   });
   const vscBand = createFloorHighlight(root, bandMaterialAlt, bandGlowMaterialAlt, {
-    x: 1.78,
-    z: -0.32,
-    width: 2.45,
-    depth: 2.02,
-    height: 3.58,
+    x: 1.86,
+    z: -0.58,
+    width: 2.72,
+    depth: 1.78,
+    height: 3.52,
     floor: 9
   });
 
   const connectorCurve = new THREE.CatmullRomCurve3([
-    new THREE.Vector3(-1.02, 3.48, 0.36),
-    new THREE.Vector3(-0.28, 3.44, 0.68),
-    new THREE.Vector3(0.72, 3.25, 0.74),
-    new THREE.Vector3(1.54, 3.02, 0.74)
+    new THREE.Vector3(-1.24, 3.58, 0.34),
+    new THREE.Vector3(-0.42, 3.5, 0.62),
+    new THREE.Vector3(0.72, 3.28, 0.62),
+    new THREE.Vector3(1.38, 3.05, 0.48)
   ]);
   const connectorPoints = connectorCurve.getPoints(40);
   const connectorGeometry = new THREE.BufferGeometry().setFromPoints(connectorPoints);
@@ -938,24 +915,24 @@ function updateScene(
   );
   const pulse = 0.5 + Math.sin(elapsed * 0.0025) * 0.5;
 
-  handles.root.rotation.y = mix(0.52, 0.34, settle);
-  handles.root.rotation.x = mix(0.2, 0.035, settle);
+  handles.root.rotation.y = mix(0.18, 0.02, settle);
+  handles.root.rotation.x = mix(0.16, 0.02, settle);
   handles.root.position.set(
-    mix(0.02, -0.16, settle),
-    mix(-0.62, -0.38, reveal),
-    mix(-0.02, -0.12, settle)
+    mix(-0.04, -0.16, settle),
+    mix(-0.66, -0.42, reveal),
+    mix(-0.02, -0.08, settle)
   );
-  handles.root.scale.setScalar(mix(0.56, 0.74, reveal) * mix(1, 0.96, compress));
+  handles.root.scale.setScalar(mix(0.52, 0.7, reveal) * mix(1, 0.96, compress));
 
   handles.camera.position.set(
-    mix(-8.5, -7.2, settle),
-    mix(8.2, 6.1, settle),
-    mix(10.6, 8.6, settle)
+    mix(4.8, 3.6, settle),
+    mix(8.8, 6.8, settle),
+    mix(11.4, 9.6, settle)
   );
   const lookTarget = new THREE.Vector3(
-    mix(0.1, 0.85, settle),
-    mix(1.45, 1.12, settle),
-    mix(0.1, 0.2, settle)
+    mix(0.1, 0.72, settle),
+    mix(1.5, 1.12, settle),
+    mix(0.32, 0.24, settle)
   );
   handles.camera.lookAt(lookTarget);
 
