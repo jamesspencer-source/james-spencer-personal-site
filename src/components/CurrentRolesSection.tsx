@@ -262,16 +262,19 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
     const trigger = scrollTriggerRef.current;
     if (!trigger) {
       const target = document.getElementById(`roles-${chapterId}`);
-      target?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
+      target?.scrollIntoView({ behavior: "auto" });
       return;
     }
 
-    const stop = chapterStops[chapterId];
+    const stop = rolesTiming.jumpStops[chapterId];
     trigger.refresh();
+    progressValueRef.current = stop;
+    setProgress(stop);
+    setActiveChapterId(getActiveChapterId(stop));
     const scrollTop = trigger.start + (trigger.end - trigger.start) * stop;
     window.scrollTo({
       top: scrollTop,
-      behavior: reducedMotion ? "auto" : "smooth"
+      behavior: "auto"
     });
   };
 

@@ -58,6 +58,12 @@ const rolesTiming = {
     program: 0.58,
     network: 0.82
   },
+  jumpStops: {
+    overview: 0.04,
+    labs: 0.36,
+    program: 0.64,
+    network: 0.88
+  },
   sequences: {
     labs: { start: 0.22, end: 0.5 },
     program: { start: 0.52, end: 0.78 },

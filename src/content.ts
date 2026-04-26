@@ -119,34 +119,34 @@ const hostCities: HostCity[] = [
 
 export const siteContent = {
   meta: {
-    title: "James M. Spencer | Research Operations and Scientific Program Leader",
+    title: "James M. Spencer | Laboratory Manager and Program Operations Lead",
     description:
-      "James M. Spencer leads research operations, scientific program delivery, and lab-management community work across Harvard Medical School and Howard Hughes Medical Institute-associated roles."
+      "James M. Spencer manages research laboratory operations, supports scientific program delivery, and chairs a lab-manager advisory board."
   },
   hero: {
     label: "",
     name: "James M. Spencer",
-    title: "Research Operations, Scientific Program, and Lab-Management Leader",
+    title: "Laboratory Manager, Program Operations Lead, and Advisory Board Chair",
     location: "Boston, Massachusetts",
     summary: [
-      "James M. Spencer leads the operating work behind active academic research: laboratory administration, scientific program delivery, and lab-management community leadership at Harvard Medical School and in Howard Hughes Medical Institute-associated roles.",
-      "His work keeps people, space, funding, equipment, vendors, onboarding, biosafety preparation, and conference programming aligned so researchers, students, and lab managers have reliable support."
+      "James M. Spencer is a laboratory manager in Harvard Medical School Microbiology, supporting the Bernhardt and Abraham laboratories, two Howard Hughes Medical Institute Investigator labs in separate buildings.",
+      "He also leads operations for Community Phages and chairs the Lab Management Network of Professionals advisory board. His work includes staffing support, budgets, purchasing, facilities, equipment, vendors, onboarding, access, biosafety preparation, program logistics, and conference planning."
     ],
     proof: [
       {
-        headline: "Trusted with operations across two Howard Hughes Medical Institute Investigator labs",
+        headline: "Two Howard Hughes Medical Institute Investigator laboratories",
         detail:
           "Supports separate scientific programs in Harvard Medical School Microbiology, with facilities, equipment, regulated space, and staff support across two buildings."
       },
       {
-        headline: "Annual Community Phages delivery",
+        headline: "Community Phages program operations",
         detail:
-          "Runs the operating cycle for Community Phages, an eight-week summer internship program now in its fifth year."
+          "Coordinates setup and delivery for Community Phages, an eight-week summer internship program now in its fifth year."
       },
       {
-        headline: "Lab-manager network and conference leadership",
+        headline: "Lab-manager advisory board and conferences",
         detail:
-          "Chairs the Lab Management Network of Professionals advisory board and helps plan regional and national conference programming."
+          "Chairs the Lab Management Network of Professionals advisory board and helps plan regional and national conferences."
       }
     ] as ProofItem[],
     actions: [
@@ -165,7 +165,7 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "James's current work is anchored in laboratory operations, with program delivery and lab-management community leadership extending the same planning, coordination, and follow-through into student training and professional development.",
+      "James's current work has three main parts: laboratory management, Community Phages program operations, and Lab Management Network of Professionals advisory-board leadership.",
     chapters: [
       {
         id: "overview",
@@ -176,7 +176,7 @@ export const siteContent = {
           "Harvard Medical School, Howard Hughes Medical Institute, and the Lab Management Network of Professionals",
         dates: "Current",
         summary:
-          "James's current work is anchored in laboratory operations for two research labs. He applies the same planning and follow-through to Community Phages and the Lab Management Network of Professionals, where program delivery, conference planning, and year-round continuity matter.",
+          "Across these roles, James coordinates people, space, equipment, vendors, budgets, logistics, and follow-through for research labs, a student program, and lab-manager conferences.",
         responsibilities: [
           "Maintains continuity across staffing, budgets, facilities, equipment, vendors, and regulated space for active research labs with separate scientific programs and locations.",
           "Applies that coordination work to an annual student internship program and recurring regional and national conferences for lab managers."
@@ -188,9 +188,9 @@ export const siteContent = {
               "Two research laboratories, one annual summer program, and recurring regional and national conferences for lab managers."
           },
           {
-            label: "Execution focus",
+            label: "Work includes",
             value:
-              "Planning, staffing, logistics, facilities coordination, and continuity across research, program, and lab-management community work."
+              "Planning, staffing, logistics, facilities coordination, and day-to-day support across research, program, and lab-management work."
           }
         ],
         visual: {
@@ -206,7 +206,7 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "James's core role is laboratory operations leadership for the Bernhardt and Abraham laboratories: two Howard Hughes Medical Institute Investigator labs in Harvard Medical School's Department of Microbiology, with separate scientific programs and locations. He keeps the administrative, facilities, equipment, vendor, staffing, access, and daily coordination work aligned so both groups can operate with continuity across locations.",
+          "James's core role is laboratory management for the Bernhardt and Abraham laboratories: two Howard Hughes Medical Institute Investigator labs in Harvard Medical School's Department of Microbiology, with separate scientific programs and locations. He handles administrative, facilities, equipment, vendor, staffing, access, and day-to-day coordination so each lab has reliable support.",
         responsibilities: [
           "Coordinates budgets, purchasing, facilities, vendor relationships, and equipment planning for laboratory space in Veritas Science Center and 4 Blackfan Circle.",
           "Manages hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
@@ -237,7 +237,7 @@ export const siteContent = {
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "James leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He turns the program from annual plan into working summer experience: funding, hiring, onboarding, laboratory setup, biosafety preparation, partner logistics, instructor support, student support, and closeout.",
+          "James leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He coordinates the annual setup and delivery: funding, hiring, onboarding, laboratory setup, biosafety preparation, partner logistics, instructor support, student support, and closeout.",
         responsibilities: [
           "Prepares the annual program before students arrive, including funding coordination, hiring and interviewing, access, biosafety planning, bench setup, supply readiness, and lab-space turnover.",
           "Coordinates delivery during the program, including instructors, partner logistics, student support, field trips, daily schedules, and final closeout."
@@ -271,7 +271,7 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers. He helps convert the network into sustained professional programming through board priorities, conference planning, speaker coordination, partner relationships, and continuity between meetings.",
+          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers. The role includes board priorities, conference planning, speaker coordination, partner relationships, recurring programming, and continuity between meetings.",
         responsibilities: [
           "Sets board priorities and helps plan regional and national conferences for laboratory managers and institute partners.",
           "Maintains year-round programming, peer exchange, speaker coordination, and continuity between conferences."
@@ -306,9 +306,9 @@ export const siteContent = {
   },
   background: {
     label: "Background",
-    heading: "Earlier work that informs the operating approach.",
+    heading: "Earlier work",
     intro:
-      "Earlier bench-science and residential-life leadership work shaped the current operating style: close attention to laboratory practice, people systems, documentation, coordination, and high-volume support.",
+      "Earlier work in bench science and residential life connects to James's current focus on laboratory practice, documentation, coordination, and support for large residential communities.",
     portrait: null as PortraitAsset | null,
     entries: [
       {
@@ -344,13 +344,13 @@ export const siteContent = {
     label: "Contact",
     heading: "Connect",
     intro:
-      "LinkedIn is the best way to reach James about research operations, scientific program delivery, lab-management communities, or roles where academic science depends on reliable operating systems.",
+      "For conversations about lab operations, scientific program operations, lab-manager networks, or conference planning, LinkedIn is the best way to reach James.",
     supportLine:
-      "Best fit: work that brings people, space, equipment, funding, compliance preparation, and programming into practical alignment.",
+      "Relevant areas include academic research operations, lab administration, program delivery, and conference planning.",
     contextTags: [
-      "Academic research operations",
-      "Scientific program delivery",
-      "Lab-management communities"
+      "Research operations",
+      "Program operations",
+      "Lab-manager conferences"
     ],
     portrait: {
       src: asset("assets/images/james-m-spencer-studio-headshot.jpg"),
