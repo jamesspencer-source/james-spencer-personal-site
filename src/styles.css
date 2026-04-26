@@ -638,6 +638,7 @@ button {
 .roles-story__panel-shell {
   grid-area: 1 / 1;
   position: relative;
+  min-height: 0;
   pointer-events: none;
 }
 
@@ -811,6 +812,107 @@ button {
 
 .roles-story__documentary-credit {
   margin-top: 0.42rem;
+}
+
+@media (min-width: 1025px) {
+  .roles-story__layout {
+    height: calc(100svh - var(--header-offset) - 1.25rem);
+  }
+
+  .roles-story__copy {
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .roles-story__panels {
+    overflow: hidden;
+  }
+
+  .roles-story__panel-shell {
+    max-height: 100%;
+    overflow: hidden;
+  }
+
+  .roles-story__panel-shell[data-active="true"] {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 0.22rem;
+    scrollbar-gutter: stable;
+  }
+
+  .roles-story__panel-shell[data-active="true"]::-webkit-scrollbar {
+    width: 7px;
+  }
+
+  .roles-story__panel-shell[data-active="true"]::-webkit-scrollbar-thumb {
+    background: rgba(155, 195, 173, 0.28);
+    border-radius: 999px;
+  }
+
+  .roles-story__panel {
+    max-width: 39rem;
+    padding: 0.9rem 0.95rem 1rem;
+  }
+
+  .roles-story__title {
+    margin-top: 0.48rem;
+    font-size: clamp(1.72rem, 2.55vw, 2.45rem);
+  }
+
+  .roles-story__program-progress {
+    margin-top: 0.52rem;
+  }
+
+  .roles-story__organization {
+    margin-top: 0.58rem;
+    font-size: 0.88rem;
+    line-height: 1.4;
+  }
+
+  .roles-story__summary {
+    margin-top: 0.56rem;
+    font-size: 0.9rem;
+    line-height: 1.42;
+  }
+
+  .roles-story__link {
+    margin-top: 0.58rem;
+  }
+
+  .roles-story__grid {
+    grid-template-columns: minmax(0, 1.04fr) minmax(12.5rem, 0.86fr);
+    gap: 0.72rem;
+    margin-top: 0.68rem;
+  }
+
+  .roles-story__list {
+    gap: 0.42rem;
+    padding-left: 1rem;
+  }
+
+  .roles-story__list li {
+    font-size: 0.88rem;
+    line-height: 1.38;
+  }
+
+  .roles-story__evidence {
+    gap: 0.56rem;
+  }
+
+  .roles-story__evidence-item {
+    padding-top: 0.5rem;
+  }
+
+  .roles-story__evidence dd {
+    margin-top: 0.24rem;
+    font-size: 0.86rem;
+    line-height: 1.36;
+  }
+
+  .roles-story__documentary-note {
+    margin-top: 0.68rem;
+    padding-top: 0.68rem;
+  }
 }
 
 .roles-story__visual {

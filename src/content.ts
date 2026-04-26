@@ -178,8 +178,8 @@ export const siteContent = {
         summary:
           "Across these roles, James coordinates people, space, equipment, vendors, budgets, logistics, and follow-through for research labs, a student program, and lab-manager conferences.",
         responsibilities: [
-          "Maintains continuity across staffing, budgets, facilities, equipment, vendors, and regulated space for active research labs with separate scientific programs and locations.",
-          "Applies that coordination work to an annual student internship program and recurring regional and national conferences for lab managers."
+          "Supports staffing, budgets, facilities, equipment, vendors, and regulated space for active research labs with separate scientific programs and locations.",
+          "Extends that work to an annual student internship program and recurring conferences for lab managers."
         ],
         evidence: [
           {
@@ -206,10 +206,10 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "James's core role is laboratory management for the Bernhardt and Abraham laboratories: two Howard Hughes Medical Institute Investigator labs in Harvard Medical School's Department of Microbiology, with separate scientific programs and locations. He handles administrative, facilities, equipment, vendor, staffing, access, and day-to-day coordination so each lab has reliable support.",
+          "James's core role is laboratory management for the Bernhardt and Abraham laboratories: two Howard Hughes Medical Institute Investigator labs in Harvard Medical School Microbiology, with separate scientific programs and locations. He handles administration, facilities, equipment, vendors, staffing, access, and daily coordination.",
         responsibilities: [
-          "Coordinates budgets, purchasing, facilities, vendor relationships, and equipment planning for laboratory space in Veritas Science Center and 4 Blackfan Circle.",
-          "Manages hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination for active research space on the ninth and tenth floors."
+          "Coordinates budgets, purchasing, facilities, vendors, and equipment planning for laboratory space in Veritas Science Center and 4 Blackfan Circle.",
+          "Manages hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination on the ninth and tenth floors."
         ],
         evidence: [
           {
@@ -220,7 +220,7 @@ export const siteContent = {
           {
             label: "Core responsibilities",
             value:
-              "Staffing support, facilities coordination, equipment planning, budgets, purchasing, vendor relationships, onboarding, access, and daily continuity."
+              "Staffing support, facilities coordination, equipment planning, budgets, purchasing, vendors, onboarding, access, and daily support."
           }
         ],
         callouts: [],
@@ -237,10 +237,10 @@ export const siteContent = {
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "James leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He coordinates the annual setup and delivery: funding, hiring, onboarding, laboratory setup, biosafety preparation, partner logistics, instructor support, student support, and closeout.",
+          "James leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He coordinates funding, hiring, onboarding, lab setup, biosafety preparation, partner logistics, instructor support, student support, and closeout.",
         responsibilities: [
-          "Prepares the annual program before students arrive, including funding coordination, hiring and interviewing, access, biosafety planning, bench setup, supply readiness, and lab-space turnover.",
-          "Coordinates delivery during the program, including instructors, partner logistics, student support, field trips, daily schedules, and final closeout."
+          "Prepares the program before students arrive, including funding, hiring and interviewing, access, biosafety planning, bench setup, supplies, and lab-space turnover.",
+          "Coordinates delivery during the program, including instructors, partner logistics, student support, field trips, daily schedules, and closeout."
         ],
         evidence: [
           {
@@ -251,7 +251,7 @@ export const siteContent = {
           {
             label: "Delivery system",
             value:
-              "Funding coordination, hiring, onboarding, lab buildout, biosafety preparation, partner logistics, student support, daily schedules, and closeout."
+              "Funding, hiring, onboarding, lab buildout, biosafety preparation, partner logistics, student support, daily schedules, and closeout."
           }
         ],
         link: {
@@ -274,13 +274,13 @@ export const siteContent = {
           "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers. The role includes board priorities, conference planning, speaker coordination, partner relationships, recurring programming, and continuity between meetings.",
         responsibilities: [
           "Sets board priorities and helps plan regional and national conferences for laboratory managers and institute partners.",
-          "Maintains year-round programming, peer exchange, speaker coordination, and continuity between conferences."
+          "Maintains programming, peer exchange, speaker coordination, and continuity between conferences."
         ],
         evidence: [
           {
             label: "Advisory-board leadership",
             value:
-              "Board direction, conference planning, and recurring professional-development programming for laboratory managers."
+              "Board direction, conference planning, and recurring professional-development programming."
           },
           {
             label: "Hosted conferences",
