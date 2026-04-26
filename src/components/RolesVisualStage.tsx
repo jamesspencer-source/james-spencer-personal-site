@@ -52,6 +52,30 @@ const chapterStops: Record<RoleChapter["id"], number> = {
   network: 0.78
 };
 
+const rolesTiming = {
+  active: {
+    labs: 0.27,
+    program: 0.58,
+    network: 0.82
+  },
+  sequences: {
+    labs: { start: 0.22, end: 0.5 },
+    program: { start: 0.52, end: 0.78 },
+    globe: { start: 0.8, end: 0.9 },
+    documentary: { start: 0.9, end: 1 }
+  },
+  visibility: {
+    overview: { enterStart: 0, enterEnd: 0.08, exitStart: 0.2, exitEnd: 0.32 },
+    labs: { enterStart: 0.2, enterEnd: 0.3, exitStart: 0.5, exitEnd: 0.58 },
+    program: { enterStart: 0.5, enterEnd: 0.58, exitStart: 0.78, exitEnd: 0.84 },
+    globe: { enterStart: 0.78, enterEnd: 0.88, exitStart: 1.08, exitEnd: 1.18 }
+  },
+  programCopy: {
+    start: 0.56,
+    end: 0.78
+  }
+};
+
 const programStations = [
   { label: "Funding", detail: "Budget + partner setup", x: 72, y: 208 },
   { label: "Hiring", detail: "Interviews + onboarding", x: 350, y: 70 },
@@ -75,14 +99,14 @@ const programConnectorPaths = [
   "M 312 430 L 372 430"
 ] as const;
 
-const LAB_SEQUENCE_START = 0.22;
-const LAB_SEQUENCE_END = 0.5;
-const PROGRAM_SEQUENCE_START = 0.52;
-const PROGRAM_SEQUENCE_END = 0.76;
-const GLOBE_SEQUENCE_START = 0.8;
-const GLOBE_SEQUENCE_END = 0.9;
-const DOCUMENTARY_SEQUENCE_START = 0.9;
-const DOCUMENTARY_SEQUENCE_END = 1;
+const LAB_SEQUENCE_START = rolesTiming.sequences.labs.start;
+const LAB_SEQUENCE_END = rolesTiming.sequences.labs.end;
+const PROGRAM_SEQUENCE_START = rolesTiming.sequences.program.start;
+const PROGRAM_SEQUENCE_END = rolesTiming.sequences.program.end;
+const GLOBE_SEQUENCE_START = rolesTiming.sequences.globe.start;
+const GLOBE_SEQUENCE_END = rolesTiming.sequences.globe.end;
+const DOCUMENTARY_SEQUENCE_START = rolesTiming.sequences.documentary.start;
+const DOCUMENTARY_SEQUENCE_END = rolesTiming.sequences.documentary.end;
 
 const globeRouteConnections = [
   ["Washington, DC", "Boston"],
@@ -227,26 +251,50 @@ function RolesVisualStage({
 }: RolesVisualStageProps) {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const overviewVisibility = fadeBetween(progress, 0, 0.08, 0.2, 0.32);
-  const labsVisibility = fadeBetween(progress, 0.2, 0.3, 0.48, 0.56);
-  const programVisibility = fadeBetween(progress, 0.48, 0.54, 0.76, 0.84);
-  const globeVisibility = fadeBetween(progress, 0.76, 0.84, 1.08, 1.18);
+  const overviewVisibility = fadeBetween(
+    progress,
+    rolesTiming.visibility.overview.enterStart,
+    rolesTiming.visibility.overview.enterEnd,
+    rolesTiming.visibility.overview.exitStart,
+    rolesTiming.visibility.overview.exitEnd
+  );
+  const labsVisibility = fadeBetween(
+    progress,
+    rolesTiming.visibility.labs.enterStart,
+    rolesTiming.visibility.labs.enterEnd,
+    rolesTiming.visibility.labs.exitStart,
+    rolesTiming.visibility.labs.exitEnd
+  );
+  const programVisibility = fadeBetween(
+    progress,
+    rolesTiming.visibility.program.enterStart,
+    rolesTiming.visibility.program.enterEnd,
+    rolesTiming.visibility.program.exitStart,
+    rolesTiming.visibility.program.exitEnd
+  );
+  const globeVisibility = fadeBetween(
+    progress,
+    rolesTiming.visibility.globe.enterStart,
+    rolesTiming.visibility.globe.enterEnd,
+    rolesTiming.visibility.globe.exitStart,
+    rolesTiming.visibility.globe.exitEnd
+  );
 
   const overviewCompress = smoothstep(0.18, 0.32, progress);
   const labsLocalProgress = normalizeProgress(progress, LAB_SEQUENCE_START, LAB_SEQUENCE_END);
-  const labsCompress = smoothstep(0.48, 0.56, progress);
+  const labsCompress = smoothstep(0.5, 0.58, progress);
   const labsReveal = smoothstep(0, 0.16, labsLocalProgress);
   const labsDetail =
     smoothstep(0.16, 0.3, labsLocalProgress) * (1 - smoothstep(0.92, 1, labsLocalProgress));
-  const programEnter = smoothstep(0.48, 0.54, progress);
-  const programExit = smoothstep(0.76, 0.84, progress);
+  const programEnter = smoothstep(0.5, 0.58, progress);
+  const programExit = smoothstep(0.78, 0.84, progress);
   const programStationsVisibility =
-    smoothstep(0.52, 0.6, progress) * (1 - smoothstep(0.86, 0.94, progress));
+    smoothstep(0.56, 0.64, progress) * (1 - smoothstep(0.8, 0.86, progress));
   const programSequenceProgress = getProgramSequenceProgress(progress);
   const globeSequenceProgress = clamp01(
     (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)
   );
-  const globeEnter = smoothstep(0.76, 0.88, progress);
+  const globeEnter = smoothstep(0.8, 0.9, progress);
   const documentaryEnter = smoothstep(
     DOCUMENTARY_SEQUENCE_START,
     DOCUMENTARY_SEQUENCE_END,
@@ -385,6 +433,9 @@ function RolesVisualStage({
   }, [networkVisual, overviewGlobePath]);
 
   const globeFocusLabel = hoveredCity;
+  const toggleHoveredCity = (label: string) => {
+    setHoveredCity((current) => (current === label ? null : label));
+  };
 
   const activeCallouts =
     chapters.find((chapter) => chapter.id === activeChapterId)?.callouts ?? [];
@@ -693,14 +744,14 @@ function RolesVisualStage({
                     y={-6}
                     width={programStationCard.width + 12}
                     height={programStationCard.height + 12}
-                    rx={18}
+                    rx={8}
                     style={{ opacity: emphasis * 0.9 }}
                   />
                   <rect
                     className="scene-program__station-card"
                     width={programStationCard.width}
                     height={programStationCard.height}
-                    rx={14}
+                    rx={8}
                   />
                   <circle
                     className="scene-program__station-dot"
@@ -850,22 +901,34 @@ function RolesVisualStage({
               projectedCities.length
             );
             const active = globeFocusLabel === city.label;
+            const pinInteractive =
+              activeChapterId === "network" &&
+              reveal > 0.05 &&
+              globeLayerVisibility > 0.2 &&
+              documentaryEnter < 0.72;
 
             return (
               <g
                 key={`${city.label}-${city.year}`}
                 className="scene-globe__pin"
                 transform={`translate(${city.x} ${city.y})`}
-                tabIndex={0}
+                tabIndex={pinInteractive ? 0 : -1}
                 role="button"
+                aria-hidden={!pinInteractive}
                 aria-label={`${city.label}, ${city.state}${city.year ? ` (${city.year})` : ""}`}
                 onMouseEnter={() => setHoveredCity(city.label)}
                 onMouseLeave={() => setHoveredCity(null)}
                 onFocus={() => setHoveredCity(city.label)}
                 onBlur={() => setHoveredCity(null)}
-                onClick={() =>
-                  setHoveredCity((current) => (current === city.label ? null : city.label))
-                }
+                onClick={() => toggleHoveredCity(city.label)}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                  }
+
+                  event.preventDefault();
+                  toggleHoveredCity(city.label);
+                }}
                 style={{
                   opacity: reveal * clamp01(globeEnter * 1.15),
                   transform: `scale(${mix(0.86, active ? 1.2 : 1, active ? 1 : reveal)})`
@@ -886,7 +949,7 @@ function RolesVisualStage({
             transform="translate(62 76)"
             style={{ opacity: clamp01(globeEnter * 1.18) }}
           >
-            <rect className="scene-globe__annotation-frame" width="324" height="220" rx="18" />
+            <rect className="scene-globe__annotation-frame" width="324" height="220" rx="8" />
             <text className="scene-globe__annotation-title" x="22" y="31">
               Conference locations
             </text>
@@ -909,7 +972,7 @@ function RolesVisualStage({
                   transform={`translate(18 ${rowY})`}
                   style={{ opacity: reveal * mix(0.58, 1, active ? 1 : reveal) }}
                 >
-                  <rect width="288" height="28" rx="10" />
+                  <rect width="288" height="28" rx="7" />
                   <circle cx="15" cy="14" r={active ? 5.5 : 4.2} />
                   <text className="scene-globe__annotation-city" x="30" y="12">
                     {city.label}
@@ -927,7 +990,7 @@ function RolesVisualStage({
             transform="translate(94 582)"
             style={{ opacity: clamp01(globeEnter * 1.12) }}
           >
-            <rect width="430" height="82" rx="18" />
+            <rect width="430" height="82" rx="8" />
             <text x="22" y="28">Conference footprint</text>
             <text x="22" y="52">Regional and national conference sites appear chronologically.</text>
             <text x="22" y="69">Each location remains visible as the map progresses.</text>
@@ -979,5 +1042,5 @@ function RolesVisualStage({
   );
 }
 
-export { chapterStops };
+export { chapterStops, rolesTiming };
 export default RolesVisualStage;

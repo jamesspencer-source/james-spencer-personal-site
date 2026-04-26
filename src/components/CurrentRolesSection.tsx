@@ -1,7 +1,7 @@
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import RolesVisualStage, { chapterStops } from "./RolesVisualStage";
+import RolesVisualStage, { chapterStops, rolesTiming } from "./RolesVisualStage";
 import { siteContent, type RoleChapter } from "../content";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -10,8 +10,9 @@ type CurrentRolesSectionProps = {
   reducedMotion: boolean;
 };
 
-const PROGRAM_COPY_PROGRESS_END = 0.76;
-const NETWORK_DOCUMENTARY_PROGRESS_START = 0.9;
+const PROGRAM_COPY_PROGRESS_START = rolesTiming.programCopy.start;
+const PROGRAM_COPY_PROGRESS_END = rolesTiming.programCopy.end;
+const NETWORK_DOCUMENTARY_PROGRESS_START = rolesTiming.sequences.documentary.start;
 
 function clamp01(value: number) {
   return Math.max(0, Math.min(1, value));
@@ -33,15 +34,15 @@ function fadeBetween(
 }
 
 function getActiveChapterId(progress: number): RoleChapter["id"] {
-  if (progress >= 0.78) {
+  if (progress >= rolesTiming.active.network) {
     return "network";
   }
 
-  if (progress >= 0.52) {
+  if (progress >= rolesTiming.active.program) {
     return "program";
   }
 
-  if (progress >= 0.22) {
+  if (progress >= rolesTiming.active.labs) {
     return "labs";
   }
 
@@ -178,7 +179,8 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
   const chapters = siteContent.rolesSection.chapters;
   const programChapterProgress = clamp01(
-    (progress - chapterStops.program) / (PROGRAM_COPY_PROGRESS_END - chapterStops.program)
+    (progress - PROGRAM_COPY_PROGRESS_START) /
+      (PROGRAM_COPY_PROGRESS_END - PROGRAM_COPY_PROGRESS_START)
   );
   const networkDocumentaryProgress = clamp01(
     (progress - NETWORK_DOCUMENTARY_PROGRESS_START) / (1 - NETWORK_DOCUMENTARY_PROGRESS_START)
@@ -187,9 +189,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const chapterVisibility = useMemo(
     () => ({
       overview: fadeBetween(progress, 0, 0.08, 0.24, 0.36),
-      labs: fadeBetween(progress, 0.2, 0.3, 0.48, 0.58),
-      program: fadeBetween(progress, 0.48, 0.56, 0.78, 0.88),
-      network: fadeBetween(progress, 0.76, 0.84, 1.08, 1.18)
+      labs: fadeBetween(progress, 0.22, 0.32, 0.5, 0.6),
+      program: fadeBetween(progress, 0.52, 0.6, 0.78, 0.86),
+      network: fadeBetween(progress, 0.8, 0.88, 1.08, 1.18)
     }),
     [progress]
   );
@@ -217,7 +219,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       });
     };
 
-    const headerHeight =
+    const getHeaderHeight = () =>
       document.querySelector<HTMLElement>(".site-header")?.getBoundingClientRect()
         .height ?? 76;
 
@@ -235,7 +237,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       trigger: sectionRef.current,
       animation: masterTimeline,
       pin: viewportRef.current,
-      start: () => `top top+=${headerHeight}`,
+      start: () => `top top+=${getHeaderHeight()}`,
       end: () =>
         `+=${Math.round(
           window.innerHeight * (window.innerWidth < 900 ? 6.4 : 8)
@@ -265,11 +267,34 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
     }
 
     const stop = chapterStops[chapterId];
+    trigger.refresh();
     const scrollTop = trigger.start + (trigger.end - trigger.start) * stop;
     window.scrollTo({
       top: scrollTop,
       behavior: reducedMotion ? "auto" : "smooth"
     });
+  };
+
+  const handleProgressKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    index: number
+  ) => {
+    const lastIndex = chapters.length - 1;
+    const keyMap: Record<string, number> = {
+      ArrowLeft: Math.max(0, index - 1),
+      ArrowUp: Math.max(0, index - 1),
+      ArrowRight: Math.min(lastIndex, index + 1),
+      ArrowDown: Math.min(lastIndex, index + 1),
+      Home: 0,
+      End: lastIndex
+    };
+
+    if (!(event.key in keyMap)) {
+      return;
+    }
+
+    event.preventDefault();
+    handleJump(chapters[keyMap[event.key]].id);
   };
 
   if (reducedMotion) {
@@ -294,7 +319,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
                   type="button"
                   className="roles-story__progress-item"
                   data-active={activeChapterId === chapter.id}
+                  aria-current={activeChapterId === chapter.id ? "step" : undefined}
                   onClick={() => handleJump(chapter.id)}
+                  onKeyDown={(event) => handleProgressKeyDown(event, index)}
                 >
                   <span className="roles-story__progress-index">
                     {String(index + 1).padStart(2, "0")}
@@ -309,6 +336,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
                 (() => {
                   const isActive = activeChapterId === chapter.id;
                   const opacity = isActive ? 1 : chapterVisibility[chapter.id];
+                  const isVisible = opacity > 0.02;
 
                   return (
                     <div
@@ -316,6 +344,9 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
                       id={`roles-${chapter.id}`}
                       className="roles-story__panel-shell"
                       data-active={isActive}
+                      data-visible={isVisible}
+                      aria-hidden={!isActive}
+                      inert={!isActive}
                       style={{
                         opacity,
                         transform: `translate3d(0, ${isActive ? 0 : 24 - opacity * 24}px, 0)`

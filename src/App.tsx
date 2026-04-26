@@ -16,7 +16,13 @@ const navItems: Array<{ id: SectionId; label: string }> = [
 ];
 
 function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -152,6 +158,39 @@ function SectionLabel({ label, className }: { label?: string; className: string 
   return <p className={className}>{label}</p>;
 }
 
+function HeroOperationsIndex() {
+  const items = [
+    {
+      index: "01",
+      label: "Laboratories",
+      detail: "People, space, equipment, vendors"
+    },
+    {
+      index: "02",
+      label: "Program delivery",
+      detail: "Funding, hiring, onboarding, closeout"
+    },
+    {
+      index: "03",
+      label: "Lab-manager conferences",
+      detail: "Board priorities, speakers, partners"
+    }
+  ];
+
+  return (
+    <div className="hero-operations-index" aria-hidden="true">
+      <div className="hero-operations-index__rule" />
+      {items.map((item) => (
+        <div className="hero-operations-index__row" key={item.index}>
+          <span className="hero-operations-index__index">{item.index}</span>
+          <span className="hero-operations-index__label">{item.label}</span>
+          <span className="hero-operations-index__detail">{item.detail}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function App() {
   const prefersReducedMotion = usePrefersReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -164,6 +203,30 @@ function App() {
     updateMetaProperty("og:description", siteContent.meta.description);
     updateMetaTag("twitter:title", siteContent.meta.title);
     updateMetaTag("twitter:description", siteContent.meta.description);
+  }, []);
+
+  useLayoutEffect(() => {
+    const header = document.querySelector<HTMLElement>(".site-header");
+
+    if (!header) {
+      return;
+    }
+
+    const syncHeaderOffset = () => {
+      const height = Math.ceil(header.getBoundingClientRect().height);
+      document.documentElement.style.setProperty("--header-offset", `${height}px`);
+    };
+
+    syncHeaderOffset();
+
+    const observer = new ResizeObserver(syncHeaderOffset);
+    observer.observe(header);
+    window.addEventListener("resize", syncHeaderOffset);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", syncHeaderOffset);
+    };
   }, []);
 
   useEffect(() => {
@@ -327,6 +390,7 @@ function App() {
 
               <aside className="hero-proof-panel js-hero-item" aria-label="Key proof">
                 <p className="hero-proof-panel__label">At a glance</p>
+                <HeroOperationsIndex />
                 <div className="hero-proof-panel__list">
                   {siteContent.hero.proof.map((item) => (
                     <article className="hero-proof-panel__item" key={item.headline}>
