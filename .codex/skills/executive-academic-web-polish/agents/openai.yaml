@@ -1,0 +1,6 @@
+interface:
+  display_name: "Executive Academic Web Polish"
+  short_description: "Polish executive-academic web presence"
+  default_prompt: "Use $executive-academic-web-polish to improve James M. Spencer's personal website with a sophisticated, credible design standard."
+policy:
+  allow_implicit_invocation: true
