@@ -127,7 +127,6 @@ button {
 .site-brand,
 .site-nav__link,
 .hero__eyebrow,
-.hero__title,
 .hero__location,
 .hero-proof-panel__label,
 .section-heading__label,
@@ -270,18 +269,23 @@ button {
 
 .hero__name {
   margin: 0;
-  font-size: clamp(3.3rem, 7.2vw, 5.5rem);
-  font-weight: 600;
-  line-height: 0.94;
-  letter-spacing: -0.028em;
+  color: var(--forest);
+  font-family: "Inter", sans-serif;
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
 }
 
 .hero__title {
-  margin: 1.1rem 0 0;
+  max-width: 12.5ch;
+  margin: 0.8rem 0 0;
   color: var(--ink);
-  font-size: 1.03rem;
+  font-family: "Newsreader", Georgia, serif;
+  font-size: clamp(3.05rem, 6.4vw, 5.25rem);
   font-weight: 600;
-  letter-spacing: 0.01em;
+  line-height: 0.96;
+  letter-spacing: -0.026em;
+  text-wrap: balance;
 }
 
 .hero__location {
@@ -830,23 +834,7 @@ button {
 
   .roles-story__panel-shell {
     max-height: 100%;
-    overflow: hidden;
-  }
-
-  .roles-story__panel-shell[data-active="true"] {
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    padding-right: 0.22rem;
-    scrollbar-gutter: stable;
-  }
-
-  .roles-story__panel-shell[data-active="true"]::-webkit-scrollbar {
-    width: 7px;
-  }
-
-  .roles-story__panel-shell[data-active="true"]::-webkit-scrollbar-thumb {
-    background: rgba(155, 195, 173, 0.28);
-    border-radius: 999px;
+    overflow: visible;
   }
 
   .roles-story__panel {
@@ -927,6 +915,37 @@ button {
   height: min(calc(100svh - var(--header-offset) - 3rem), 36rem);
   border-radius: 0;
   overflow: hidden;
+}
+
+.roles-scene--placeholder {
+  display: grid;
+  place-items: center;
+}
+
+.roles-scene__placeholder-mark {
+  position: relative;
+  width: min(52%, 22rem);
+  height: 1px;
+  overflow: hidden;
+  background: rgba(221, 238, 229, 0.14);
+}
+
+.roles-scene__placeholder-mark span {
+  position: absolute;
+  inset: 0;
+  width: 42%;
+  background: linear-gradient(90deg, rgba(155, 195, 173, 0), rgba(155, 195, 173, 0.68), rgba(155, 195, 173, 0));
+  animation: placeholder-scan 1.6s ease-in-out infinite;
+}
+
+@keyframes placeholder-scan {
+  from {
+    transform: translateX(-120%);
+  }
+
+  to {
+    transform: translateX(260%);
+  }
 }
 
 .roles-scene__backdrop,
@@ -1378,19 +1397,19 @@ button {
 
 .scene-program__stations .scene-program__station-index {
   fill: rgba(167, 203, 184, 0.82);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.08em;
 }
 
 .scene-program__stations .scene-program__station-label {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 700;
 }
 
 .scene-program__stations .scene-program__station-detail {
   fill: rgba(216, 232, 223, 0.82);
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 650;
 }
 
@@ -1678,7 +1697,7 @@ button {
 
 .roles-story__card {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  grid-template-columns: 1fr;
   gap: 1.25rem;
   padding: 1rem;
   border-radius: var(--radius);
@@ -1688,7 +1707,7 @@ button {
 }
 
 .roles-story__card-visual {
-  min-height: 22rem;
+  min-height: clamp(20rem, 48vw, 30rem);
 }
 
 .roles-story__card-copy .roles-story__panel {
@@ -1889,7 +1908,7 @@ button {
   margin: 0;
   justify-self: end;
   align-self: center;
-  width: min(100%, 29rem);
+  width: min(100%, 24rem);
   min-width: 0;
   max-height: min(72vh, 42rem);
   padding: 0.5rem;
@@ -1898,6 +1917,10 @@ button {
   background:
     linear-gradient(180deg, rgba(246, 241, 232, 0.92), rgba(225, 217, 203, 0.48));
   box-shadow: 0 26px 54px rgba(20, 22, 17, 0.12);
+}
+
+.contact__portrait picture {
+  display: block;
 }
 
 .contact__portrait img {

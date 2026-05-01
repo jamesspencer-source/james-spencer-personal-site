@@ -370,10 +370,10 @@ function App() {
                   label={siteContent.hero.label}
                   className="hero__eyebrow js-hero-item"
                 />
-                <h1 className="hero__name js-hero-item">
+                <p className="hero__name js-hero-item">
                   {siteContent.hero.name}
-                </h1>
-                <p className="hero__title js-hero-item">{siteContent.hero.title}</p>
+                </p>
+                <h1 className="hero__title js-hero-item">{siteContent.hero.title}</h1>
                 <p className="hero__location js-hero-item">
                   {siteContent.hero.location}
                 </p>
@@ -500,14 +500,25 @@ function App() {
 
             {siteContent.contact.portrait ? (
               <figure className="contact__portrait js-stage-reveal">
-                <img
-                  src={siteContent.contact.portrait.src}
-                  alt={siteContent.contact.portrait.alt}
-                  width={1996}
-                  height={3000}
-                  loading="lazy"
-                  decoding="async"
-                />
+                <picture>
+                  {siteContent.contact.portrait.sources?.length ? (
+                    <source
+                      type="image/jpeg"
+                      srcSet={siteContent.contact.portrait.sources
+                        .map((source) => `${source.src} ${source.width}w`)
+                        .join(", ")}
+                      sizes="(max-width: 640px) 88vw, (max-width: 1024px) 24rem, 24rem"
+                    />
+                  ) : null}
+                  <img
+                    src={siteContent.contact.portrait.src}
+                    alt={siteContent.contact.portrait.alt}
+                    width={1996}
+                    height={3000}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </picture>
               </figure>
             ) : null}
           </div>

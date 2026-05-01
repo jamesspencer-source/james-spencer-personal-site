@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import type * as Three from "three";
 
-let THREE: any = null;
+let THREE = null as unknown as typeof Three;
 
 type LabBuildingsSceneProps = {
   progress: number;
@@ -11,20 +12,20 @@ type LabBuildingsSceneProps = {
 };
 
 type SceneHandles = {
-  renderer: any;
-  scene: any;
-  camera: any;
-  root: any;
-  detailGroup: any;
-  himBand: any;
-  vscBand: any;
-  connector: any;
-  connectorGlow: any;
-  connectorCurve: any;
+  renderer: Three.WebGLRenderer;
+  scene: Three.Scene;
+  camera: Three.PerspectiveCamera;
+  root: Three.Group;
+  detailGroup: Three.Group;
+  himBand: Three.Group;
+  vscBand: Three.Group;
+  connector: Three.Line<Three.BufferGeometry, Three.LineBasicMaterial>;
+  connectorGlow: Three.Mesh<Three.TubeGeometry, Three.MeshBasicMaterial>;
+  connectorCurve: Three.CatmullRomCurve3;
   connectorPointCount: number;
-  signalMarker: any;
-  facadeMaterials: any[];
-  detailMaterials: any[];
+  signalMarker: Three.Mesh<Three.SphereGeometry, Three.MeshBasicMaterial>;
+  facadeMaterials: Three.MeshStandardMaterial[];
+  detailMaterials: Three.MeshStandardMaterial[];
   resizeObserver: ResizeObserver;
   frameId: number;
 };
@@ -45,8 +46,8 @@ function smoothstep(start: number, end: number, value: number) {
 }
 
 function createBox(
-  parent: any,
-  material: any,
+  parent: Three.Object3D,
+  material: Three.Material,
   size: [number, number, number],
   position: [number, number, number],
   rotation: [number, number, number] = [0, 0, 0]
@@ -59,8 +60,8 @@ function createBox(
 }
 
 function createCylinder(
-  parent: any,
-  material: any,
+  parent: Three.Object3D,
+  material: Three.Material,
   radius: number,
   height: number,
   position: [number, number, number],
@@ -86,7 +87,7 @@ function addEdges(parent: any, mesh: any, material: any) {
 }
 
 function addWindowGrid(
-  parent: any,
+  parent: Three.Object3D,
   options: {
     x: number;
     z: number;
@@ -96,8 +97,8 @@ function addWindowGrid(
     floors: number;
     columns: number;
     orientation: "front" | "right" | "left";
-    windowMaterial: any;
-    mullionMaterial: any;
+    windowMaterial: Three.Material;
+    mullionMaterial: Three.Material;
     bayScale?: number;
   }
 ) {
@@ -157,7 +158,7 @@ function addWindowGrid(
 }
 
 function addCurtainWall(
-  parent: any,
+  parent: Three.Object3D,
   options: {
     x: number;
     z: number;
@@ -167,8 +168,8 @@ function addCurtainWall(
     floors: number;
     columns: number;
     orientation: "front" | "right" | "left";
-    panelMaterial: any;
-    mullionMaterial: any;
+    panelMaterial: Three.Material;
+    mullionMaterial: Three.Material;
   }
 ) {
   const floorHeight = options.height / options.floors;
@@ -226,7 +227,7 @@ function addCurtainWall(
 }
 
 function addVerticalFacadeRibs(
-  parent: any,
+  parent: Three.Object3D,
   options: {
     x: number;
     z: number;
@@ -235,7 +236,7 @@ function addVerticalFacadeRibs(
     height: number;
     count: number;
     orientation: "front" | "right" | "left";
-    material: any;
+    material: Three.Material;
   }
 ) {
   const count = Math.max(2, options.count);
@@ -268,9 +269,9 @@ function addVerticalFacadeRibs(
 }
 
 function createFloorHighlight(
-  parent: any,
-  material: any,
-  glowMaterial: any,
+  parent: Three.Object3D,
+  material: Three.MeshStandardMaterial,
+  glowMaterial: Three.MeshBasicMaterial,
   options: {
     x: number;
     z: number;
@@ -345,18 +346,19 @@ function createFloorHighlight(
   return group;
 }
 
-function setGroupMaterial(group: any, opacity: number, emissiveIntensity: number) {
-  group.children.forEach((child: any) => {
+function setGroupMaterial(group: Three.Group, opacity: number, emissiveIntensity: number) {
+  group.children.forEach((child) => {
+    const mesh = child as Three.Mesh<Three.BufferGeometry, Three.MeshStandardMaterial | Three.MeshBasicMaterial>;
     const opacityMultiplier = child.userData?.opacityMultiplier ?? 1;
     const emissiveMultiplier = child.userData?.emissiveMultiplier ?? 1;
-    child.material.opacity = clamp01(opacity * opacityMultiplier);
-    if ("emissiveIntensity" in child.material) {
-      child.material.emissiveIntensity = emissiveIntensity * emissiveMultiplier;
+    mesh.material.opacity = clamp01(opacity * opacityMultiplier);
+    if ("emissiveIntensity" in mesh.material) {
+      mesh.material.emissiveIntensity = emissiveIntensity * emissiveMultiplier;
     }
   });
 }
 
-function addRoofArray(parent: any, material: any, x: number, y: number, z: number) {
+function addRoofArray(parent: Three.Object3D, material: Three.Material, x: number, y: number, z: number) {
   for (let row = 0; row < 3; row += 1) {
     for (let column = 0; column < 5; column += 1) {
       createBox(
@@ -369,7 +371,14 @@ function addRoofArray(parent: any, material: any, x: number, y: number, z: numbe
   }
 }
 
-function addTree(parent: any, trunkMaterial: any, canopyMaterial: any, x: number, z: number, scale: number) {
+function addTree(
+  parent: Three.Object3D,
+  trunkMaterial: Three.Material,
+  canopyMaterial: Three.Material,
+  x: number,
+  z: number,
+  scale: number
+) {
   createCylinder(parent, trunkMaterial, 0.025 * scale, 0.22 * scale, [x, 0.13 * scale, z]);
   const canopy = new THREE.Mesh(
     new THREE.DodecahedronGeometry(0.18 * scale, 0),
@@ -888,7 +897,7 @@ function buildScene(canvas: HTMLCanvasElement, container: HTMLDivElement) {
       roofPanelMaterial,
       treeCanopyMaterial,
       sidewalkMaterial
-    ],
+    ] as Three.MeshStandardMaterial[],
     resizeObserver,
     frameId: 0
   };
@@ -975,11 +984,14 @@ function updateScene(
 function disposeScene(handles: SceneHandles) {
   handles.resizeObserver.disconnect();
   window.cancelAnimationFrame(handles.frameId);
-  handles.scene.traverse((object: any) => {
+  handles.scene.traverse((object) => {
     if (object instanceof THREE.Mesh || object instanceof THREE.Line || object instanceof THREE.LineSegments) {
-      object.geometry.dispose();
-      const materials = Array.isArray(object.material) ? object.material : [object.material];
-      materials.forEach((material: any) => material.dispose());
+      const disposable = object as Three.Mesh | Three.Line | Three.LineSegments;
+      disposable.geometry.dispose();
+      const materials = Array.isArray(disposable.material)
+        ? disposable.material
+        : [disposable.material];
+      materials.forEach((material) => material.dispose());
     }
   });
   handles.renderer.dispose();

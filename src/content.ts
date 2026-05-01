@@ -1,3 +1,5 @@
+import siteMeta from "../site-meta.json";
+
 export type ActionLink = {
   label: string;
   href: string;
@@ -33,6 +35,10 @@ export type HostCity = {
 export type PortraitAsset = {
   src: string;
   alt: string;
+  sources?: Array<{
+    src: string;
+    width: number;
+  }>;
 };
 
 export type DocumentaryBeat = {
@@ -46,6 +52,24 @@ export type RoleVisual =
   | { kind: "labs-schematic" }
   | { kind: "program-cycle" }
   | { kind: "network-globe"; hostCities: HostCity[] };
+
+export type OverviewVisualCard = {
+  index: string;
+  titleLines: string[];
+  captionLines: string[];
+};
+
+export type ProgramStation = {
+  label: string;
+  detail: string;
+  x: number;
+  y: number;
+};
+
+export type GlobeAnnotation = {
+  city: string;
+  detail: string;
+};
 
 export type RoleChapter = {
   id: "overview" | "labs" | "program" | "network";
@@ -78,6 +102,22 @@ export type ContactContent = {
   contextTags?: string[];
   portrait?: PortraitAsset | null;
   links: ActionLink[];
+};
+
+export type RolesVisualCopy = {
+  overviewCards: OverviewVisualCard[];
+  programStations: ProgramStation[];
+  programCore: {
+    title: string;
+    subtitle: string;
+  };
+  globeAnnotation: {
+    title: string;
+    subtitle: string;
+    rows: GlobeAnnotation[];
+    legendTitle: string;
+    legendLines: string[];
+  };
 };
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
@@ -118,35 +158,32 @@ const hostCities: HostCity[] = [
 ];
 
 export const siteContent = {
-  meta: {
-    title: "James M. Spencer | Laboratory Manager and Program Operations Lead",
-    description:
-      "James M. Spencer manages research laboratory operations, supports scientific program delivery, and chairs a lab-manager advisory board."
-  },
+  meta: siteMeta,
   hero: {
     label: "",
     name: "James M. Spencer",
-    title: "Laboratory Manager, Program Operations Lead, and Advisory Board Chair",
+    title:
+      "Research operations leadership for laboratories, programs, and lab-manager conferences",
     location: "Boston, Massachusetts",
     summary: [
-      "James M. Spencer is a laboratory manager in Harvard Medical School Microbiology, supporting the Bernhardt and Abraham laboratories, two Howard Hughes Medical Institute Investigator labs in separate buildings.",
-      "He also leads operations for Community Phages and chairs the Lab Management Network of Professionals advisory board. His work includes staffing support, budgets, purchasing, facilities, equipment, vendors, onboarding, access, biosafety preparation, program logistics, and conference planning."
+      "James manages the coordination work that keeps two distinct HHMI Investigator laboratories, an annual student research program, and regional and national lab-manager conferences running reliably.",
+      "His current roles combine laboratory management, Community Phages program operations, and advisory-board leadership for the Lab Management Network of Professionals."
     ],
     proof: [
       {
-        headline: "Two Howard Hughes Medical Institute Investigator laboratories",
+        headline: "Two HHMI Investigator laboratories",
         detail:
-          "Supports separate scientific programs in Harvard Medical School Microbiology, with facilities, equipment, regulated space, and staff support across two buildings."
+          "Distinct Harvard Medical School Microbiology labs supported across separate spaces and operating needs."
       },
       {
-        headline: "Community Phages program operations",
+        headline: "Community Phages program delivery",
         detail:
-          "Coordinates setup and delivery for Community Phages, an eight-week summer internship program now in its fifth year."
+          "Annual delivery for an eight-week student research program now in its fifth annual cycle."
       },
       {
-        headline: "Lab-manager advisory board and conferences",
+        headline: "Lab-manager conference leadership",
         detail:
-          "Chairs the Lab Management Network of Professionals advisory board and helps plan regional and national conferences."
+          "Advisory-board chair work supporting regional and national conference programming."
       }
     ] as ProofItem[],
     actions: [
@@ -165,7 +202,53 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "James's current work has three main parts: laboratory management, Community Phages program operations, and Lab Management Network of Professionals advisory-board leadership.",
+      "Laboratory operations is James's core role. Community Phages and LMNOP extend the same planning, coordination, and continuity work into program delivery and lab-manager conferences.",
+    visualCopy: {
+      overviewCards: [
+        {
+          index: "01",
+          titleLines: ["Laboratory", "operations"],
+          captionLines: ["Two research labs", "Distinct spaces", "Daily continuity"]
+        },
+        {
+          index: "02",
+          titleLines: ["Community", "Phages"],
+          captionLines: ["Annual program delivery", "Funding to closeout"]
+        },
+        {
+          index: "03",
+          titleLines: ["Network", "leadership"],
+          captionLines: ["Regional and national", "conferences", "Year-round programming"]
+        }
+      ],
+      programStations: [
+        { label: "Funding", detail: "Budget + partner setup", x: 72, y: 220 },
+        { label: "Hiring", detail: "Interviews + onboarding", x: 350, y: 60 },
+        { label: "Lab setup", detail: "Benches + supplies", x: 626, y: 208 },
+        { label: "Biosafety", detail: "Training + access", x: 626, y: 370 },
+        { label: "Delivery", detail: "Daily program support", x: 350, y: 548 },
+        { label: "Closeout", detail: "Space reset + wrap-up", x: 72, y: 430 }
+      ],
+      programCore: {
+        title: "Annual operating cycle",
+        subtitle: "Community Phages"
+      },
+      globeAnnotation: {
+        title: "Conference locations",
+        subtitle: "Hosted sites appear in sequence and remain active.",
+        rows: [
+          { city: "Washington, DC", detail: "2023 + 2025 national conferences" },
+          { city: "Boston", detail: "2024 regional conference" },
+          { city: "San Francisco", detail: "2026 regional conference" },
+          { city: "New York City", detail: "2026 regional conference" }
+        ],
+        legendTitle: "Conference footprint",
+        legendLines: [
+          "Regional and national sites appear chronologically.",
+          "Each location remains visible as the map progresses."
+        ]
+      }
+    } satisfies RolesVisualCopy,
     chapters: [
       {
         id: "overview",
@@ -176,21 +259,21 @@ export const siteContent = {
           "Harvard Medical School, Howard Hughes Medical Institute, and the Lab Management Network of Professionals",
         dates: "Current",
         summary:
-          "Across these roles, James coordinates people, space, equipment, vendors, budgets, logistics, and follow-through for research labs, a student program, and lab-manager conferences.",
+          "James's current work centers on keeping complex research and program environments ready, staffed, supplied, and coordinated.",
         responsibilities: [
-          "Supports staffing, budgets, facilities, equipment, vendors, and regulated space for active research labs with separate scientific programs and locations.",
-          "Extends that work to an annual student internship program and recurring conferences for lab managers."
+          "Maintains continuity across people, space, equipment, vendors, budgets, and access.",
+          "Applies the same coordination to student-program delivery and lab-manager conferences."
         ],
         evidence: [
           {
             label: "Current scope",
             value:
-              "Two research laboratories, one annual summer program, and recurring regional and national conferences for lab managers."
+              "Two research labs, one annual summer program, and recurring lab-manager conferences."
           },
           {
-            label: "Work includes",
+            label: "Execution focus",
             value:
-              "Planning, staffing, logistics, facilities coordination, and day-to-day support across research, program, and lab-management work."
+              "Planning, staffing, logistics, facilities coordination, and day-to-day follow-through."
           }
         ],
         visual: {
@@ -206,21 +289,21 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "James's core role is laboratory management for the Bernhardt and Abraham laboratories: two Howard Hughes Medical Institute Investigator labs in Harvard Medical School Microbiology, with separate scientific programs and locations. He handles administration, facilities, equipment, vendors, staffing, access, and daily coordination.",
+          "James's core role is laboratory management for the Bernhardt and Abraham laboratories: two HHMI Investigator labs in Harvard Medical School Microbiology with separate scientific programs and locations.",
         responsibilities: [
-          "Coordinates budgets, purchasing, facilities, vendors, and equipment planning for laboratory space in Veritas Science Center and 4 Blackfan Circle.",
-          "Manages hiring logistics, onboarding, candidate visits, access, and regulated laboratory-space coordination on the ninth and tenth floors."
+          "Manages budgets, purchasing, vendors, facilities requests, equipment planning, and access.",
+          "Coordinates hiring logistics, onboarding, candidate visits, training, and daily lab support."
         ],
         evidence: [
           {
             label: "Current scope",
             value:
-              "Two distinct Howard Hughes Medical Institute Investigator laboratories in the same department, located across two buildings."
+              "Two distinct HHMI Investigator labs in HMS Microbiology across two buildings."
           },
           {
-            label: "Core responsibilities",
+            label: "Continuity work",
             value:
-              "Staffing support, facilities coordination, equipment planning, budgets, purchasing, vendors, onboarding, access, and daily support."
+              "Budgets, space, staff support, equipment, vendors, safety, and daily coordination."
           }
         ],
         callouts: [],
@@ -237,21 +320,21 @@ export const siteContent = {
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "James leads operations for Community Phages, an eight-week summer internship program for Roxbury Community College students at Harvard Medical School. He coordinates funding, hiring, onboarding, lab setup, biosafety preparation, partner logistics, instructor support, student support, and closeout.",
+          "James leads operations for Community Phages, an eight-week summer internship for Roxbury Community College students at Harvard Medical School.",
         responsibilities: [
-          "Prepares the program before students arrive, including funding, hiring and interviewing, access, biosafety planning, bench setup, supplies, and lab-space turnover.",
-          "Coordinates delivery during the program, including instructors, partner logistics, student support, field trips, daily schedules, and closeout."
+          "Coordinates funding, hiring, onboarding, access, biosafety prep, and lab setup.",
+          "Runs delivery logistics, instructor support, field trips, student support, and closeout."
         ],
         evidence: [
           {
             label: "Program cycle",
             value:
-              "Fifth annual cycle for an eight-week research internship program."
+              "Fifth annual cycle of an eight-week RCC student research internship."
           },
           {
-            label: "Delivery system",
+            label: "Readiness work",
             value:
-              "Funding, hiring, onboarding, lab buildout, biosafety preparation, partner logistics, student support, daily schedules, and closeout."
+              "Program readiness from budget setup through lab breakdown and closeout."
           }
         ],
         link: {
@@ -271,21 +354,21 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers. The role includes board priorities, conference planning, speaker coordination, partner relationships, recurring programming, and continuity between meetings.",
+          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers.",
         responsibilities: [
-          "Sets board priorities and helps plan regional and national conferences for laboratory managers and institute partners.",
-          "Maintains programming, peer exchange, speaker coordination, and continuity between conferences."
+          "Sets board priorities and plans regional and national conferences for lab managers.",
+          "Maintains programming, speaker coordination, partner contact, and peer exchange."
         ],
         evidence: [
           {
             label: "Advisory-board leadership",
             value:
-              "Board direction, conference planning, and recurring professional-development programming."
+              "Board direction, conference planning, and professional-development programming."
           },
           {
             label: "Hosted conferences",
             value:
-              "Regional and national conferences organized in Boston, Washington, DC, San Francisco, and New York City."
+              "Conferences in Boston, Washington, DC, San Francisco, and New York City."
           }
         ],
         visual: {
@@ -308,7 +391,7 @@ export const siteContent = {
     label: "Background",
     heading: "Earlier work",
     intro:
-      "Earlier work in bench science and residential life connects to James's current focus on laboratory practice, documentation, coordination, and support for large residential communities.",
+      "Earlier work connects bench-science fluency with people-systems leadership: laboratory practice, documentation, peer training, and support for large residential communities.",
     portrait: null as PortraitAsset | null,
     entries: [
       {
@@ -344,16 +427,30 @@ export const siteContent = {
     label: "Contact",
     heading: "Connect",
     intro:
-      "For conversations about lab operations, scientific program operations, lab-manager networks, or conference planning, LinkedIn is the best way to reach James.",
+      "For conversations about research operations, scientific program leadership, or laboratory management, LinkedIn is the best way to reach James.",
     supportLine:
-      "Relevant areas include academic research operations, lab administration, program delivery, and conference planning.",
+      "His work sits where people, space, equipment, funding, and programming have to come together reliably.",
     contextTags: [
       "Research operations",
-      "Program operations",
-      "Lab-manager conferences"
+      "Scientific program leadership",
+      "Laboratory management"
     ],
     portrait: {
       src: asset("assets/images/james-m-spencer-studio-headshot.jpg"),
+      sources: [
+        {
+          src: asset("assets/images/james-m-spencer-studio-headshot-720.jpg"),
+          width: 720
+        },
+        {
+          src: asset("assets/images/james-m-spencer-studio-headshot-1100.jpg"),
+          width: 1100
+        },
+        {
+          src: asset("assets/images/james-m-spencer-studio-headshot-1500.jpg"),
+          width: 1500
+        }
+      ],
       alt: "James M. Spencer in a studio headshot wearing a navy shirt against a gray background."
     } as PortraitAsset,
     links: [

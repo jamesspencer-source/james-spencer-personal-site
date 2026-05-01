@@ -1,8 +1,20 @@
-import { useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type RefObject
+} from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import RolesVisualStage, { chapterStops, rolesTiming } from "./RolesVisualStage";
 import { siteContent, type RoleChapter } from "../content";
+import { chapterStops, rolesTiming } from "../rolesTiming";
+
+const RolesVisualStage = lazy(() => import("./RolesVisualStage"));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -31,6 +43,103 @@ function fadeBetween(
   exitEnd: number
 ) {
   return smoothstep(enterStart, enterEnd, value) * (1 - smoothstep(exitStart, exitEnd, value));
+}
+
+function useVisualsReady(sectionRef: RefObject<HTMLElement | null>) {
+  const [visualsReady, setVisualsReady] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+
+    if (!section || visualsReady) {
+      return;
+    }
+
+    if (!("IntersectionObserver" in window)) {
+      setVisualsReady(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisualsReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "720px 0px" }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [sectionRef, visualsReady]);
+
+  return visualsReady;
+}
+
+function usePinnedRolesEnabled(reducedMotion: boolean) {
+  const [enabled, setEnabled] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+
+    return !reducedMotion && window.innerWidth >= 900 && window.innerHeight >= 760;
+  });
+
+  useEffect(() => {
+    const updateEnabled = () => {
+      setEnabled(!reducedMotion && window.innerWidth >= 900 && window.innerHeight >= 760);
+    };
+
+    updateEnabled();
+    window.addEventListener("resize", updateEnabled);
+
+    return () => window.removeEventListener("resize", updateEnabled);
+  }, [reducedMotion]);
+
+  return enabled;
+}
+
+function RolesVisualPlaceholder() {
+  return (
+    <div className="roles-scene roles-scene--placeholder" aria-hidden="true">
+      <div className="roles-scene__backdrop" />
+      <div className="roles-scene__glow" />
+      <div className="roles-scene__placeholder-mark">
+        <span />
+      </div>
+    </div>
+  );
+}
+
+function RolesVisualSlot({
+  visualsReady,
+  progress,
+  activeChapterId,
+  chapters,
+  staticMode = false
+}: {
+  visualsReady: boolean;
+  progress: number;
+  activeChapterId: RoleChapter["id"];
+  chapters: RoleChapter[];
+  staticMode?: boolean;
+}) {
+  if (!visualsReady) {
+    return <RolesVisualPlaceholder />;
+  }
+
+  return (
+    <Suspense fallback={<RolesVisualPlaceholder />}>
+      <RolesVisualStage
+        progress={progress}
+        activeChapterId={activeChapterId}
+        chapters={chapters}
+        staticMode={staticMode}
+      />
+    </Suspense>
+  );
 }
 
 function getActiveChapterId(progress: number): RoleChapter["id"] {
@@ -127,11 +236,17 @@ function RoleCopy({
   );
 }
 
-function ReducedMotionRoles() {
+function ReducedMotionRoles({
+  sectionRef,
+  visualsReady
+}: {
+  sectionRef: RefObject<HTMLElement | null>;
+  visualsReady: boolean;
+}) {
   const chapters = siteContent.rolesSection.chapters;
 
   return (
-    <section id="roles" data-section="roles" className="stage stage--roles">
+    <section id="roles" data-section="roles" className="stage stage--roles" ref={sectionRef}>
       <div className="roles-story roles-story--reduced">
         <div className="roles-story__chrome">
           <div className="roles-story__heading-block">
@@ -145,7 +260,8 @@ function ReducedMotionRoles() {
           {chapters.map((chapter) => (
             <article key={chapter.id} className="roles-story__card">
               <div className="roles-story__card-visual">
-                <RolesVisualStage
+                <RolesVisualSlot
+                  visualsReady={visualsReady}
                   progress={chapter.id === "network" ? 0.985 : chapterStops[chapter.id] + 0.04}
                   activeChapterId={chapter.id}
                   chapters={chapters}
@@ -176,6 +292,8 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const progressValueRef = useRef(0);
   const [progress, setProgress] = useState(0);
   const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>("overview");
+  const visualsReady = useVisualsReady(sectionRef);
+  const pinnedRolesEnabled = usePinnedRolesEnabled(reducedMotion);
 
   const chapters = siteContent.rolesSection.chapters;
   const programChapterProgress = clamp01(
@@ -188,16 +306,40 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
   const chapterVisibility = useMemo(
     () => ({
-      overview: fadeBetween(progress, 0, 0.08, 0.24, 0.36),
-      labs: fadeBetween(progress, 0.22, 0.32, 0.5, 0.6),
-      program: fadeBetween(progress, 0.52, 0.6, 0.78, 0.86),
-      network: fadeBetween(progress, 0.8, 0.88, 1.08, 1.18)
+      overview: fadeBetween(
+        progress,
+        rolesTiming.visibility.overview.enterStart,
+        rolesTiming.visibility.overview.enterEnd,
+        rolesTiming.visibility.overview.exitStart,
+        rolesTiming.visibility.overview.exitEnd
+      ),
+      labs: fadeBetween(
+        progress,
+        rolesTiming.visibility.labs.enterStart,
+        rolesTiming.visibility.labs.enterEnd,
+        rolesTiming.visibility.labs.exitStart,
+        rolesTiming.visibility.labs.exitEnd
+      ),
+      program: fadeBetween(
+        progress,
+        rolesTiming.visibility.program.enterStart,
+        rolesTiming.visibility.program.enterEnd,
+        rolesTiming.visibility.program.exitStart,
+        rolesTiming.visibility.program.exitEnd
+      ),
+      network: fadeBetween(
+        progress,
+        rolesTiming.visibility.globe.enterStart,
+        rolesTiming.visibility.globe.enterEnd,
+        rolesTiming.visibility.globe.exitStart,
+        rolesTiming.visibility.globe.exitEnd
+      )
     }),
     [progress]
   );
 
   useLayoutEffect(() => {
-    if (reducedMotion || !sectionRef.current || !viewportRef.current) {
+    if (!pinnedRolesEnabled || !sectionRef.current || !viewportRef.current) {
       return;
     }
 
@@ -256,7 +398,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
       scrollTriggerRef.current = null;
       masterTimeline.kill();
     };
-  }, [reducedMotion]);
+  }, [pinnedRolesEnabled]);
 
   const handleJump = (chapterId: RoleChapter["id"]) => {
     const trigger = scrollTriggerRef.current;
@@ -268,9 +410,6 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
     const stop = rolesTiming.jumpStops[chapterId];
     trigger.refresh();
-    progressValueRef.current = stop;
-    setProgress(stop);
-    setActiveChapterId(getActiveChapterId(stop));
     const scrollTop = trigger.start + (trigger.end - trigger.start) * stop;
     window.scrollTo({
       top: scrollTop,
@@ -300,8 +439,8 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
     handleJump(chapters[keyMap[event.key]].id);
   };
 
-  if (reducedMotion) {
-    return <ReducedMotionRoles />;
+  if (!pinnedRolesEnabled) {
+    return <ReducedMotionRoles sectionRef={sectionRef} visualsReady={visualsReady} />;
   }
 
   return (
@@ -373,7 +512,8 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
           </div>
 
           <div className="roles-story__visual">
-            <RolesVisualStage
+            <RolesVisualSlot
+              visualsReady={visualsReady}
               progress={progress}
               activeChapterId={activeChapterId}
               chapters={chapters}

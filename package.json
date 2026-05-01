@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "check:content": "node scripts/check-content.mjs",
+    "check": "npm run check:content && npm run typecheck && npm run build",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
@@ -25,6 +28,7 @@
     "@types/geojson": "^7946.0.16",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
+    "@types/three": "^0.184.0",
     "@types/topojson-client": "^3.1.5",
     "@vitejs/plugin-react": "^4.4.1",
     "typescript": "^5.8.3",

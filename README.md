@@ -21,6 +21,14 @@ npm run build
 
 The production build is emitted to `dist/`.
 
+## Checks
+
+```bash
+npm run check
+```
+
+The check script runs source guardrails, TypeScript, and the production build. It blocks known content regressions such as outdated CTA labels, abstract phrasing that has already been rejected, old headshot asset names, former building-name labels in the public UI, and unintended React Three Fiber usage.
+
 ## Content and assets
 
 - Structured site content lives in `src/content.ts`
@@ -34,6 +42,10 @@ Current public assets:
 - Resume PDF: `public/assets/resume/james-m-spencer-resume.pdf`
 - Favicon: `public/assets/favicon.svg`
 - Contact headshot: `public/assets/images/james-m-spencer-studio-headshot.jpg`
+
+Resume source note: the site PDF should match the current public 2026 resume source, currently `JSpencer_Resume_Public_2026.pdf`.
+
+Portrait asset policy: the contact section should use the approved studio headshot and its responsive derivatives only. Do not replace it with a narrow portrait export.
 
 ## Deployment
 

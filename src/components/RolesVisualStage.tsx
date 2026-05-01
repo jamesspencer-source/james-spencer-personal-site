@@ -4,10 +4,11 @@ import type { Feature, FeatureCollection, Geometry, LineString, MultiPolygon } f
 import { feature, merge } from "topojson-client";
 import usAtlasData from "us-atlas/states-10m.json";
 import worldLandData from "world-atlas/land-110m.json";
-import { type HostCity, type RoleChapter } from "../content";
+import { siteContent, type HostCity, type RoleChapter } from "../content";
+import { rolesTiming } from "../rolesTiming";
 import LabBuildingsScene from "./LabBuildingsScene";
 
-type RolesVisualStageProps = {
+export type RolesVisualStageProps = {
   progress: number;
   activeChapterId: RoleChapter["id"];
   chapters: RoleChapter[];
@@ -45,55 +46,9 @@ const WORLD_LAND = feature(
   worldAtlas.objects.land as never
 ) as unknown as Feature<Geometry>;
 
-const chapterStops: Record<RoleChapter["id"], number> = {
-  overview: 0,
-  labs: 0.22,
-  program: 0.52,
-  network: 0.78
-};
-
-const rolesTiming = {
-  active: {
-    labs: 0.27,
-    program: 0.58,
-    network: 0.82
-  },
-  jumpStops: {
-    overview: 0.04,
-    labs: 0.36,
-    program: 0.64,
-    network: 0.88
-  },
-  sequences: {
-    labs: { start: 0.22, end: 0.5 },
-    program: { start: 0.52, end: 0.78 },
-    globe: { start: 0.8, end: 0.9 },
-    documentary: { start: 0.9, end: 1 }
-  },
-  visibility: {
-    overview: { enterStart: 0, enterEnd: 0.08, exitStart: 0.2, exitEnd: 0.32 },
-    labs: { enterStart: 0.2, enterEnd: 0.3, exitStart: 0.5, exitEnd: 0.58 },
-    program: { enterStart: 0.5, enterEnd: 0.58, exitStart: 0.78, exitEnd: 0.84 },
-    globe: { enterStart: 0.78, enterEnd: 0.88, exitStart: 1.08, exitEnd: 1.18 }
-  },
-  programCopy: {
-    start: 0.56,
-    end: 0.78
-  }
-};
-
-const programStations = [
-  { label: "Funding", detail: "Budget + partner setup", x: 72, y: 208 },
-  { label: "Hiring", detail: "Interviews + onboarding", x: 350, y: 70 },
-  { label: "Lab setup", detail: "Benches + supplies", x: 644, y: 196 },
-  { label: "Biosafety", detail: "Training + access", x: 644, y: 374 },
-  { label: "Delivery", detail: "Daily program support", x: 350, y: 548 },
-  { label: "Closeout", detail: "Space reset + wrap-up", x: 72, y: 432 }
-];
-
 const programStationCard = {
-  width: 244,
-  height: 92
+  width: 256,
+  height: 100
 };
 
 const programConnectorPaths = [
@@ -286,21 +241,32 @@ function RolesVisualStage({
     rolesTiming.visibility.globe.exitEnd
   );
 
-  const overviewCompress = smoothstep(0.18, 0.32, progress);
+  const overviewCards = useMemo(
+    () => siteContent.rolesSection.visualCopy.overviewCards,
+    []
+  );
+  const programStations = useMemo(
+    () => siteContent.rolesSection.visualCopy.programStations,
+    []
+  );
+  const programCore = siteContent.rolesSection.visualCopy.programCore;
+  const globeAnnotation = siteContent.rolesSection.visualCopy.globeAnnotation;
+
+  const overviewCompress = smoothstep(0.14, 0.18, progress);
   const labsLocalProgress = normalizeProgress(progress, LAB_SEQUENCE_START, LAB_SEQUENCE_END);
-  const labsCompress = smoothstep(0.5, 0.58, progress);
+  const labsCompress = smoothstep(0.4, 0.43, progress);
   const labsReveal = smoothstep(0, 0.16, labsLocalProgress);
   const labsDetail =
     smoothstep(0.16, 0.3, labsLocalProgress) * (1 - smoothstep(0.92, 1, labsLocalProgress));
-  const programEnter = smoothstep(0.5, 0.58, progress);
-  const programExit = smoothstep(0.78, 0.84, progress);
+  const programEnter = smoothstep(0.43, 0.49, progress);
+  const programExit = smoothstep(0.65, 0.68, progress);
   const programStationsVisibility =
-    smoothstep(0.56, 0.64, progress) * (1 - smoothstep(0.8, 0.86, progress));
+    smoothstep(0.47, 0.53, progress) * (1 - smoothstep(0.65, 0.68, progress));
   const programSequenceProgress = getProgramSequenceProgress(progress);
   const globeSequenceProgress = clamp01(
     (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)
   );
-  const globeEnter = smoothstep(0.8, 0.9, progress);
+  const globeEnter = smoothstep(0.68, 0.76, progress);
   const documentaryEnter = smoothstep(
     DOCUMENTARY_SEQUENCE_START,
     DOCUMENTARY_SEQUENCE_END,
@@ -472,16 +438,15 @@ function RolesVisualStage({
 
           <g className="scene-overview__cards">
             <g className="scene-overview__card" transform="translate(42 136)">
-              <rect className="scene-overview__card-frame" width="276" height="360" rx="28" />
+              <rect className="scene-overview__card-frame" width="276" height="360" rx="8" />
               <text className="scene-overview__index" x="30" y="42">
-                01
+                {overviewCards[0]?.index}
               </text>
-              <text className="scene-overview__title" x="30" y="78">
-                Laboratory
-              </text>
-              <text className="scene-overview__title" x="30" y="106">
-                operations
-              </text>
+              {overviewCards[0]?.titleLines.map((line, index) => (
+                <text key={line} className="scene-overview__title" x="30" y={78 + index * 28}>
+                  {line}
+                </text>
+              ))}
 
               <g transform="translate(30 132) scale(1.08)">
                 <polygon className="scene-overview__mini-building" points="8,28 68,28 88,42 28,42" />
@@ -498,28 +463,28 @@ function RolesVisualStage({
                 <rect className="scene-overview__mini-bridge-pulse scene-overview__mini-bridge-pulse--delay" x="88" y="114" width="34" height="14" rx="7" />
               </g>
 
-              <text className="scene-overview__caption" x="30" y="286">
-                Two research labs
-              </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="312">
-                Coordinated lab
-              </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
-                support
-              </text>
+              {overviewCards[0]?.captionLines.map((line, index) => (
+                <text
+                  key={line}
+                  className={`scene-overview__caption${index === 0 ? "" : " scene-overview__caption--soft"}`}
+                  x="30"
+                  y={286 + index * 22}
+                >
+                  {line}
+                </text>
+              ))}
             </g>
 
             <g className="scene-overview__card" transform="translate(342 136)">
-              <rect className="scene-overview__card-frame" width="276" height="360" rx="28" />
+              <rect className="scene-overview__card-frame" width="276" height="360" rx="8" />
               <text className="scene-overview__index" x="30" y="42">
-                02
+                {overviewCards[1]?.index}
               </text>
-              <text className="scene-overview__title" x="30" y="78">
-                Community
-              </text>
-              <text className="scene-overview__title" x="30" y="106">
-                Phages
-              </text>
+              {overviewCards[1]?.titleLines.map((line, index) => (
+                <text key={line} className="scene-overview__title" x="30" y={78 + index * 28}>
+                  {line}
+                </text>
+              ))}
 
               <g transform="translate(24 126) scale(1.06)">
                 <path
@@ -540,28 +505,28 @@ function RolesVisualStage({
                 <circle className="scene-overview__mini-node scene-overview__mini-node--soft" cx="186" cy="62" r="6" />
               </g>
 
-              <text className="scene-overview__caption" x="30" y="286">
-                Annual program delivery
-              </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="312">
-                Repeatable operating
-              </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
-                cycle
-              </text>
+              {overviewCards[1]?.captionLines.map((line, index) => (
+                <text
+                  key={line}
+                  className={`scene-overview__caption${index === 0 ? "" : " scene-overview__caption--soft"}`}
+                  x="30"
+                  y={286 + index * 22}
+                >
+                  {line}
+                </text>
+              ))}
             </g>
 
             <g className="scene-overview__card" transform="translate(642 136)">
-              <rect className="scene-overview__card-frame" width="276" height="360" rx="28" />
+              <rect className="scene-overview__card-frame" width="276" height="360" rx="8" />
               <text className="scene-overview__index" x="30" y="42">
-                03
+                {overviewCards[2]?.index}
               </text>
-              <text className="scene-overview__title" x="30" y="78">
-                Network
-              </text>
-              <text className="scene-overview__title" x="30" y="106">
-                leadership
-              </text>
+              {overviewCards[2]?.titleLines.map((line, index) => (
+                <text key={line} className="scene-overview__title" x="30" y={78 + index * 28}>
+                  {line}
+                </text>
+              ))}
 
               <g transform="translate(14 18) scale(1.05)">
                 <circle className="scene-overview__mini-globe-aura" cx="124" cy="158" r="92" />
@@ -582,18 +547,16 @@ function RolesVisualStage({
                 ))}
               </g>
 
-              <text className="scene-overview__caption" x="30" y="282">
-                Regional and national
-              </text>
-              <text className="scene-overview__caption" x="30" y="306">
-                conferences
-              </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="332">
-                Professional community
-              </text>
-              <text className="scene-overview__caption scene-overview__caption--soft" x="30" y="352">
-                leadership
-              </text>
+              {overviewCards[2]?.captionLines.map((line, index) => (
+                <text
+                  key={line}
+                  className={`scene-overview__caption${index < 2 ? "" : " scene-overview__caption--soft"}`}
+                  x="30"
+                  y={282 + index * 24}
+                >
+                  {line}
+                </text>
+              ))}
             </g>
           </g>
         </svg>
@@ -782,8 +745,8 @@ function RolesVisualStage({
 
           <g className="scene-program__core-labels">
             <ellipse className="scene-program__core-panel" cx="504" cy="398" rx="142" ry="78" />
-            <text x="504" y="388">Annual operating cycle</text>
-            <text x="504" y="416">Community Phages</text>
+            <text x="504" y="388">{programCore.title}</text>
+            <text x="504" y="416">{programCore.subtitle}</text>
             <g className="scene-program__header-progress">
               <rect x="438" y="436" width="132" height="3" rx="1.5" />
               <rect
@@ -957,10 +920,10 @@ function RolesVisualStage({
           >
             <rect className="scene-globe__annotation-frame" width="324" height="220" rx="8" />
             <text className="scene-globe__annotation-title" x="22" y="31">
-              Conference locations
+              {globeAnnotation.title}
             </text>
             <text className="scene-globe__annotation-subtitle" x="22" y="52">
-              Hosted sites appear in sequence and remain active.
+              {globeAnnotation.subtitle}
             </text>
             {projectedCities.map((city, index) => {
               const reveal = getChronologicalReveal(
@@ -984,7 +947,8 @@ function RolesVisualStage({
                     {city.label}
                   </text>
                   <text className="scene-globe__annotation-detail" x="30" y="24">
-                    {getGlobeAnnotationDetail(city)}
+                    {globeAnnotation.rows.find((row) => row.city === city.label)?.detail ??
+                      getGlobeAnnotationDetail(city)}
                   </text>
                 </g>
               );
@@ -997,9 +961,12 @@ function RolesVisualStage({
             style={{ opacity: clamp01(globeEnter * 1.12) }}
           >
             <rect width="430" height="82" rx="8" />
-            <text x="22" y="28">Conference footprint</text>
-            <text x="22" y="52">Regional and national conference sites appear chronologically.</text>
-            <text x="22" y="69">Each location remains visible as the map progresses.</text>
+            <text x="22" y="28">{globeAnnotation.legendTitle}</text>
+            {globeAnnotation.legendLines.map((line, index) => (
+              <text key={line} x="22" y={52 + index * 17}>
+                {line}
+              </text>
+            ))}
           </g>
         </svg>
       </div>
@@ -1048,5 +1015,4 @@ function RolesVisualStage({
   );
 }
 
-export { chapterStops, rolesTiming };
 export default RolesVisualStage;

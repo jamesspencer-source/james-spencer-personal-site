@@ -1,0 +1,68 @@
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { extname, join } from "node:path";
+
+const root = fileURLToPath(new URL("..", import.meta.url));
+const meta = JSON.parse(readFileSync(join(root, "site-meta.json"), "utf8"));
+const indexHtml = readFileSync(join(root, "index.html"), "utf8");
+
+const scanTargets = [
+  join(root, "src"),
+  join(root, "index.html"),
+  join(root, "README.md"),
+  join(root, "package.json"),
+  join(root, "vite.config.ts")
+];
+
+const allowedExtensions = new Set([".ts", ".tsx", ".css", ".html", ".md", ".json"]);
+const blocked = [
+  { label: "Preferred", pattern: /Preferred/i },
+  { label: "remit", pattern: /\bremit\b/i },
+  { label: "shared operating footprint", pattern: /shared operating footprint/i },
+  { label: "Documentary proof", pattern: /Documentary proof/i },
+  { label: "old cropped headshot filename", pattern: /(headshot-cropped|headshot-tall|skinny-headshot|tall-skinny)/i },
+  { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i },
+  { label: "React Three Fiber dependency", pattern: /@react-three\/fiber/i }
+];
+
+function walk(path) {
+  const stats = statSync(path);
+
+  if (stats.isDirectory()) {
+    return readdirSync(path).flatMap((entry) => walk(join(path, entry)));
+  }
+
+  if (!allowedExtensions.has(extname(path))) {
+    return [];
+  }
+
+  return [path];
+}
+
+const files = scanTargets.flatMap((target) => walk(target));
+const failures = [];
+
+for (const file of files) {
+  const text = readFileSync(file, "utf8");
+
+  for (const item of blocked) {
+    if (item.pattern.test(text)) {
+      failures.push(`${file.replace(`${root}/`, "")}: blocked phrase or dependency found (${item.label})`);
+    }
+  }
+}
+
+if (!indexHtml.includes(`<title>${meta.title}</title>`)) {
+  failures.push("index.html: title does not match site-meta.json");
+}
+
+if (!indexHtml.includes(`content="${meta.description}"`)) {
+  failures.push("index.html: description does not match site-meta.json");
+}
+
+if (failures.length) {
+  console.error(failures.join("\n"));
+  process.exit(1);
+}
+
+console.log("Content checks passed.");
