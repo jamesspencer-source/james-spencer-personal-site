@@ -28,6 +28,12 @@ const blocked = [
   { label: "work behind the titles", pattern: /work behind the titles/i },
   { label: "work moving", pattern: /work moving/i },
   { label: "Documentary proof", pattern: /Documentary proof/i },
+  { label: "ready to run", pattern: /ready to run/i },
+  { label: "practical systems", pattern: /practical systems/i },
+  { label: "steady follow-through", pattern: /steady follow-through/i },
+  { label: "the anchor", pattern: /the anchor/i },
+  { label: "work spans", pattern: /work spans/i },
+  { label: "operating work", pattern: /operating work/i },
   { label: "old cropped headshot filename", pattern: /(headshot-cropped|headshot-tall|skinny-headshot|tall-skinny)/i },
   { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i },
   { label: "React Three Fiber dependency", pattern: /@react-three\/fiber/i }
