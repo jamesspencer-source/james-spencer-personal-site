@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CurrentRolesSection from "./components/CurrentRolesSection";
-import { siteContent, type ActionLink } from "./content";
+import { siteContent, type ActionLink, type ProofSectionItem } from "./content";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -188,6 +188,144 @@ function HeroOperationsIndex() {
         </div>
       ))}
     </div>
+  );
+}
+
+function ProofVisual({ item }: { item: ProofSectionItem }) {
+  if (item.visual === "labs") {
+    return (
+      <svg className="proof-visual proof-visual--labs" viewBox="0 0 520 360" role="presentation">
+        <defs>
+          <linearGradient id="proof-lab-glass" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#9eb7bf" />
+            <stop offset="100%" stopColor="#445963" />
+          </linearGradient>
+          <linearGradient id="proof-lab-concrete" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#c4beb1" />
+            <stop offset="100%" stopColor="#7d7a72" />
+          </linearGradient>
+        </defs>
+        <path className="proof-visual__ground" d="M 52 288 L 430 310 L 486 254 L 116 236 Z" />
+        <g className="proof-visual__building proof-visual__building--concrete">
+          <path d="M 100 98 L 204 82 L 204 254 L 100 266 Z" />
+          <path d="M 204 82 L 240 106 L 240 268 L 204 254 Z" />
+          <path d="M 100 98 L 204 82 L 240 106 L 136 122 Z" />
+          {Array.from({ length: 10 }).map((_, index) => (
+            <path key={`lab-floor-a-${index}`} d={`M 112 ${118 + index * 13} L 194 ${106 + index * 13}`} />
+          ))}
+          <path className="proof-visual__floor proof-visual__floor--left" d="M 102 116 L 204 100 L 238 122 L 136 138 Z" />
+        </g>
+        <g className="proof-visual__building proof-visual__building--glass">
+          <path d="M 292 80 L 424 108 L 424 258 L 292 246 Z" />
+          <path d="M 424 108 L 458 130 L 458 276 L 424 258 Z" />
+          <path d="M 292 80 L 424 108 L 458 130 L 326 102 Z" />
+          {Array.from({ length: 10 }).map((_, index) => (
+            <path key={`lab-floor-b-${index}`} d={`M 306 ${105 + index * 13} L 414 ${128 + index * 10}`} />
+          ))}
+          <path className="proof-visual__floor proof-visual__floor--right" d="M 294 116 L 424 142 L 456 164 L 326 138 Z" />
+        </g>
+        <path className="proof-visual__connector" d="M 222 172 C 258 158, 284 160, 320 180" />
+        <path className="proof-visual__connector proof-visual__connector--soft" d="M 222 198 C 256 188, 286 190, 320 208" />
+      </svg>
+    );
+  }
+
+  if (item.visual === "program") {
+    return (
+      <svg className="proof-visual proof-visual--program" viewBox="0 0 520 360" role="presentation">
+        <defs>
+          <linearGradient id="proof-cycle-track" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#9bc3ad" />
+            <stop offset="100%" stopColor="#466052" />
+          </linearGradient>
+        </defs>
+        <ellipse className="proof-visual__shadow" cx="270" cy="286" rx="180" ry="34" />
+        <path
+          className="proof-visual__cycle"
+          d="M 142 180 C 142 102, 202 58, 276 58 C 364 58, 428 124, 420 204 C 412 278, 346 318, 266 310 C 190 302, 134 248, 142 190"
+        />
+        <path className="proof-visual__cycle-arrow" d="M 412 172 L 434 204 L 396 199" />
+        {[
+          [276, 58],
+          [408, 142],
+          [398, 238],
+          [266, 310],
+          [154, 220],
+          [164, 128]
+        ].map(([cx, cy], index) => (
+          <g className="proof-visual__cycle-node" key={`${cx}-${cy}`}>
+            <circle cx={cx} cy={cy} r={index === 0 ? 13 : 10} />
+            <text x={cx} y={cy + 5}>{String(index + 1).padStart(2, "0")}</text>
+          </g>
+        ))}
+        <g className="proof-visual__workplane">
+          <path d="M 200 176 L 330 150 L 372 198 L 240 226 Z" />
+          <path d="M 222 184 L 312 166" />
+          <path d="M 244 204 L 338 184" />
+        </g>
+      </svg>
+    );
+  }
+
+  return (
+    <figure className="proof-media">
+      {item.image ? (
+        <img src={item.image.src} alt={item.image.alt} loading="lazy" decoding="async" />
+      ) : (
+        <svg className="proof-visual proof-visual--network" viewBox="0 0 520 360" role="presentation">
+          <circle className="proof-visual__globe" cx="270" cy="176" r="112" />
+          <path className="proof-visual__us" d="M 206 164 C 236 136, 304 136, 342 158 C 326 182, 278 190, 224 184 Z" />
+          <path className="proof-visual__route" d="M 224 174 C 270 148, 306 150, 342 172" />
+          <path className="proof-visual__route proof-visual__route--soft" d="M 208 178 C 260 204, 316 200, 354 168" />
+          {[224, 278, 342, 312].map((cx, index) => (
+            <circle className="proof-visual__pin" key={cx} cx={cx} cy={index === 2 ? 172 : 176 - index * 8} r="7" />
+          ))}
+        </svg>
+      )}
+      {item.caption ? <figcaption>{item.caption}</figcaption> : null}
+    </figure>
+  );
+}
+
+function ProofSection() {
+  return (
+    <section className="stage stage--proof js-stage" aria-labelledby="proof-heading">
+      <div className="shell proof-section">
+        <div className="proof-section__heading js-stage-reveal">
+          <SectionLabel
+            label={siteContent.proofSection.label}
+            className="section-heading__label"
+          />
+          <h2 id="proof-heading" className="section-heading__title">
+            {siteContent.proofSection.heading}
+          </h2>
+          <SectionIntro body={siteContent.proofSection.intro} />
+        </div>
+
+        <div className="proof-section__items">
+          {siteContent.proofSection.items.map((item) => (
+            <article className="proof-item js-stage-reveal" key={item.id}>
+              <div className="proof-item__copy">
+                <p className="proof-item__meta">
+                  <span>{item.index}</span>
+                  {item.label}
+                </p>
+                <h3>{item.title}</h3>
+                <p>{item.summary}</p>
+                <ul>
+                  {item.details.map((detail) => (
+                    <li key={detail}>{detail}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="proof-item__visual">
+                <ProofVisual item={item} />
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -405,6 +543,8 @@ function App() {
         </section>
 
         <CurrentRolesSection reducedMotion={prefersReducedMotion} />
+
+        <ProofSection />
 
         <section
           id="background"

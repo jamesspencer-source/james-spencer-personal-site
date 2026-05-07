@@ -11,6 +11,25 @@ export type ProofItem = {
   detail: string;
 };
 
+export type ProofSectionItem = {
+  id: "labs" | "program" | "network";
+  index: string;
+  label: string;
+  title: string;
+  summary: string;
+  details: string[];
+  visual: "labs" | "program" | "network";
+  image?: PortraitAsset;
+  caption?: string;
+};
+
+export type ProofSectionContent = {
+  label: string;
+  heading: string;
+  intro: string;
+  items: ProofSectionItem[];
+};
+
 export type RoleEvidence = {
   label: string;
   value: string;
@@ -163,27 +182,27 @@ export const siteContent = {
     label: "",
     name: "James M. Spencer",
     title:
-      "Research operations leadership for laboratories, programs, and lab-manager conferences",
+      "Research operations leader for scientific teams and programs",
     location: "Boston, Massachusetts",
     summary: [
-      "James manages the coordination work that keeps two distinct HHMI Investigator laboratories, an annual student research program, and regional and national lab-manager conferences running reliably.",
-      "His current roles combine laboratory management, Community Phages program operations, and advisory-board leadership for the Lab Management Network of Professionals."
+      "James M. Spencer manages the practical systems that keep research labs, student programs, and lab-manager conferences ready to run.",
+      "His work spans two HHMI Investigator laboratories, Community Phages program delivery, and advisory-board leadership for the Lab Management Network of Professionals."
     ],
     proof: [
       {
         headline: "Two HHMI Investigator laboratories",
         detail:
-          "Distinct Harvard Medical School Microbiology labs supported across separate spaces and operating needs."
+          "Laboratory management for distinct HMS Microbiology research groups with separate spaces and operating needs."
       },
       {
-        headline: "Community Phages program delivery",
+        headline: "Community Phages operations",
         detail:
-          "Annual delivery for an eight-week student research program now in its fifth annual cycle."
+          "Funding, hiring, onboarding, lab setup, delivery support, and closeout for an eight-week student research program."
       },
       {
-        headline: "Lab-manager conference leadership",
+        headline: "LMNOP advisory-board chair",
         detail:
-          "Advisory-board chair work supporting regional and national conference programming."
+          "Board priorities, speaker coordination, partner contact, and regional and national conference planning for lab managers."
       }
     ] as ProofItem[],
     actions: [
@@ -202,7 +221,7 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "Laboratory operations is James's core role. Community Phages and LMNOP extend the same planning, coordination, and continuity work into program delivery and lab-manager conferences.",
+      "Laboratory operations is the anchor. Community Phages and LMNOP extend that planning into student-program delivery and professional programming for lab managers.",
     visualCopy: {
       overviewCards: [
         {
@@ -254,26 +273,26 @@ export const siteContent = {
         id: "overview",
         sceneId: "overview",
         navLabel: "Overview",
-        title: "Current work",
+        title: "Current scope",
         organization:
           "Harvard Medical School, Howard Hughes Medical Institute, and the Lab Management Network of Professionals",
         dates: "Current",
         summary:
-          "James's current work centers on keeping complex research and program environments ready, staffed, supplied, and coordinated.",
+          "James supports active research labs, an annual student program, and recurring lab-manager conferences.",
         responsibilities: [
-          "Maintains continuity across people, space, equipment, vendors, budgets, and access.",
-          "Applies the same coordination to student-program delivery and lab-manager conferences."
+          "Keeps people, space, equipment, vendors, budgets, and access aligned.",
+          "Plans student-program delivery and lab-manager conference programming."
         ],
         evidence: [
           {
             label: "Current scope",
             value:
-              "Two research labs, one annual summer program, and recurring lab-manager conferences."
+              "Two research labs, an annual summer program, and recurring conferences."
           },
           {
             label: "Execution focus",
             value:
-              "Planning, staffing, logistics, facilities coordination, and day-to-day follow-through."
+              "Planning, staffing, logistics, facilities coordination, and follow-through."
           }
         ],
         visual: {
@@ -289,7 +308,7 @@ export const siteContent = {
           "Thomas Bernhardt and Jonathan Abraham laboratories, Department of Microbiology, Harvard Medical School",
         dates: "2019 - Present",
         summary:
-          "James's core role is laboratory management for the Bernhardt and Abraham laboratories: two HHMI Investigator labs in Harvard Medical School Microbiology with separate scientific programs and locations.",
+          "James manages operations for the Bernhardt and Abraham laboratories: two HHMI Investigator labs in Harvard Medical School Microbiology with separate scientific programs and locations.",
         responsibilities: [
           "Manages budgets, purchasing, vendors, facilities requests, equipment planning, and access.",
           "Coordinates hiring logistics, onboarding, candidate visits, training, and daily lab support."
@@ -298,12 +317,12 @@ export const siteContent = {
           {
             label: "Current scope",
             value:
-              "Two distinct HHMI Investigator labs in HMS Microbiology across two buildings."
+              "Two distinct HHMI Investigator labs in HMS Microbiology."
           },
           {
             label: "Continuity work",
             value:
-              "Budgets, space, staff support, equipment, vendors, safety, and daily coordination."
+              "Budgets, space, equipment, vendors, safety, and daily coordination."
           }
         ],
         callouts: [],
@@ -320,7 +339,7 @@ export const siteContent = {
           "Community Phages, Department of Microbiology, Harvard Medical School",
         dates: "2022 - Present",
         summary:
-          "James leads operations for Community Phages, an eight-week summer internship for Roxbury Community College students at Harvard Medical School.",
+          "James leads operations for Community Phages, an eight-week summer research program for Roxbury Community College students at Harvard Medical School.",
         responsibilities: [
           "Coordinates funding, hiring, onboarding, access, biosafety prep, and lab setup.",
           "Runs delivery logistics, instructor support, field trips, student support, and closeout."
@@ -329,12 +348,12 @@ export const siteContent = {
           {
             label: "Program cycle",
             value:
-              "Fifth annual cycle of an eight-week RCC student research internship."
+              "Fifth annual cycle of an eight-week RCC research program."
           },
           {
             label: "Readiness work",
             value:
-              "Program readiness from budget setup through lab breakdown and closeout."
+              "Readiness from budget setup through lab breakdown and closeout."
           }
         ],
         link: {
@@ -354,7 +373,7 @@ export const siteContent = {
           "Lab Management Network of Professionals, Howard Hughes Medical Institute",
         dates: "2022 - Present",
         summary:
-          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for laboratory managers.",
+          "James chairs the advisory board for the Lab Management Network of Professionals, a peer professional-development community for lab managers.",
         responsibilities: [
           "Sets board priorities and plans regional and national conferences for lab managers.",
           "Maintains programming, speaker coordination, partner contact, and peer exchange."
@@ -363,7 +382,7 @@ export const siteContent = {
           {
             label: "Advisory-board leadership",
             value:
-              "Board direction, conference planning, and professional-development programming."
+              "Board direction, conference planning, and professional programming."
           },
           {
             label: "Hosted conferences",
@@ -387,11 +406,68 @@ export const siteContent = {
       }
     ] as RoleChapter[]
   },
+  proofSection: {
+    label: "Selected proof",
+    heading: "Selected operating work",
+    intro:
+      "Each role depends on readiness before launch and steady follow-through after.",
+    items: [
+      {
+        id: "labs",
+        index: "01",
+        label: "Laboratory operations",
+        title: "Two distinct labs, two operating environments",
+        summary:
+          "The laboratory role is the anchor: day-to-day continuity for active research groups in Harvard Medical School Microbiology.",
+        details: [
+          "Bernhardt Lab: 10th floor, 4 Blackfan Circle.",
+          "Abraham Lab: 9th floor, Veritas Science Center.",
+          "Budgets, purchasing, vendors, access, equipment, facilities, and lab support."
+        ],
+        visual: "labs"
+      },
+      {
+        id: "program",
+        index: "02",
+        label: "Scientific program delivery",
+        title: "Eight-week student program, full-cycle delivery",
+        summary:
+          "Community Phages depends on practical readiness before students arrive and steady support while the program is running.",
+        details: [
+          "Funding coordination, hiring, onboarding, and access.",
+          "Lab setup, biosafety preparation, instructor support, and field trips.",
+          "Daily delivery, student support, final logistics, and lab-space closeout."
+        ],
+        visual: "program"
+      },
+      {
+        id: "network",
+        index: "03",
+        label: "Conference leadership",
+        title: "Regional and national conferences for lab managers",
+        summary:
+          "The LMNOP role extends the same planning discipline into board priorities, recurring programming, speaker coordination, and conference delivery.",
+        details: [
+          "Advisory-board chair work for a peer professional-development network.",
+          "Conference planning in Boston, Washington, DC, San Francisco, and New York City.",
+          "Year-round continuity between meetings, partners, speakers, and lab managers."
+        ],
+        visual: "network",
+        image: {
+          src: asset("assets/images/lmnop-conference-photo-2026-sf.jpg"),
+          alt:
+            "James M. Spencer speaking into a microphone beside a laptop during an LMNOP conference session in San Francisco."
+        },
+        caption:
+          "LMNOP conference programming during a regional meeting in San Francisco."
+      }
+    ]
+  } satisfies ProofSectionContent,
   background: {
     label: "Background",
     heading: "Earlier work",
     intro:
-      "Earlier work connects bench-science fluency with people-systems leadership: laboratory practice, documentation, peer training, and support for large residential communities.",
+      "Earlier work adds bench-science context and people-leadership experience: lab practice, documentation, peer training, and residential-life leadership.",
     portrait: null as PortraitAsset | null,
     entries: [
       {
@@ -429,7 +505,7 @@ export const siteContent = {
     intro:
       "For conversations about research operations, scientific program leadership, or laboratory management, LinkedIn is the best way to reach James.",
     supportLine:
-      "His work sits where people, space, equipment, funding, and programming have to come together reliably.",
+      "Relevant conversations include research operations, scientific program delivery, laboratory management, and lab-manager conferences.",
     contextTags: [
       "Research operations",
       "Scientific program leadership",

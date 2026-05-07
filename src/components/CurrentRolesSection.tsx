@@ -84,12 +84,12 @@ function usePinnedRolesEnabled(reducedMotion: boolean) {
       return false;
     }
 
-    return !reducedMotion && window.innerWidth >= 900 && window.innerHeight >= 760;
+    return !reducedMotion && window.innerWidth >= 900 && window.innerHeight >= 820;
   });
 
   useEffect(() => {
     const updateEnabled = () => {
-      setEnabled(!reducedMotion && window.innerWidth >= 900 && window.innerHeight >= 760);
+      setEnabled(!reducedMotion && window.innerWidth >= 900 && window.innerHeight >= 820);
     };
 
     updateEnabled();
