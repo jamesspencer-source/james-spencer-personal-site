@@ -212,13 +212,6 @@ function RolesVisualStage({
 }: RolesVisualStageProps) {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
-  const overviewVisibility = fadeBetween(
-    progress,
-    rolesTiming.visibility.overview.enterStart,
-    rolesTiming.visibility.overview.enterEnd,
-    rolesTiming.visibility.overview.exitStart,
-    rolesTiming.visibility.overview.exitEnd
-  );
   const labsVisibility = fadeBetween(
     progress,
     rolesTiming.visibility.labs.enterStart,
@@ -241,10 +234,6 @@ function RolesVisualStage({
     rolesTiming.visibility.globe.exitEnd
   );
 
-  const overviewCards = useMemo(
-    () => siteContent.rolesSection.visualCopy.overviewCards,
-    []
-  );
   const programStations = useMemo(
     () => siteContent.rolesSection.visualCopy.programStations,
     []
@@ -252,21 +241,20 @@ function RolesVisualStage({
   const programCore = siteContent.rolesSection.visualCopy.programCore;
   const globeAnnotation = siteContent.rolesSection.visualCopy.globeAnnotation;
 
-  const overviewCompress = smoothstep(0.14, 0.18, progress);
   const labsLocalProgress = normalizeProgress(progress, LAB_SEQUENCE_START, LAB_SEQUENCE_END);
-  const labsCompress = smoothstep(0.4, 0.43, progress);
+  const labsCompress = smoothstep(0.31, 0.34, progress);
   const labsReveal = smoothstep(0, 0.16, labsLocalProgress);
   const labsDetail =
     smoothstep(0.16, 0.3, labsLocalProgress) * (1 - smoothstep(0.92, 1, labsLocalProgress));
-  const programEnter = smoothstep(0.43, 0.49, progress);
-  const programExit = smoothstep(0.65, 0.68, progress);
+  const programEnter = smoothstep(0.34, 0.41, progress);
+  const programExit = smoothstep(0.62, 0.66, progress);
   const programStationsVisibility =
-    smoothstep(0.47, 0.53, progress) * (1 - smoothstep(0.65, 0.68, progress));
+    smoothstep(0.39, 0.46, progress) * (1 - smoothstep(0.62, 0.66, progress));
   const programSequenceProgress = getProgramSequenceProgress(progress);
   const globeSequenceProgress = clamp01(
     (progress - GLOBE_SEQUENCE_START) / (GLOBE_SEQUENCE_END - GLOBE_SEQUENCE_START)
   );
-  const globeEnter = smoothstep(0.68, 0.76, progress);
+  const globeEnter = smoothstep(0.66, 0.74, progress);
   const documentaryEnter = smoothstep(
     DOCUMENTARY_SEQUENCE_START,
     DOCUMENTARY_SEQUENCE_END,
@@ -283,19 +271,7 @@ function RolesVisualStage({
       .rotate([mix(118, 97, globeEnter), mix(-18, -37, globeEnter)]);
   }, [globeEnter]);
 
-  const overviewGlobeProjection = useMemo(() => {
-    return geoOrthographic()
-      .translate([124, 158])
-      .scale(68)
-      .clipAngle(90)
-      .rotate([104, -26]);
-  }, []);
-
   const globePath = useMemo(() => geoPath(globeProjection), [globeProjection]);
-  const overviewGlobePath = useMemo(
-    () => geoPath(overviewGlobeProjection),
-    [overviewGlobeProjection]
-  );
   const graticule = useMemo(() => geoGraticule().step([15, 15])(), []);
 
   const networkChapter = useMemo(
@@ -321,16 +297,6 @@ function RolesVisualStage({
           (city): city is HostCity & { x: number; y: number } => city !== null
         ),
     [globeProjection, networkVisual]
-  );
-
-  const overviewProjectedCities = useMemo(
-    () =>
-      (networkVisual?.hostCities ?? [])
-        .map((city) => projectHostCity(city, overviewGlobeProjection))
-        .filter(
-          (city): city is HostCity & { x: number; y: number } => city !== null
-        ),
-    [networkVisual, overviewGlobeProjection]
   );
 
   const routePaths = useMemo(() => {
@@ -369,41 +335,6 @@ function RolesVisualStage({
     });
   }, [globePath, networkVisual]);
 
-  const overviewRoutePaths = useMemo(() => {
-    const cities = networkVisual?.hostCities ?? [];
-    if (cities.length < 2) {
-      return [];
-    }
-
-    const cityByLabel = new Map(
-      cities.map((city, index) => [city.label, { city, index }])
-    );
-
-    return globeRouteConnections.flatMap(([from, to]) => {
-      const start = cityByLabel.get(from);
-      const end = cityByLabel.get(to);
-
-      if (!start || !end) {
-        return [];
-      }
-
-      const arc = {
-        type: "LineString",
-        coordinates: [
-          [start.city.longitude, start.city.latitude],
-          [end.city.longitude, end.city.latitude]
-        ]
-      } as LineString;
-
-      return [
-        {
-          key: `overview-${from}-${to}`,
-          d: overviewGlobePath(arc) ?? ""
-        }
-      ];
-    });
-  }, [networkVisual, overviewGlobePath]);
-
   const globeFocusLabel = hoveredCity;
   const toggleHoveredCity = (label: string) => {
     setHoveredCity((current) => (current === label ? null : label));
@@ -416,151 +347,6 @@ function RolesVisualStage({
     <div className={`roles-scene roles-scene--${activeChapterId}`}>
       <div className="roles-scene__backdrop" />
       <div className="roles-scene__glow" />
-
-      <div
-        className="roles-scene__layer roles-scene__layer--overview"
-        style={{
-          opacity: overviewVisibility,
-          transform: `translate3d(${mix(0, -40, overviewCompress)}px, ${mix(0, -18, overviewCompress)}px, 0) scale(${mix(1, 0.92, overviewCompress)})`
-        }}
-      >
-        <svg className="roles-scene__svg" viewBox="0 0 960 720" role="presentation">
-          <defs>
-            <linearGradient id="overview-card" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="rgba(245, 249, 247, 0.13)" />
-              <stop offset="100%" stopColor="rgba(245, 249, 247, 0.04)" />
-            </linearGradient>
-            <linearGradient id="overview-mini-track" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#9ecab3" />
-              <stop offset="100%" stopColor="#4b675c" />
-            </linearGradient>
-          </defs>
-
-          <g className="scene-overview__cards">
-            <g className="scene-overview__card" transform="translate(42 136)">
-              <rect className="scene-overview__card-frame" width="276" height="360" rx="8" />
-              <text className="scene-overview__index" x="30" y="42">
-                {overviewCards[0]?.index}
-              </text>
-              {overviewCards[0]?.titleLines.map((line, index) => (
-                <text key={line} className="scene-overview__title" x="30" y={78 + index * 28}>
-                  {line}
-                </text>
-              ))}
-
-              <g transform="translate(30 132) scale(1.08)">
-                <polygon className="scene-overview__mini-building" points="8,28 68,28 88,42 28,42" />
-                <polygon className="scene-overview__mini-building-side" points="8,28 28,42 28,144 8,130" />
-                <polygon className="scene-overview__mini-building-front" points="28,42 88,42 88,158 28,144" />
-
-                <polygon className="scene-overview__mini-building" points="136,44 196,44 216,58 156,58" />
-                <polygon className="scene-overview__mini-building-side" points="136,44 156,58 156,142 136,130" />
-                <polygon className="scene-overview__mini-building-front" points="156,58 216,58 216,154 156,142" />
-
-                <rect className="scene-overview__mini-bridge" x="88" y="92" width="68" height="14" rx="7" />
-                <rect className="scene-overview__mini-bridge" x="88" y="114" width="68" height="14" rx="7" />
-                <rect className="scene-overview__mini-bridge-pulse" x="88" y="92" width="34" height="14" rx="7" />
-                <rect className="scene-overview__mini-bridge-pulse scene-overview__mini-bridge-pulse--delay" x="88" y="114" width="34" height="14" rx="7" />
-              </g>
-
-              {overviewCards[0]?.captionLines.map((line, index) => (
-                <text
-                  key={line}
-                  className={`scene-overview__caption${index === 0 ? "" : " scene-overview__caption--soft"}`}
-                  x="30"
-                  y={286 + index * 22}
-                >
-                  {line}
-                </text>
-              ))}
-            </g>
-
-            <g className="scene-overview__card" transform="translate(342 136)">
-              <rect className="scene-overview__card-frame" width="276" height="360" rx="8" />
-              <text className="scene-overview__index" x="30" y="42">
-                {overviewCards[1]?.index}
-              </text>
-              {overviewCards[1]?.titleLines.map((line, index) => (
-                <text key={line} className="scene-overview__title" x="30" y={78 + index * 28}>
-                  {line}
-                </text>
-              ))}
-
-              <g transform="translate(24 126) scale(1.06)">
-                <path
-                  className="scene-overview__mini-cycle"
-                  d="M 38 98 C 38 54, 74 24, 124 24 C 178 24, 214 60, 214 108 C 214 154, 176 188, 122 188 C 72 188, 38 156, 38 110"
-                />
-                <path
-                  className="scene-overview__mini-cycle-pulse"
-                  d="M 38 98 C 38 54, 74 24, 124 24 C 178 24, 214 60, 214 108 C 214 154, 176 188, 122 188 C 72 188, 38 156, 38 110"
-                  pathLength={1}
-                />
-                <path className="scene-overview__mini-cycle-arrow" d="M 204 84 L 218 108 L 194 105" />
-                <circle className="scene-overview__mini-node" cx="124" cy="24" r="8" />
-                <circle className="scene-overview__mini-node" cx="214" cy="108" r="8" />
-                <circle className="scene-overview__mini-node" cx="122" cy="188" r="8" />
-                <circle className="scene-overview__mini-node" cx="38" cy="110" r="8" />
-                <circle className="scene-overview__mini-node scene-overview__mini-node--soft" cx="72" cy="52" r="6" />
-                <circle className="scene-overview__mini-node scene-overview__mini-node--soft" cx="186" cy="62" r="6" />
-              </g>
-
-              {overviewCards[1]?.captionLines.map((line, index) => (
-                <text
-                  key={line}
-                  className={`scene-overview__caption${index === 0 ? "" : " scene-overview__caption--soft"}`}
-                  x="30"
-                  y={286 + index * 22}
-                >
-                  {line}
-                </text>
-              ))}
-            </g>
-
-            <g className="scene-overview__card" transform="translate(642 136)">
-              <rect className="scene-overview__card-frame" width="276" height="360" rx="8" />
-              <text className="scene-overview__index" x="30" y="42">
-                {overviewCards[2]?.index}
-              </text>
-              {overviewCards[2]?.titleLines.map((line, index) => (
-                <text key={line} className="scene-overview__title" x="30" y={78 + index * 28}>
-                  {line}
-                </text>
-              ))}
-
-              <g transform="translate(14 18) scale(1.05)">
-                <circle className="scene-overview__mini-globe-aura" cx="124" cy="158" r="92" />
-                <circle className="scene-overview__mini-globe" cx="124" cy="158" r="76" />
-                <path className="scene-overview__mini-graticule" d={overviewGlobePath(graticule) ?? ""} />
-                <path className="scene-overview__mini-land" d={overviewGlobePath(LOWER_48_LAND) ?? ""} />
-                {overviewRoutePaths.map((route) => (
-                  <path key={route.key} className="scene-overview__mini-route" d={route.d} />
-                ))}
-                {overviewProjectedCities.map((city) => (
-                  <circle
-                    key={`overview-pin-${city.label}`}
-                    className="scene-overview__mini-pin"
-                    cx={city.x}
-                    cy={city.y}
-                    r="4.5"
-                  />
-                ))}
-              </g>
-
-              {overviewCards[2]?.captionLines.map((line, index) => (
-                <text
-                  key={line}
-                  className={`scene-overview__caption${index < 2 ? "" : " scene-overview__caption--soft"}`}
-                  x="30"
-                  y={282 + index * 24}
-                >
-                  {line}
-                </text>
-              ))}
-            </g>
-          </g>
-        </svg>
-      </div>
 
       <div
         className="roles-scene__layer roles-scene__layer--labs"

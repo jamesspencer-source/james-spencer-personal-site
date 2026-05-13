@@ -67,16 +67,9 @@ export type DocumentaryBeat = {
 };
 
 export type RoleVisual =
-  | { kind: "roles-overview" }
   | { kind: "labs-schematic" }
   | { kind: "program-cycle" }
   | { kind: "network-globe"; hostCities: HostCity[] };
-
-export type OverviewVisualCard = {
-  index: string;
-  titleLines: string[];
-  captionLines: string[];
-};
 
 export type ProgramStation = {
   label: string;
@@ -91,8 +84,8 @@ export type GlobeAnnotation = {
 };
 
 export type RoleChapter = {
-  id: "overview" | "labs" | "program" | "network";
-  sceneId: "overview" | "labs" | "program" | "network";
+  id: "labs" | "program" | "network";
+  sceneId: "labs" | "program" | "network";
   navLabel: string;
   title: string;
   organization: string;
@@ -124,7 +117,6 @@ export type ContactContent = {
 };
 
 export type RolesVisualCopy = {
-  overviewCards: OverviewVisualCard[];
   programStations: ProgramStation[];
   programCore: {
     title: string;
@@ -182,27 +174,27 @@ export const siteContent = {
     label: "",
     name: "James M. Spencer",
     title:
-      "Research operations for laboratories, programs, and scientific communities",
+      "Research operations leader for academic laboratories and scientific programs",
     location: "Boston, Massachusetts",
     summary: [
       "James M. Spencer manages day-to-day research operations for two HHMI Investigator laboratories in Harvard Medical School Microbiology.",
-      "His work covers lab space, equipment, purchasing, vendors, onboarding, biosafety preparation, program logistics, and conference planning for lab managers."
+      "His work covers lab space, equipment, purchasing, vendors, onboarding, biosafety preparation, student-program logistics, and conference planning for lab managers."
     ],
     proof: [
       {
-        headline: "Laboratory operations",
+        headline: "Two HHMI Investigator laboratories",
         detail:
-          "Budgets, purchasing, equipment, facilities requests, access, onboarding, and daily support for two distinct research groups."
+          "Distinct research groups, separate spaces, shared department, daily lab support."
       },
       {
-        headline: "Program delivery",
+        headline: "Community Phages program delivery",
         detail:
-          "Funding coordination, hiring, lab setup, biosafety preparation, student support, and closeout for Community Phages."
+          "Funding, hiring, onboarding, lab setup, student support, and closeout."
       },
       {
-        headline: "Lab-manager conferences",
+        headline: "LMNOP conference planning",
         detail:
-          "Board priorities, speaker coordination, partner contact, conference logistics, and year-round programming for LMNOP."
+          "Board priorities, speaker coordination, partner contact, and regional/national conferences."
       }
     ] as ProofItem[],
     actions: [
@@ -221,25 +213,8 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "Laboratory operations is the core role. Community Phages and LMNOP extend the same coordination work into student-program delivery and professional programming for lab managers.",
+      "Laboratory operations is the core role. Community Phages and LMNOP extend that work into student-program delivery and programming for lab managers.",
     visualCopy: {
-      overviewCards: [
-        {
-          index: "01",
-          titleLines: ["Laboratory", "operations"],
-          captionLines: ["Two research labs", "Distinct spaces", "Daily continuity"]
-        },
-        {
-          index: "02",
-          titleLines: ["Community", "Phages"],
-          captionLines: ["Annual program delivery", "Funding to closeout"]
-        },
-        {
-          index: "03",
-          titleLines: ["Network", "leadership"],
-          captionLines: ["Regional and national", "conferences", "Year-round programming"]
-        }
-      ],
       programStations: [
         { label: "Funding", detail: "Budget + partner setup", x: 72, y: 220 },
         { label: "Hiring", detail: "Interviews + onboarding", x: 350, y: 60 },
@@ -269,36 +244,6 @@ export const siteContent = {
       }
     } satisfies RolesVisualCopy,
     chapters: [
-      {
-        id: "overview",
-        sceneId: "overview",
-        navLabel: "Overview",
-        title: "Current scope",
-        organization:
-          "Harvard Medical School, Howard Hughes Medical Institute, and the Lab Management Network of Professionals",
-        dates: "Current",
-        summary:
-          "James supports active research labs, an annual student program, and recurring lab-manager conferences through practical coordination before, during, and after launch.",
-        responsibilities: [
-          "Tracks people, space, equipment, vendors, budgets, access, and daily needs.",
-          "Plans student-program delivery, conference logistics, and follow-up."
-        ],
-        evidence: [
-          {
-            label: "Current scope",
-            value:
-              "Two research labs, an annual summer program, and recurring conferences."
-          },
-          {
-            label: "Execution focus",
-            value:
-              "Planning, staffing, logistics, facilities coordination, and follow-through."
-          }
-        ],
-        visual: {
-          kind: "roles-overview"
-        }
-      },
       {
         id: "labs",
         sceneId: "labs",
@@ -407,16 +352,16 @@ export const siteContent = {
     ] as RoleChapter[]
   },
   proofSection: {
-    label: "Selected proof",
-    heading: "Selected operations work",
+    label: "Selected work",
+    heading: "Selected work",
     intro:
-      "Selected examples of lab support, program delivery, and conference planning.",
+      "A few examples of the operations work behind the current roles.",
     items: [
       {
         id: "labs",
         index: "01",
         label: "Laboratory operations",
-        title: "Two distinct labs, two operating environments",
+        title: "Two HHMI Investigator labs, two operating environments",
         summary:
           "Day-to-day lab management for two active research groups in Harvard Medical School Microbiology.",
         details: [
@@ -430,7 +375,7 @@ export const siteContent = {
         id: "program",
         index: "02",
         label: "Scientific program delivery",
-        title: "Eight-week student program, full-cycle delivery",
+        title: "Eight-week student program, fifth annual cycle",
         summary:
           "Community Phages requires setup before students arrive, daily support during the program, and lab-space closeout after.",
         details: [
@@ -503,9 +448,9 @@ export const siteContent = {
     label: "Contact",
     heading: "Connect",
     intro:
-      "For conversations about research operations, lab management, scientific program operations, or conference programming, LinkedIn is the best way to reach James.",
+      "For research operations, lab management, scientific program operations, or conference programming, LinkedIn is the best way to reach James.",
     supportLine:
-      "Relevant conversations include day-to-day lab operations, student-program delivery, equipment and space coordination, and professional-development programming.",
+      "Relevant conversations include lab space, equipment, program delivery, and professional-development programming for lab managers.",
     contextTags: [
       "Research operations",
       "Lab management",

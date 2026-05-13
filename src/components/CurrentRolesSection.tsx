@@ -151,11 +151,7 @@ function getActiveChapterId(progress: number): RoleChapter["id"] {
     return "program";
   }
 
-  if (progress >= rolesTiming.active.labs) {
-    return "labs";
-  }
-
-  return "overview";
+  return "labs";
 }
 
 function RoleCopy({
@@ -262,7 +258,7 @@ function ReducedMotionRoles({
               <div className="roles-story__card-visual">
                 <RolesVisualSlot
                   visualsReady={visualsReady}
-                  progress={chapter.id === "network" ? 0.985 : chapterStops[chapter.id] + 0.04}
+                  progress={chapter.id === "network" ? 0.985 : chapterStops[chapter.id] + 0.08}
                   activeChapterId={chapter.id}
                   chapters={chapters}
                   staticMode
@@ -291,7 +287,7 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
   const rafRef = useRef<number | null>(null);
   const progressValueRef = useRef(0);
   const [progress, setProgress] = useState(0);
-  const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>("overview");
+  const [activeChapterId, setActiveChapterId] = useState<RoleChapter["id"]>("labs");
   const visualsReady = useVisualsReady(sectionRef);
   const pinnedRolesEnabled = usePinnedRolesEnabled(reducedMotion);
 
@@ -306,13 +302,6 @@ function CurrentRolesSection({ reducedMotion }: CurrentRolesSectionProps) {
 
   const chapterVisibility = useMemo(
     () => ({
-      overview: fadeBetween(
-        progress,
-        rolesTiming.visibility.overview.enterStart,
-        rolesTiming.visibility.overview.enterEnd,
-        rolesTiming.visibility.overview.exitStart,
-        rolesTiming.visibility.overview.exitEnd
-      ),
       labs: fadeBetween(
         progress,
         rolesTiming.visibility.labs.enterStart,
