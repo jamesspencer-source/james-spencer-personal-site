@@ -38,6 +38,7 @@ export type OperatingScopeItem = {
 };
 
 export type FitRole = {
+  tier: "Primary fit" | "Adjacent fit";
   title: string;
   detail: string;
 };
@@ -213,9 +214,9 @@ export const siteContent = {
           "Funding coordination, hiring, onboarding, lab setup, student support, and closeout for an eight-week program."
       },
       {
-        headline: "LMNOP conference planning",
+        headline: "Lab-manager conference planning",
         detail:
-          "Advisory-board chair work covering speakers, partners, agendas, and regional/national conferences."
+          "Lab Management Network of Professionals advisory-board work covering speakers, partners, agendas, and regional/national conferences."
       }
     ] as ProofItem[],
     actions: [
@@ -234,7 +235,7 @@ export const siteContent = {
     label: "Current Roles",
     heading: "Current Roles",
     intro:
-      "Laboratory management is the primary role. Community Phages adds student-program delivery; LMNOP adds lab-manager conference planning and peer resources.",
+      "Laboratory management is the primary role. Community Phages adds student-program delivery; the Lab Management Network of Professionals adds conference planning and peer resources for lab managers.",
     visualCopy: {
       programStations: [
         { label: "Funding", detail: "Budget + partner setup", x: 72, y: 220 },
@@ -376,7 +377,7 @@ export const siteContent = {
     label: "Operational Scope",
     heading: "Where this experience fits",
     intro:
-      "This site is built for people evaluating research operations, lab management, scientific program delivery, and conference operations. The relevant work is coordination across people, space, equipment, vendors, budgets, access, safety preparation, programs, and events.",
+      "The strongest fit is research operations work that depends on coordination across people, space, equipment, vendors, budgets, access, safety preparation, programs, and events.",
     items: [
       {
         label: "Laboratories",
@@ -406,7 +407,7 @@ export const siteContent = {
         label: "Lab managers",
         heading: "Conference operations",
         body:
-          "Advisory-board chair work for LMNOP, supporting regional and national conferences and year-round resources for laboratory managers.",
+          "Advisory-board chair work for the Lab Management Network of Professionals, supporting regional and national conferences and year-round resources for laboratory managers.",
         details: [
           "Board priorities and meeting agendas",
           "Speaker coordination and partner contact",
@@ -417,29 +418,34 @@ export const siteContent = {
     ],
     fitHeading: "Relevant roles",
     fitIntro:
-      "The strongest match is research operations in environments where scientific teams need reliable coordination across space, people, equipment, budgets, vendors, and timelines.",
+      "Best-fit roles sit in academic and biomedical research environments, with program delivery and conference planning as supporting strengths.",
     fitRoles: [
       {
+        tier: "Primary fit",
         title: "Research Operations Manager",
         detail:
           "Lab space, purchasing, vendors, access, equipment, budgets, and daily research support."
       },
       {
+        tier: "Primary fit",
         title: "Laboratory Operations Manager",
         detail:
           "Multi-lab coordination in academic or biomedical research environments."
       },
       {
+        tier: "Adjacent fit",
         title: "Scientific Program Manager",
         detail:
           "Program setup, staffing, logistics, student support, delivery, and closeout."
       },
       {
+        tier: "Primary fit",
         title: "Senior Lab Manager",
         detail:
           "Hands-on continuity across people, equipment, facilities, supplies, and purchasing."
       },
       {
+        tier: "Adjacent fit",
         title: "Conference Operations Manager",
         detail:
           "Agendas, speakers, partner contact, logistics, and member resources."

@@ -1633,6 +1633,7 @@ button {
 
 .operating-scope__item-index,
 .fit-rail__label,
+.fit-role__tier,
 .fit-role h3 {
   font-family: "Inter", sans-serif;
 }
@@ -1754,6 +1755,16 @@ button {
 .fit-role:last-child {
   border-bottom: 0;
   padding-bottom: 0;
+}
+
+.fit-role__tier {
+  display: inline-block;
+  margin: 0 0 0.34rem;
+  color: rgba(70, 96, 82, 0.9);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .fit-role h3 {

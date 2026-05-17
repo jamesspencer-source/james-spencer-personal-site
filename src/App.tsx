@@ -248,6 +248,7 @@ function OperatingScopeSection() {
             <div className="fit-rail__roles">
               {scope.fitRoles.map((role) => (
                 <article className="fit-role" key={role.title}>
+                  <p className="fit-role__tier">{role.tier}</p>
                   <h3>{role.title}</h3>
                   <p>{role.detail}</p>
                 </article>
