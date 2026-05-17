@@ -43,10 +43,17 @@ export type FitRole = {
   detail: string;
 };
 
+export type AudienceNote = {
+  label: string;
+  heading: string;
+  body: string;
+};
+
 export type OperatingScopeContent = {
   label: string;
   heading: string;
   intro: string;
+  audienceNotes: AudienceNote[];
   items: OperatingScopeItem[];
   fitHeading: string;
   fitIntro: string;
@@ -378,6 +385,20 @@ export const siteContent = {
     heading: "Where this experience fits",
     intro:
       "The strongest fit is research operations work that depends on coordination across people, space, equipment, vendors, budgets, access, safety preparation, programs, and events.",
+    audienceNotes: [
+      {
+        label: "For hiring teams",
+        heading: "Best-fit lane",
+        body:
+          "Research operations, laboratory operations, senior lab management, and scientific program operations roles."
+      },
+      {
+        label: "For peers",
+        heading: "Working context",
+        body:
+          "The day-to-day details behind lab management: equipment, access, onboarding, purchasing, vendors, facilities, student support, and conference logistics."
+      }
+    ],
     items: [
       {
         label: "Laboratories",

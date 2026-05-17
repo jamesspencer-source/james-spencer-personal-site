@@ -232,7 +232,18 @@ function OperatingScopeSection() {
               {scope.heading}
             </h2>
           </div>
-          <p>{scope.intro}</p>
+          <div className="operating-scope__heading-copy">
+            <p>{scope.intro}</p>
+            <div className="operating-scope__audiences" aria-label="Audience fit">
+              {scope.audienceNotes.map((note) => (
+                <article className="operating-scope__audience" key={note.label}>
+                  <p>{note.label}</p>
+                  <h3>{note.heading}</h3>
+                  <span>{note.body}</span>
+                </article>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="operating-scope__layout">
