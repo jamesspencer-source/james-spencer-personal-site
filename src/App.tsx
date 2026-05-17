@@ -2,7 +2,12 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CurrentRolesSection from "./components/CurrentRolesSection";
-import { siteContent, type ActionLink, type ProofSectionItem } from "./content";
+import {
+  siteContent,
+  type ActionLink,
+  type OperatingScopeItem,
+  type ProofSectionItem
+} from "./content";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -188,6 +193,70 @@ function HeroOperationsIndex() {
         </div>
       ))}
     </div>
+  );
+}
+
+function OperatingScopeRow({ item, index }: { item: OperatingScopeItem; index: number }) {
+  return (
+    <article className="operating-scope__item">
+      <div className="operating-scope__item-index">
+        <span>{String(index + 1).padStart(2, "0")}</span>
+        <p>{item.label}</p>
+      </div>
+      <div className="operating-scope__item-copy">
+        <h3>{item.heading}</h3>
+        <p>{item.body}</p>
+        <ul>
+          {item.details.map((detail) => (
+            <li key={detail}>{detail}</li>
+          ))}
+        </ul>
+      </div>
+    </article>
+  );
+}
+
+function OperatingScopeSection() {
+  const scope = siteContent.operatingScope;
+
+  return (
+    <section className="stage stage--operating-scope js-stage" aria-labelledby="operating-scope-heading">
+      <div className="shell operating-scope">
+        <div className="operating-scope__heading js-stage-reveal">
+          <div>
+            <SectionLabel
+              label={scope.label}
+              className="section-heading__label"
+            />
+            <h2 id="operating-scope-heading" className="section-heading__title">
+              {scope.heading}
+            </h2>
+          </div>
+          <p>{scope.intro}</p>
+        </div>
+
+        <div className="operating-scope__layout">
+          <div className="operating-scope__items js-stage-reveal">
+            {scope.items.map((item, index) => (
+              <OperatingScopeRow item={item} index={index} key={item.label} />
+            ))}
+          </div>
+
+          <aside className="fit-rail js-stage-reveal">
+            <p className="fit-rail__label">{scope.fitHeading}</p>
+            <p className="fit-rail__intro">{scope.fitIntro}</p>
+            <div className="fit-rail__roles">
+              {scope.fitRoles.map((role) => (
+                <article className="fit-role" key={role.title}>
+                  <h3>{role.title}</h3>
+                  <p>{role.detail}</p>
+                </article>
+              ))}
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -543,6 +612,8 @@ function App() {
         </section>
 
         <CurrentRolesSection reducedMotion={prefersReducedMotion} />
+
+        <OperatingScopeSection />
 
         <ProofSection />
 
