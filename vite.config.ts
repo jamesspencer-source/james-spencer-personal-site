@@ -25,7 +25,7 @@ export default defineConfig(({ mode }) => ({
             return "vendor-geo";
           }
 
-          if (id.includes("node_modules/three")) {
+          if (id.includes("node_modules/three") || id.includes("node_modules/@react-three/fiber")) {
             return "vendor-three";
           }
 

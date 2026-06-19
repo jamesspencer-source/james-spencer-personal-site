@@ -1,9 +1,10 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { siteContent } from "../content";
 import { vNextContent } from "./VNextContent";
-import { VNextContact, VNextFit, VNextHero, VNextStory } from "./VNextSections";
+import { VNextExperience } from "./VNextExperience";
+import { VNextContact, VNextFit, VNextHero } from "./VNextSections";
 import "./vnext.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -30,18 +31,18 @@ function usePrefersReducedMotion() {
   return reducedMotion;
 }
 
-function usePinnedStoryEnabled(reducedMotion: boolean) {
+function usePinnedExperienceEnabled(reducedMotion: boolean) {
   const [enabled, setEnabled] = useState(() => {
     if (typeof window === "undefined") {
       return false;
     }
 
-    return !reducedMotion && window.innerWidth >= 1000 && window.innerHeight >= 760;
+    return !reducedMotion && window.innerWidth >= 980 && window.innerHeight >= 740;
   });
 
   useEffect(() => {
     const update = () => {
-      setEnabled(!reducedMotion && window.innerWidth >= 1000 && window.innerHeight >= 760);
+      setEnabled(!reducedMotion && window.innerWidth >= 980 && window.innerHeight >= 740);
     };
 
     update();
@@ -55,36 +56,37 @@ function usePinnedStoryEnabled(reducedMotion: boolean) {
 
 export default function VNextApp() {
   const reducedMotion = usePrefersReducedMotion();
-  const pinnedStoryEnabled = usePinnedStoryEnabled(reducedMotion);
-  const staticStory = reducedMotion || !pinnedStoryEnabled;
-  const storyRef = useRef<HTMLElement | null>(null);
+  const pinnedExperienceEnabled = usePinnedExperienceEnabled(reducedMotion);
+  const staticExperience = reducedMotion || !pinnedExperienceEnabled;
+  const experienceRef = useRef<HTMLDivElement | null>(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    document.title = `${siteContent.hero.name} | vNext Prototype`;
+    document.title = `${siteContent.hero.name} | Research Operations vNext`;
   }, []);
 
   useLayoutEffect(() => {
-    const story = storyRef.current;
+    const experience = experienceRef.current;
 
-    if (!story || staticStory) {
-      setProgress(0.58);
+    if (!experience || staticExperience) {
+      setProgress(0);
       return;
     }
 
     const ctx = gsap.context(() => {
-      const pin = story.querySelector<HTMLElement>(".vnext-story__pin");
+      const pin = experience.querySelector<HTMLElement>(".vnext-experience__pin");
 
       if (!pin) {
         return;
       }
 
       ScrollTrigger.create({
-        trigger: story,
+        id: "vnext-experience",
+        trigger: experience,
         start: "top top",
-        end: "+=520%",
+        end: "+=680%",
         pin,
-        scrub: 0.65,
+        scrub: 0.68,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate: (self) => setProgress(Number(self.progress.toFixed(4)))
@@ -93,24 +95,44 @@ export default function VNextApp() {
       gsap.utils.toArray<HTMLElement>(".vnext-reveal").forEach((item) => {
         gsap.fromTo(
           item,
-          { autoAlpha: 0, y: 28 },
+          { autoAlpha: 0, y: 36 },
           {
             autoAlpha: 1,
             y: 0,
-            duration: 0.72,
+            duration: 0.78,
             ease: "power2.out",
             scrollTrigger: {
               trigger: item,
-              start: "top 82%",
+              start: "top 84%",
               once: true
             }
           }
         );
       });
-    }, story);
+    }, experience);
 
     return () => ctx.revert();
-  }, [staticStory]);
+  }, [staticExperience]);
+
+  const handleJump = useCallback(
+    (targetProgress: number) => {
+      if (staticExperience) {
+        const target = document.getElementById(`vnext-${targetProgress < 0.34 ? "labs" : targetProgress < 0.66 ? "program" : "network"}`);
+        target?.scrollIntoView({ block: "start", behavior: "smooth" });
+        return;
+      }
+
+      const trigger = ScrollTrigger.getById("vnext-experience");
+
+      if (!trigger) {
+        return;
+      }
+
+      const top = trigger.start + (trigger.end - trigger.start) * targetProgress;
+      window.scrollTo({ top, behavior: "auto" });
+    },
+    [staticExperience]
+  );
 
   return (
     <div className="vnext-page">
@@ -129,37 +151,37 @@ export default function VNextApp() {
 
       <main>
         <VNextHero
+          links={vNextContent.hero.links}
           name={vNextContent.hero.name}
-          title={vNextContent.hero.title}
-          summary={vNextContent.hero.summary}
           proof={vNextContent.hero.proof}
-          links={siteContent.hero.actions}
+          reducedMotion={staticExperience}
+          summary={vNextContent.hero.summary}
+          title={vNextContent.hero.title}
         />
 
-        <section
-          ref={storyRef}
-          className={`vnext-story${staticStory ? " vnext-story--reduced" : ""}`}
-          id="vnext-roles"
-        >
-          <VNextStory
+        <div ref={experienceRef}>
+          <VNextExperience
             chapters={vNextContent.chapters}
-            progress={progress}
-            reducedMotion={staticStory}
+            conferenceSites={vNextContent.system.conferenceSites}
             documentary={vNextContent.documentary}
-          />
-        </section>
-
-        <div className="vnext-reveal">
-          <VNextFit
-            title={vNextContent.fit.title}
-            summary={vNextContent.fit.summary}
-            roles={vNextContent.fit.roles}
-            scope={vNextContent.fit.scope}
+            onJump={handleJump}
+            programStations={vNextContent.system.programStations}
+            progress={progress}
+            reducedMotion={staticExperience}
           />
         </div>
 
         <div className="vnext-reveal">
-          <VNextContact contact={siteContent.contact} />
+          <VNextFit
+            roles={vNextContent.fit.roles}
+            scope={vNextContent.fit.scope}
+            summary={vNextContent.fit.summary}
+            title={vNextContent.fit.title}
+          />
+        </div>
+
+        <div className="vnext-reveal">
+          <VNextContact contact={vNextContent.contact} />
         </div>
       </main>
     </div>

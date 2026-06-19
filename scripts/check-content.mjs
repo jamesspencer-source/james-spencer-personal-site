@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { extname, join } from "node:path";
+import { extname, join, relative } from "node:path";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const meta = JSON.parse(readFileSync(join(root, "site-meta.json"), "utf8"));
@@ -40,9 +40,10 @@ const blocked = [
   { label: "before, during, and after launch", pattern: /before, during, and after launch/i },
   { label: "Selected examples", pattern: /Selected examples/i },
   { label: "old cropped headshot filename", pattern: /(headshot-cropped|headshot-tall|skinny-headshot|tall-skinny)/i },
-  { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i },
-  { label: "React Three Fiber dependency", pattern: /@react-three\/fiber/i }
+  { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i }
 ];
+
+const r3fPattern = /@react-three\/fiber/i;
 
 function walk(path) {
   const stats = statSync(path);
@@ -61,12 +62,26 @@ function walk(path) {
 const files = scanTargets.flatMap((target) => walk(target));
 const failures = [];
 
+function relativeFromRoot(file) {
+  return relative(root, file);
+}
+
 for (const file of files) {
   const text = readFileSync(file, "utf8");
 
   for (const item of blocked) {
     if (item.pattern.test(text)) {
-      failures.push(`${file.replace(`${root}/`, "")}: blocked phrase or dependency found (${item.label})`);
+      failures.push(`${relativeFromRoot(file)}: blocked phrase or dependency found (${item.label})`);
+    }
+  }
+
+  if (r3fPattern.test(text)) {
+    const relativeFile = relativeFromRoot(file);
+    const allowedR3fFile =
+      relativeFile.startsWith("src/vnext/") || relativeFile === "package.json" || relativeFile === "vite.config.ts";
+
+    if (!allowedR3fFile) {
+      failures.push(`${relativeFile}: React Three Fiber is only allowed inside src/vnext`);
     }
   }
 }

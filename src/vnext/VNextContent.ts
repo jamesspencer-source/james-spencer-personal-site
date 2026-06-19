@@ -1,86 +1,129 @@
-import { siteContent } from "../content";
+import { siteContent, type ActionLink, type ContactContent, type DocumentaryBeat } from "../content";
+
+export type VNextChapterId = "labs" | "program" | "network";
 
 export type VNextChapter = {
-  id: "labs" | "program" | "network";
+  id: VNextChapterId;
   index: string;
-  label: string;
+  navLabel: string;
   title: string;
+  organization: string;
+  dates: string;
   summary: string;
-  points: string[];
+  responsibilities: string[];
+  evidence: string[];
+  holdProgress: number;
 };
+
+export type VNextProgramStation = {
+  label: string;
+  detail: string;
+};
+
+export type VNextConferenceSite = {
+  city: string;
+  detail: string;
+};
+
+const roleChapters = siteContent.rolesSection.chapters;
+const labRole = roleChapters.find((chapter) => chapter.id === "labs")!;
+const programRole = roleChapters.find((chapter) => chapter.id === "program")!;
+const networkRole = roleChapters.find((chapter) => chapter.id === "network")!;
 
 export const vNextContent = {
   nav: [
     { label: "Current site", href: import.meta.env.BASE_URL },
-    { label: "Prototype", href: `${import.meta.env.BASE_URL}vnext` }
+    { label: "vNext", href: `${import.meta.env.BASE_URL}vnext` }
   ],
   hero: {
     name: siteContent.hero.name,
-    title: "Research operations, staged as a working system",
-    summary:
-      "A more cinematic prototype using the same public facts: laboratory operations, student-program delivery, and lab-manager conference planning presented as one connected operating environment.",
+    title: "Research operations for labs, programs, and scientific meetings",
+    summary: [
+      "A more cinematic prototype for James M. Spencer’s work in academic research operations.",
+      "The visual system moves from laboratory management to student-program delivery to lab-manager conference planning."
+    ],
     proof: [
-      "Two HHMI Investigator laboratories",
-      "Community Phages program delivery",
-      "Lab-manager conference planning"
-    ]
+      {
+        label: "Laboratories",
+        value: "Two HHMI Investigator labs in HMS Microbiology"
+      },
+      {
+        label: "Program delivery",
+        value: "Community Phages annual student research program"
+      },
+      {
+        label: "Meetings",
+        value: "LMNOP regional and national conference planning"
+      }
+    ],
+    links: siteContent.hero.actions as ActionLink[]
   },
   chapters: [
     {
       id: "labs",
       index: "01",
-      label: "Laboratory operations",
-      title: "Two labs, separate spaces, daily coordination",
-      summary:
-        "Day-to-day operations for the Bernhardt and Abraham laboratories in HMS Microbiology, including equipment, access, vendors, purchasing, facilities requests, onboarding, and lab support.",
-      points: [
-        "9th- and 10th-floor research space",
-        "Equipment, supplies, service contracts",
-        "Access, onboarding, candidate visits"
-      ]
+      navLabel: "Laboratory operations",
+      title: labRole.title,
+      organization: labRole.organization,
+      dates: labRole.dates,
+      summary: labRole.summary,
+      responsibilities: labRole.responsibilities,
+      evidence: labRole.evidence.map((item) => item.value),
+      holdProgress: 0.18
     },
     {
       id: "program",
       index: "02",
-      label: "Community Phages",
-      title: "A program cycle from setup to closeout",
-      summary:
-        "Operations support for an eight-week summer research program, including funding coordination, hiring, onboarding, lab setup, biosafety preparation, delivery logistics, student support, and closeout.",
-      points: [
-        "Funding, hiring, onboarding",
-        "Lab-space and biosafety preparation",
-        "Daily logistics, field trips, closeout"
-      ]
+      navLabel: "Community Phages",
+      title: programRole.title,
+      organization: programRole.organization,
+      dates: programRole.dates,
+      summary: programRole.summary,
+      responsibilities: programRole.responsibilities,
+      evidence: programRole.evidence.map((item) => item.value),
+      holdProgress: 0.48
     },
     {
       id: "network",
       index: "03",
-      label: "Lab-manager conferences",
-      title: "A lab-manager network with recurring conference work",
-      summary:
-        "Advisory-board chair work for the Lab Management Network of Professionals, including board priorities, meeting agendas, speaker coordination, partner contact, conference logistics, and member resources.",
-      points: [
-        "Boston, Washington, DC, San Francisco, New York City",
-        "Regional and national conferences",
-        "Speaker coordination and partner contact"
-      ]
+      navLabel: "Lab-manager conferences",
+      title: networkRole.title,
+      organization: networkRole.organization,
+      dates: networkRole.dates,
+      summary: networkRole.summary,
+      responsibilities: networkRole.responsibilities,
+      evidence: networkRole.evidence.map((item) => item.value),
+      holdProgress: 0.76
     }
   ] satisfies VNextChapter[],
+  system: {
+    labels: [
+      { label: "Laboratory operations", x: 18, y: 72 },
+      { label: "Program delivery", x: 52, y: 78 },
+      { label: "Conference network", x: 82, y: 70 }
+    ],
+    programStations: [
+      { label: "Funding", detail: "Budget and partner setup" },
+      { label: "Hiring", detail: "Interviews and onboarding" },
+      { label: "Lab setup", detail: "Benches, access, supplies" },
+      { label: "Biosafety", detail: "Training and readiness" },
+      { label: "Delivery", detail: "Daily program support" },
+      { label: "Closeout", detail: "Space reset and wrap-up" }
+    ] satisfies VNextProgramStation[],
+    conferenceSites: [
+      { city: "Washington, DC", detail: "National conferences" },
+      { city: "Boston", detail: "Regional conference" },
+      { city: "San Francisco", detail: "Regional conference" },
+      { city: "New York City", detail: "Regional conference" }
+    ] satisfies VNextConferenceSite[]
+  },
   fit: {
-    title: "Built for research operations roles",
+    title: "Best-fit roles",
     summary:
-      "Best-fit roles sit in academic and biomedical research environments where scientific teams need reliable coordination across people, space, equipment, budgets, vendors, timelines, programs, and events.",
+      "The strongest fit is research operations work inside academic or biomedical environments: labs, programs, space, equipment, vendors, budgets, people, timelines, and meetings.",
     roles: siteContent.operatingScope.fitRoles,
     scope: siteContent.operatingScope.items
   },
-  contact: {
-    heading: siteContent.contact.heading,
-    intro: siteContent.contact.intro,
-    supportLine: siteContent.contact.supportLine,
-    tags: siteContent.contact.contextTags ?? [],
-    portrait: siteContent.contact.portrait,
-    links: siteContent.contact.links
-  },
-  documentary: siteContent.rolesSection.chapters.find((chapter) => chapter.id === "network")
-    ?.documentaryBeat
+  documentary: networkRole.documentaryBeat as DocumentaryBeat | undefined,
+  contact: siteContent.contact as ContactContent
 };
