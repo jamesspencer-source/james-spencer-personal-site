@@ -11,8 +11,17 @@ import "@fontsource/newsreader/latin-700.css";
 import App from "./App";
 import "./styles.css";
 
+const isVNextRoute = window.location.pathname.replace(/\/$/, "").endsWith("/vnext");
+const VNextApp = React.lazy(() => import("./vnext/VNextApp"));
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    {isVNextRoute ? (
+      <React.Suspense fallback={null}>
+        <VNextApp />
+      </React.Suspense>
+    ) : (
+      <App />
+    )}
   </React.StrictMode>
 );

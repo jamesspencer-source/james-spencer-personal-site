@@ -21,6 +21,16 @@ npm run build
 
 The production build is emitted to `dist/`.
 
+The build also creates `dist/vnext/index.html` so the parallel prototype can be opened as a static `/vnext` path.
+
+For a separate prototype GitHub Pages repo, build with:
+
+```bash
+npm run build:vnext
+```
+
+That command uses the preview base path `/james-spencer-personal-site-vnext/`.
+
 ## Checks
 
 ```bash
@@ -34,6 +44,7 @@ The check script runs source guardrails, TypeScript, and the production build. I
 - Structured site content lives in `src/content.ts`
 - UI and section composition live in `src/App.tsx`
 - Global styling and motion-ready layout rules live in `src/styles.css`
+- Parallel prototype files live in `src/vnext/`
 - Public assets live in `public/assets/`
 
 Current public assets:
@@ -52,6 +63,7 @@ Portrait asset policy: the contact section should use the approved studio headsh
 This repository deploys to GitHub Pages through GitHub Actions.
 
 - Production base path: `/james-spencer-personal-site/`
+- Prototype preview base path: `/james-spencer-personal-site-vnext/`
 - Workflow: `.github/workflows/deploy.yml`
 
 When `main` is pushed, the site is built and deployed through the Pages workflow.

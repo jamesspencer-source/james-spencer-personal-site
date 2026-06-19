@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig(({ mode }) => ({
-  base: mode === "production" ? "/james-spencer-personal-site/" : "/",
+  base: process.env.VITE_BASE_PATH ?? (mode === "production" ? "/james-spencer-personal-site/" : "/"),
   plugins: [react()],
   build: {
     rollupOptions: {
@@ -31,7 +31,8 @@ export default defineConfig(({ mode }) => ({
 
           if (
             id.includes("src/components/RolesVisualStage") ||
-            id.includes("src/components/LabBuildingsScene")
+            id.includes("src/components/LabBuildingsScene") ||
+            id.includes("src/vnext")
           ) {
             return "roles-visuals";
           }
