@@ -43,6 +43,17 @@ const blocked = [
   { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i }
 ];
 
+const blockedVNext = [
+  { label: "systems behind", pattern: /systems behind/i },
+  { label: "operating side", pattern: /operating side/i },
+  { label: "strongest fit", pattern: /strongest fit/i },
+  { label: "recurring programming", pattern: /recurring programming/i },
+  { label: "scene settles", pattern: /scene settles/i },
+  { label: "cinematic prototype", pattern: /cinematic prototype/i },
+  { label: "visual system", pattern: /visual system/i },
+  { label: "managed floors remain visible", pattern: /managed floors remain visible/i }
+];
+
 const r3fPattern = /@react-three\/fiber/i;
 
 function walk(path) {
@@ -68,15 +79,23 @@ function relativeFromRoot(file) {
 
 for (const file of files) {
   const text = readFileSync(file, "utf8");
+  const relativeFile = relativeFromRoot(file);
 
   for (const item of blocked) {
     if (item.pattern.test(text)) {
-      failures.push(`${relativeFromRoot(file)}: blocked phrase or dependency found (${item.label})`);
+      failures.push(`${relativeFile}: blocked phrase or dependency found (${item.label})`);
+    }
+  }
+
+  if (relativeFile.startsWith("src/vnext/")) {
+    for (const item of blockedVNext) {
+      if (item.pattern.test(text)) {
+        failures.push(`${relativeFile}: blocked vNext phrase found (${item.label})`);
+      }
     }
   }
 
   if (r3fPattern.test(text)) {
-    const relativeFile = relativeFromRoot(file);
     const allowedR3fFile =
       relativeFile.startsWith("src/vnext/") || relativeFile === "package.json" || relativeFile === "vite.config.ts";
 

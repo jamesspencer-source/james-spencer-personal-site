@@ -84,7 +84,7 @@ export default function VNextApp() {
         id: "vnext-experience",
         trigger: experience,
         start: "top top",
-        end: "+=640%",
+        end: "+=700%",
         pin,
         scrub: 0.68,
         anticipatePin: 1,

@@ -48,22 +48,25 @@ export const vNextContent = {
   ],
   hero: {
     name: siteContent.hero.name,
-    title: "Research operations for academic labs, programs, and lab-manager conferences",
+    title: "Research operations for academic labs, student programs, and lab-manager conferences",
     summary: [
-      "James M. Spencer manages the day-to-day systems behind research labs, student-program delivery, and conference planning for lab managers."
+      "James M. Spencer manages day-to-day lab operations, program logistics, and conference planning in academic research settings. That work includes two HHMI Investigator laboratories, Community Phages, and the Lab Management Network of Professionals."
     ],
     proof: [
       {
-        label: "Laboratories",
-        value: "Two HHMI Investigator labs in HMS Microbiology"
+        label: "Lab operations",
+        value:
+          "Equipment, purchasing, vendors, access, facilities requests, onboarding, and daily support for two HMS Microbiology labs."
       },
       {
-        label: "Program delivery",
-        value: "Community Phages annual student research program"
+        label: "Program logistics",
+        value:
+          "Funding coordination, hiring, lab setup, biosafety preparation, student support, and closeout for Community Phages."
       },
       {
-        label: "Meetings",
-        value: "LMNOP regional and national conference planning"
+        label: "Conference planning",
+        value:
+          "Board priorities, speakers, partners, agendas, site logistics, and regional/national meetings for lab managers."
       }
     ],
     links: siteContent.hero.actions as ActionLink[]
@@ -72,28 +75,28 @@ export const vNextContent = {
     {
       id: "system-overview",
       src: vnextAsset("system-overview.jpg"),
-      alt: "Cinematic research operations system connecting laboratory buildings, a program cycle, and a conference network.",
+      alt: "Research operations scene connecting laboratory buildings, a program cycle, and a conference network.",
       chapter: "opening",
       motionRole: "foundation"
     },
     {
       id: "labs-focus",
       src: vnextAsset("labs-focus.jpg"),
-      alt: "Longwood-inspired laboratory building scene with highlighted managed floors.",
+      alt: "Longwood-inspired laboratory building scene with two active research floors emphasized.",
       chapter: "labs",
       motionRole: "chapter-focus"
     },
     {
       id: "program-cycle",
       src: vnextAsset("program-cycle.jpg"),
-      alt: "Dimensional annual program delivery cycle with staged operational checkpoints.",
+      alt: "Annual program logistics cycle with staged operational checkpoints.",
       chapter: "program",
       motionRole: "chapter-focus"
     },
     {
       id: "conference-network",
       src: vnextAsset("conference-network.jpg"),
-      alt: "Globe and network scene emphasizing lab-manager conference locations.",
+      alt: "Globe scene emphasizing lab-manager conference locations.",
       chapter: "network",
       motionRole: "network-focus"
     }
@@ -107,12 +110,15 @@ export const vNextContent = {
       organization: labRole.organization,
       dates: labRole.dates,
       summary:
-        "Manages daily operations for two distinct HHMI Investigator laboratories in Harvard Medical School Microbiology.",
+        "Manages day-to-day operations for two distinct HHMI Investigator laboratories in Harvard Medical School Microbiology.",
       responsibilities: [
         "Coordinates space, access, purchasing, equipment, vendors, and facilities requests.",
         "Supports PIs, trainees, staff, candidates, and active research space."
       ],
-      evidence: ["Two separate lab locations in the same department.", "Managed floors remain visible as the scene settles."],
+      evidence: [
+        "Separate research spaces, equipment needs, access needs, and vendor relationships.",
+        "Purchasing, service contracts, facilities requests, onboarding, and daily lab support."
+      ],
       holdProgress: 0.24
     },
     {
@@ -123,12 +129,15 @@ export const vNextContent = {
       organization: programRole.organization,
       dates: programRole.dates,
       summary:
-        "Runs the operating side of an annual eight-week student research program, from setup through closeout.",
+        "Coordinates the practical work required to run an eight-week student research program in HMS laboratory space.",
       responsibilities: [
         "Coordinates funding, hiring, onboarding, lab-space preparation, and biosafety readiness.",
         "Supports instructors, students, field trips, daily logistics, and program closeout."
       ],
-      evidence: ["Fifth annual program cycle.", "Funding, hiring, setup, biosafety, delivery, and closeout in one sequence."],
+      evidence: [
+        "Funding, hiring, onboarding, lab setup, biosafety preparation, and student support.",
+        "Instructor support, field trips, daily logistics, closeout, and lab-space reset."
+      ],
       holdProgress: 0.48
     },
     {
@@ -139,12 +148,15 @@ export const vNextContent = {
       organization: networkRole.organization,
       dates: networkRole.dates,
       summary:
-        "Chairs advisory-board work for a lab-manager network, including conference planning and recurring programming.",
+        "Chairs advisory-board work for a professional network of laboratory managers.",
       responsibilities: [
         "Sets board priorities and helps plan regional and national conferences.",
-        "Coordinates speakers, partner contact, member resources, and year-round programming."
+        "Coordinates speakers, partner contact, member resources, and year-round planning."
       ],
-      evidence: ["Conference locations appear chronologically.", "SF meeting photo closes the network chapter."],
+      evidence: [
+        "Board priorities, agendas, speaker coordination, partner contact, and member resources.",
+        "Regional and national conference planning in Boston, Washington DC, San Francisco, and New York City."
+      ],
       holdProgress: 0.7
     }
   ] satisfies VNextChapter[],
@@ -155,27 +167,31 @@ export const vNextContent = {
       { label: "Conference network", x: 82, y: 70 }
     ],
     programStations: [
-      { label: "Funding", detail: "Budget and partner setup" },
-      { label: "Hiring", detail: "Interviews and onboarding" },
-      { label: "Lab setup", detail: "Benches, access, supplies" },
-      { label: "Biosafety", detail: "Training and readiness" },
-      { label: "Delivery", detail: "Daily program support" },
-      { label: "Closeout", detail: "Space reset and wrap-up" }
+      { label: "Funding", detail: "Budget and partner coordination" },
+      { label: "Hiring", detail: "Interviews, offers, onboarding" },
+      { label: "Lab setup", detail: "Benches, supplies, access" },
+      { label: "Biosafety", detail: "Training and preparation" },
+      { label: "Delivery", detail: "Daily student and instructor support" },
+      { label: "Closeout", detail: "Space reset and final logistics" }
     ] satisfies VNextProgramStation[],
     conferenceSites: [
-      { city: "Washington, DC", detail: "National conferences" },
-      { city: "Boston", detail: "Regional conference" },
-      { city: "San Francisco", detail: "Regional conference" },
-      { city: "New York City", detail: "Regional conference" }
+      { city: "Washington, DC", detail: "National conference planning" },
+      { city: "Boston", detail: "Regional conference planning" },
+      { city: "San Francisco", detail: "Regional conference planning" },
+      { city: "New York City", detail: "Regional conference planning" }
     ] satisfies VNextConferenceSite[]
   },
   fit: {
-    title: "Best-fit roles",
+    title: "Roles this maps to",
     summary:
-      "The strongest fit is research operations work inside academic or biomedical environments: labs, programs, space, equipment, vendors, budgets, people, timelines, and meetings.",
+      "This background fits roles that need someone who can keep research space, people, equipment, vendors, budgets, timelines, and meetings moving without losing the scientific context.",
     roles: siteContent.operatingScope.fitRoles,
     scope: siteContent.operatingScope.items
   },
   documentary: networkRole.documentaryBeat as DocumentaryBeat | undefined,
-  contact: siteContent.contact as ContactContent
+  contact: {
+    ...siteContent.contact,
+    supportLine:
+      "Useful conversations include lab operations, scientific program logistics, lab management, and conference planning for research communities."
+  } satisfies ContactContent
 };

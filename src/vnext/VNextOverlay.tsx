@@ -1,7 +1,7 @@
 import type { VNextChapter, VNextConferenceSite, VNextProgramStation } from "./VNextContent";
 
 export function getVNextActiveChapter(progress: number): VNextChapter["id"] {
-  if (progress >= 0.6) {
+  if (progress >= 0.62) {
     return "network";
   }
 
@@ -13,7 +13,7 @@ export function getVNextActiveChapter(progress: number): VNextChapter["id"] {
 }
 
 function getDocumentaryProgress(progress: number) {
-  const x = Math.max(0, Math.min(1, (progress - 0.82) / 0.12));
+  const x = Math.max(0, Math.min(1, (progress - 0.84) / 0.1));
   return x * x * (3 - 2 * x);
 }
 
@@ -34,7 +34,7 @@ export function VNextOverlay({
   const chapter = chapters.find((item) => item.id === activeChapter) ?? chapters[0];
   const documentaryProgress = getDocumentaryProgress(progress);
   const programActiveCount = Math.max(0, Math.min(programStations.length, Math.ceil(((progress - 0.4) / 0.18) * programStations.length)));
-  const conferenceActiveCount = Math.max(0, Math.min(conferenceSites.length, Math.ceil(((progress - 0.62) / 0.16) * conferenceSites.length)));
+  const conferenceActiveCount = Math.max(0, Math.min(conferenceSites.length, Math.ceil(((progress - 0.64) / 0.16) * conferenceSites.length)));
 
   return (
     <div className="vnext-overlay">

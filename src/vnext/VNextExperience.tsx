@@ -15,7 +15,7 @@ type VNextExperienceProps = {
 };
 
 function getPhotoProgress(progress: number) {
-  const x = Math.max(0, Math.min(1, (progress - 0.82) / 0.12));
+  const x = Math.max(0, Math.min(1, (progress - 0.84) / 0.1));
   return x * x * (3 - 2 * x);
 }
 
@@ -35,7 +35,7 @@ export function VNextExperience({
         <div className="vnext-shell vnext-static-stack">
           <div className="vnext-static-stack__intro">
             <p className="vnext-kicker">Current Roles</p>
-            <h2>Research operations as one connected system</h2>
+            <h2>Current research operations work</h2>
           </div>
           {chapters.map((chapter) => (
             <article className="vnext-static-chapter" id={`vnext-${chapter.id}`} key={chapter.id}>

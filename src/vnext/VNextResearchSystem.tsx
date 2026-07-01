@@ -44,7 +44,7 @@ function mix(from: number, to: number, amount: number) {
 
 function getPlateState(id: VNextAssetId, progress: number, mode: VNextResearchSystemProps["mode"]): PlateState {
   const p = mode === "hero" ? 0.08 : progress;
-  const photoFade = smoothstep(0.82, 0.94, p);
+  const photoFade = smoothstep(0.84, 0.96, p);
 
   if (id === "system-overview") {
     const opening = mode === "hero" ? 1 : fadeBetween(p, 0, 0.02, 0.13, 0.22);
@@ -61,7 +61,7 @@ function getPlateState(id: VNextAssetId, progress: number, mode: VNextResearchSy
   }
 
   if (id === "labs-focus") {
-    const opacity = mode === "static" ? (Math.abs(p - 0.24) < 0.09 ? 1 : 0.12) : fadeBetween(p, 0.12, 0.18, 0.36, 0.44);
+    const opacity = mode === "static" ? (Math.abs(p - 0.24) < 0.09 ? 1 : 0.12) : fadeBetween(p, 0.1, 0.16, 0.35, 0.45);
     return {
       opacity: opacity * (1 - photoFade),
       scale: mix(1.12, 1.0, smoothstep(0.16, 0.34, p)),
@@ -74,7 +74,7 @@ function getPlateState(id: VNextAssetId, progress: number, mode: VNextResearchSy
   }
 
   if (id === "program-cycle") {
-    const opacity = mode === "static" ? (Math.abs(p - 0.48) < 0.09 ? 1 : 0.1) : fadeBetween(p, 0.34, 0.4, 0.58, 0.66);
+    const opacity = mode === "static" ? (Math.abs(p - 0.48) < 0.09 ? 1 : 0.1) : fadeBetween(p, 0.34, 0.4, 0.6, 0.69);
     return {
       opacity: opacity * (1 - photoFade),
       scale: mix(1.05, 0.98, smoothstep(0.38, 0.58, p)),
@@ -86,7 +86,7 @@ function getPlateState(id: VNextAssetId, progress: number, mode: VNextResearchSy
     };
   }
 
-  const opacity = mode === "static" ? (Math.abs(p - 0.7) < 0.1 ? 1 : 0.1) : fadeBetween(p, 0.58, 0.64, 0.83, 0.94);
+  const opacity = mode === "static" ? (Math.abs(p - 0.7) < 0.1 ? 1 : 0.1) : fadeBetween(p, 0.58, 0.64, 0.86, 0.98);
   return {
     opacity: opacity * (1 - photoFade * 0.82),
     scale: mix(1.07, 1.0, smoothstep(0.62, 0.82, p)),
@@ -209,7 +209,7 @@ function CameraRig({ progress, reducedMotion, mode }: { progress: number; reduce
 
   useFrame((_, delta) => {
     const p = reducedMotion ? 0.24 : mode === "hero" ? 0.08 : progress;
-    const photo = smoothstep(0.82, 0.94, p);
+    const photo = smoothstep(0.84, 0.96, p);
     const targetX = mix(-0.18, 0.24, smoothstep(0.16, 0.82, p));
     const targetY = mix(0.08, -0.05, smoothstep(0.38, 0.82, p));
     const targetZ = mix(7.4, 6.48, smoothstep(0.16, 0.82, p)) + photo * 0.36;
