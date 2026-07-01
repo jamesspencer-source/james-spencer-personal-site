@@ -34,6 +34,12 @@ export type VNextConferenceSite = {
   detail: string;
 };
 
+export type VNextFloorHighlight = {
+  building: string;
+  floor: string;
+  detail: string;
+};
+
 const roleChapters = siteContent.rolesSection.chapters;
 const labRole = roleChapters.find((chapter) => chapter.id === "labs")!;
 const programRole = roleChapters.find((chapter) => chapter.id === "program")!;
@@ -82,7 +88,7 @@ export const vNextContent = {
     {
       id: "labs-focus",
       src: vnextAsset("labs-focus.jpg"),
-      alt: "Longwood-inspired laboratory building scene with two active research floors emphasized.",
+      alt: "Longwood-inspired laboratory building scene emphasizing the 10th floor at 4 Blackfan Circle and the 9th floor at Veritas Science Center.",
       chapter: "labs",
       motionRole: "chapter-focus"
     },
@@ -116,10 +122,10 @@ export const vNextContent = {
         "Supports PIs, trainees, staff, candidates, and active research space."
       ],
       evidence: [
-        "Separate research spaces, equipment needs, access needs, and vendor relationships.",
-        "Purchasing, service contracts, facilities requests, onboarding, and daily lab support."
+        "Bernhardt Lab: 4 Blackfan Circle, 10th floor.",
+        "Abraham Lab: Veritas Science Center, 9th floor."
       ],
-      holdProgress: 0.24
+      holdProgress: 0.23
     },
     {
       id: "program",
@@ -138,7 +144,7 @@ export const vNextContent = {
         "Funding, hiring, onboarding, lab setup, biosafety preparation, and student support.",
         "Instructor support, field trips, daily logistics, closeout, and lab-space reset."
       ],
-      holdProgress: 0.48
+      holdProgress: 0.47
     },
     {
       id: "network",
@@ -155,9 +161,9 @@ export const vNextContent = {
       ],
       evidence: [
         "Board priorities, agendas, speaker coordination, partner contact, and member resources.",
-        "Regional and national conference planning in Boston, Washington DC, San Francisco, and New York City."
+        "Regional and national conference planning in Boston, Washington, DC, San Francisco, and New York City."
       ],
-      holdProgress: 0.7
+      holdProgress: 0.69
     }
   ] satisfies VNextChapter[],
   system: {
@@ -179,7 +185,19 @@ export const vNextContent = {
       { city: "Boston", detail: "Regional conference planning" },
       { city: "San Francisco", detail: "Regional conference planning" },
       { city: "New York City", detail: "Regional conference planning" }
-    ] satisfies VNextConferenceSite[]
+    ] satisfies VNextConferenceSite[],
+    floorHighlights: [
+      {
+        building: "4 Blackfan Circle",
+        floor: "10th floor",
+        detail: "Bernhardt Lab"
+      },
+      {
+        building: "Veritas Science Center",
+        floor: "9th floor",
+        detail: "Abraham Lab"
+      }
+    ] satisfies VNextFloorHighlight[]
   },
   fit: {
     title: "Roles this maps to",

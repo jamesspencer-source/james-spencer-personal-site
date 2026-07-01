@@ -166,6 +166,7 @@ export default function VNextApp() {
             chapters={vNextContent.chapters}
             conferenceSites={vNextContent.system.conferenceSites}
             documentary={vNextContent.documentary}
+            floorHighlights={vNextContent.system.floorHighlights}
             onJump={handleJump}
             programStations={vNextContent.system.programStations}
             progress={progress}

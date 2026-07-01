@@ -1,7 +1,8 @@
 import type { DocumentaryBeat } from "../content";
-import type { VNextAssetManifestItem, VNextChapter, VNextConferenceSite, VNextProgramStation } from "./VNextContent";
+import type { VNextAssetManifestItem, VNextChapter, VNextConferenceSite, VNextFloorHighlight, VNextProgramStation } from "./VNextContent";
 import { VNextOverlay } from "./VNextOverlay";
 import { VNextResearchSystem } from "./VNextResearchSystem";
+import { getVNextDocumentaryProgress } from "./VNextSceneManifest";
 
 type VNextExperienceProps = {
   assets: VNextAssetManifestItem[];
@@ -11,13 +12,9 @@ type VNextExperienceProps = {
   documentary?: DocumentaryBeat;
   programStations: VNextProgramStation[];
   conferenceSites: VNextConferenceSite[];
+  floorHighlights: VNextFloorHighlight[];
   onJump?: (progress: number) => void;
 };
-
-function getPhotoProgress(progress: number) {
-  const x = Math.max(0, Math.min(1, (progress - 0.84) / 0.1));
-  return x * x * (3 - 2 * x);
-}
 
 export function VNextExperience({
   assets,
@@ -27,6 +24,7 @@ export function VNextExperience({
   documentary,
   programStations,
   conferenceSites,
+  floorHighlights,
   onJump
 }: VNextExperienceProps) {
   if (reducedMotion) {
@@ -66,7 +64,7 @@ export function VNextExperience({
     );
   }
 
-  const photoProgress = getPhotoProgress(progress);
+  const photoProgress = getVNextDocumentaryProgress(progress);
 
   return (
     <div className="vnext-experience" id="vnext-roles">
@@ -80,6 +78,7 @@ export function VNextExperience({
         <VNextOverlay
           chapters={chapters}
           conferenceSites={conferenceSites}
+          floorHighlights={floorHighlights}
           onJump={onJump}
           programStations={programStations}
           progress={progress}

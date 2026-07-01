@@ -384,7 +384,7 @@ export const siteContent = {
     label: "Operational Scope",
     heading: "Where this experience fits",
     intro:
-      "The strongest fit is research operations work that depends on coordination across people, space, equipment, vendors, budgets, access, safety preparation, programs, and events.",
+      "This experience fits research operations work that depends on coordination across people, space, equipment, vendors, budgets, access, safety preparation, programs, and events.",
     audienceNotes: [
       {
         label: "For hiring teams",

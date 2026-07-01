@@ -1,40 +1,32 @@
-import type { VNextChapter, VNextConferenceSite, VNextProgramStation } from "./VNextContent";
-
-export function getVNextActiveChapter(progress: number): VNextChapter["id"] {
-  if (progress >= 0.62) {
-    return "network";
-  }
-
-  if (progress >= 0.38) {
-    return "program";
-  }
-
-  return "labs";
-}
-
-function getDocumentaryProgress(progress: number) {
-  const x = Math.max(0, Math.min(1, (progress - 0.84) / 0.1));
-  return x * x * (3 - 2 * x);
-}
+import type { VNextChapter, VNextConferenceSite, VNextFloorHighlight, VNextProgramStation } from "./VNextContent";
+import { getVNextActiveChapter, getVNextDocumentaryProgress, vNextSceneTiming } from "./VNextSceneManifest";
 
 export function VNextOverlay({
   chapters,
   progress,
   programStations,
   conferenceSites,
+  floorHighlights,
   onJump
 }: {
   chapters: VNextChapter[];
   progress: number;
   programStations: VNextProgramStation[];
   conferenceSites: VNextConferenceSite[];
+  floorHighlights: VNextFloorHighlight[];
   onJump?: (progress: number) => void;
 }) {
   const activeChapter = getVNextActiveChapter(progress);
   const chapter = chapters.find((item) => item.id === activeChapter) ?? chapters[0];
-  const documentaryProgress = getDocumentaryProgress(progress);
-  const programActiveCount = Math.max(0, Math.min(programStations.length, Math.ceil(((progress - 0.4) / 0.18) * programStations.length)));
-  const conferenceActiveCount = Math.max(0, Math.min(conferenceSites.length, Math.ceil(((progress - 0.64) / 0.16) * conferenceSites.length)));
+  const documentaryProgress = getVNextDocumentaryProgress(progress);
+  const programActiveCount = Math.max(
+    0,
+    Math.min(programStations.length, Math.ceil(((progress - vNextSceneTiming.program.start) / 0.18) * programStations.length))
+  );
+  const conferenceActiveCount = Math.max(
+    0,
+    Math.min(conferenceSites.length, Math.ceil(((progress - vNextSceneTiming.network.start) / 0.16) * conferenceSites.length))
+  );
 
   return (
     <div className="vnext-overlay">
@@ -71,6 +63,17 @@ export function VNextOverlay({
             <span>{String(index + 1).padStart(2, "0")}</span>
             <strong>{station.label}</strong>
             <p>{station.detail}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="vnext-overlay__locations" data-visible={activeChapter === "labs"}>
+        <p>Lab locations</p>
+        {floorHighlights.map((item) => (
+          <article key={`${item.building}-${item.floor}`}>
+            <strong>{item.building}</strong>
+            <span>{item.floor}</span>
+            <em>{item.detail}</em>
           </article>
         ))}
       </div>
