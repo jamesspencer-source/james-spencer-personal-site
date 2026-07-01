@@ -84,7 +84,7 @@ export default function VNextApp() {
         id: "vnext-experience",
         trigger: experience,
         start: "top top",
-        end: "+=680%",
+        end: "+=640%",
         pin,
         scrub: 0.68,
         anticipatePin: 1,
@@ -117,7 +117,7 @@ export default function VNextApp() {
   const handleJump = useCallback(
     (targetProgress: number) => {
       if (staticExperience) {
-        const target = document.getElementById(`vnext-${targetProgress < 0.34 ? "labs" : targetProgress < 0.66 ? "program" : "network"}`);
+        const target = document.getElementById(`vnext-${targetProgress < 0.38 ? "labs" : targetProgress < 0.6 ? "program" : "network"}`);
         target?.scrollIntoView({ block: "start", behavior: "smooth" });
         return;
       }
@@ -151,6 +151,7 @@ export default function VNextApp() {
 
       <main>
         <VNextHero
+          assets={vNextContent.assets}
           links={vNextContent.hero.links}
           name={vNextContent.hero.name}
           proof={vNextContent.hero.proof}
@@ -161,6 +162,7 @@ export default function VNextApp() {
 
         <div ref={experienceRef}>
           <VNextExperience
+            assets={vNextContent.assets}
             chapters={vNextContent.chapters}
             conferenceSites={vNextContent.system.conferenceSites}
             documentary={vNextContent.documentary}

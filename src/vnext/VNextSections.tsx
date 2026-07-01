@@ -1,4 +1,5 @@
 import type { ActionLink, ContactContent, FitRole, OperatingScopeItem } from "../content";
+import type { VNextAssetManifestItem } from "./VNextContent";
 import { VNextResearchSystem } from "./VNextResearchSystem";
 
 function isExternalLink(href: string) {
@@ -28,7 +29,8 @@ export function VNextHero({
   summary,
   proof,
   links,
-  reducedMotion
+  reducedMotion,
+  assets
 }: {
   name: string;
   title: string;
@@ -36,6 +38,7 @@ export function VNextHero({
   proof: Array<{ label: string; value: string }>;
   links: ActionLink[];
   reducedMotion: boolean;
+  assets: VNextAssetManifestItem[];
 }) {
   return (
     <section className="vnext-hero" id="vnext-overview">
@@ -50,7 +53,7 @@ export function VNextHero({
         </div>
 
         <div className="vnext-hero__visual">
-          <VNextResearchSystem progress={0.12} reducedMotion={reducedMotion} />
+          <VNextResearchSystem assets={assets} mode="hero" progress={0.08} reducedMotion={reducedMotion} />
         </div>
 
         <aside className="vnext-hero__index" aria-label="At a glance">

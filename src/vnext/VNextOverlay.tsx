@@ -1,11 +1,11 @@
 import type { VNextChapter, VNextConferenceSite, VNextProgramStation } from "./VNextContent";
 
 export function getVNextActiveChapter(progress: number): VNextChapter["id"] {
-  if (progress >= 0.66) {
+  if (progress >= 0.6) {
     return "network";
   }
 
-  if (progress >= 0.34) {
+  if (progress >= 0.38) {
     return "program";
   }
 
@@ -13,7 +13,7 @@ export function getVNextActiveChapter(progress: number): VNextChapter["id"] {
 }
 
 function getDocumentaryProgress(progress: number) {
-  const x = Math.max(0, Math.min(1, (progress - 0.88) / 0.08));
+  const x = Math.max(0, Math.min(1, (progress - 0.82) / 0.12));
   return x * x * (3 - 2 * x);
 }
 
@@ -33,8 +33,8 @@ export function VNextOverlay({
   const activeChapter = getVNextActiveChapter(progress);
   const chapter = chapters.find((item) => item.id === activeChapter) ?? chapters[0];
   const documentaryProgress = getDocumentaryProgress(progress);
-  const programActiveCount = Math.max(0, Math.min(programStations.length, Math.ceil(((progress - 0.38) / 0.22) * programStations.length)));
-  const conferenceActiveCount = Math.max(0, Math.min(conferenceSites.length, Math.ceil(((progress - 0.68) / 0.16) * conferenceSites.length)));
+  const programActiveCount = Math.max(0, Math.min(programStations.length, Math.ceil(((progress - 0.4) / 0.18) * programStations.length)));
+  const conferenceActiveCount = Math.max(0, Math.min(conferenceSites.length, Math.ceil(((progress - 0.62) / 0.16) * conferenceSites.length)));
 
   return (
     <div className="vnext-overlay">
@@ -44,24 +44,11 @@ export function VNextOverlay({
         <h2>{chapter.title}</h2>
         <p className="vnext-overlay__org">{chapter.organization}</p>
         <p className="vnext-overlay__summary">{chapter.summary}</p>
-        <div className="vnext-overlay__detail-grid">
-          <div>
-            <span>Responsibilities</span>
-            <ul>
-              {chapter.responsibilities.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <span>Evidence</span>
-            <ul>
-              {chapter.evidence.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <ul className="vnext-overlay__evidence">
+          {chapter.evidence.slice(0, 2).map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
       </div>
 
       <div className="vnext-overlay__rail" aria-label="Current Roles chapters">
@@ -76,12 +63,6 @@ export function VNextOverlay({
             <strong>{item.navLabel}</strong>
           </button>
         ))}
-      </div>
-
-      <div className="vnext-overlay__labels" aria-hidden="true">
-        <span className="vnext-overlay__scene-label vnext-overlay__scene-label--labs">Two research labs</span>
-        <span className="vnext-overlay__scene-label vnext-overlay__scene-label--program">Annual program cycle</span>
-        <span className="vnext-overlay__scene-label vnext-overlay__scene-label--network">Conference network</span>
       </div>
 
       <div className="vnext-overlay__program" data-visible={activeChapter === "program"}>

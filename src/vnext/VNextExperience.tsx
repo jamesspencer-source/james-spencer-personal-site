@@ -1,9 +1,10 @@
 import type { DocumentaryBeat } from "../content";
-import type { VNextChapter, VNextConferenceSite, VNextProgramStation } from "./VNextContent";
+import type { VNextAssetManifestItem, VNextChapter, VNextConferenceSite, VNextProgramStation } from "./VNextContent";
 import { VNextOverlay } from "./VNextOverlay";
 import { VNextResearchSystem } from "./VNextResearchSystem";
 
 type VNextExperienceProps = {
+  assets: VNextAssetManifestItem[];
   chapters: VNextChapter[];
   progress: number;
   reducedMotion: boolean;
@@ -14,11 +15,12 @@ type VNextExperienceProps = {
 };
 
 function getPhotoProgress(progress: number) {
-  const x = Math.max(0, Math.min(1, (progress - 0.88) / 0.08));
+  const x = Math.max(0, Math.min(1, (progress - 0.82) / 0.12));
   return x * x * (3 - 2 * x);
 }
 
 export function VNextExperience({
+  assets,
   chapters,
   progress,
   reducedMotion,
@@ -38,7 +40,7 @@ export function VNextExperience({
           {chapters.map((chapter) => (
             <article className="vnext-static-chapter" id={`vnext-${chapter.id}`} key={chapter.id}>
               <div className="vnext-static-chapter__visual">
-                <VNextResearchSystem progress={chapter.holdProgress} reducedMotion />
+                <VNextResearchSystem assets={assets} mode="static" progress={chapter.holdProgress} reducedMotion />
               </div>
               <div className="vnext-static-chapter__copy">
                 <p>{chapter.dates}</p>
@@ -46,7 +48,7 @@ export function VNextExperience({
                 <span>{chapter.organization}</span>
                 <p>{chapter.summary}</p>
                 <ul>
-                  {chapter.responsibilities.map((item) => (
+                  {chapter.evidence.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>
@@ -70,7 +72,9 @@ export function VNextExperience({
     <div className="vnext-experience" id="vnext-roles">
       <div className="vnext-experience__pin">
         <VNextResearchSystem
+          assets={assets}
           className={photoProgress > 0.02 ? "vnext-research-system--receding" : ""}
+          mode="sequence"
           progress={progress}
         />
         <VNextOverlay
@@ -85,7 +89,7 @@ export function VNextExperience({
             className="vnext-proof-photo"
             style={{
               opacity: photoProgress,
-              transform: `translate3d(${(1 - photoProgress) * 6}%, ${(1 - photoProgress) * 3}%, 0) scale(${0.92 + photoProgress * 0.08})`
+              transform: `translate3d(${(1 - photoProgress) * 6}%, ${(1 - photoProgress) * 3}%, 0) translateY(-50%) scale(${0.92 + photoProgress * 0.08})`
             }}
           >
             <img src={documentary.image.src} alt={documentary.image.alt} />

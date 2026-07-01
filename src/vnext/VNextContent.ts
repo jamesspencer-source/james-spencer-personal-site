@@ -1,6 +1,7 @@
 import { siteContent, type ActionLink, type ContactContent, type DocumentaryBeat } from "../content";
 
 export type VNextChapterId = "labs" | "program" | "network";
+export type VNextAssetId = "system-overview" | "labs-focus" | "program-cycle" | "conference-network";
 
 export type VNextChapter = {
   id: VNextChapterId;
@@ -13,6 +14,14 @@ export type VNextChapter = {
   responsibilities: string[];
   evidence: string[];
   holdProgress: number;
+};
+
+export type VNextAssetManifestItem = {
+  id: VNextAssetId;
+  src: string;
+  alt: string;
+  chapter: "opening" | VNextChapterId;
+  motionRole: "foundation" | "chapter-focus" | "network-focus";
 };
 
 export type VNextProgramStation = {
@@ -30,6 +39,8 @@ const labRole = roleChapters.find((chapter) => chapter.id === "labs")!;
 const programRole = roleChapters.find((chapter) => chapter.id === "program")!;
 const networkRole = roleChapters.find((chapter) => chapter.id === "network")!;
 
+const vnextAsset = (filename: string) => `${import.meta.env.BASE_URL}assets/vnext/${filename}`;
+
 export const vNextContent = {
   nav: [
     { label: "Current site", href: import.meta.env.BASE_URL },
@@ -37,10 +48,9 @@ export const vNextContent = {
   ],
   hero: {
     name: siteContent.hero.name,
-    title: "Research operations for labs, programs, and scientific meetings",
+    title: "Research operations for academic labs, programs, and lab-manager conferences",
     summary: [
-      "A more cinematic prototype for James M. Spencer’s work in academic research operations.",
-      "The visual system moves from laboratory management to student-program delivery to lab-manager conference planning."
+      "James M. Spencer manages the day-to-day systems behind research labs, student-program delivery, and conference planning for lab managers."
     ],
     proof: [
       {
@@ -58,6 +68,36 @@ export const vNextContent = {
     ],
     links: siteContent.hero.actions as ActionLink[]
   },
+  assets: [
+    {
+      id: "system-overview",
+      src: vnextAsset("system-overview.jpg"),
+      alt: "Cinematic research operations system connecting laboratory buildings, a program cycle, and a conference network.",
+      chapter: "opening",
+      motionRole: "foundation"
+    },
+    {
+      id: "labs-focus",
+      src: vnextAsset("labs-focus.jpg"),
+      alt: "Longwood-inspired laboratory building scene with highlighted managed floors.",
+      chapter: "labs",
+      motionRole: "chapter-focus"
+    },
+    {
+      id: "program-cycle",
+      src: vnextAsset("program-cycle.jpg"),
+      alt: "Dimensional annual program delivery cycle with staged operational checkpoints.",
+      chapter: "program",
+      motionRole: "chapter-focus"
+    },
+    {
+      id: "conference-network",
+      src: vnextAsset("conference-network.jpg"),
+      alt: "Globe and network scene emphasizing lab-manager conference locations.",
+      chapter: "network",
+      motionRole: "network-focus"
+    }
+  ] satisfies VNextAssetManifestItem[],
   chapters: [
     {
       id: "labs",
@@ -66,10 +106,14 @@ export const vNextContent = {
       title: labRole.title,
       organization: labRole.organization,
       dates: labRole.dates,
-      summary: labRole.summary,
-      responsibilities: labRole.responsibilities,
-      evidence: labRole.evidence.map((item) => item.value),
-      holdProgress: 0.18
+      summary:
+        "Manages daily operations for two distinct HHMI Investigator laboratories in Harvard Medical School Microbiology.",
+      responsibilities: [
+        "Coordinates space, access, purchasing, equipment, vendors, and facilities requests.",
+        "Supports PIs, trainees, staff, candidates, and active research space."
+      ],
+      evidence: ["Two separate lab locations in the same department.", "Managed floors remain visible as the scene settles."],
+      holdProgress: 0.24
     },
     {
       id: "program",
@@ -78,9 +122,13 @@ export const vNextContent = {
       title: programRole.title,
       organization: programRole.organization,
       dates: programRole.dates,
-      summary: programRole.summary,
-      responsibilities: programRole.responsibilities,
-      evidence: programRole.evidence.map((item) => item.value),
+      summary:
+        "Runs the operating side of an annual eight-week student research program, from setup through closeout.",
+      responsibilities: [
+        "Coordinates funding, hiring, onboarding, lab-space preparation, and biosafety readiness.",
+        "Supports instructors, students, field trips, daily logistics, and program closeout."
+      ],
+      evidence: ["Fifth annual program cycle.", "Funding, hiring, setup, biosafety, delivery, and closeout in one sequence."],
       holdProgress: 0.48
     },
     {
@@ -90,10 +138,14 @@ export const vNextContent = {
       title: networkRole.title,
       organization: networkRole.organization,
       dates: networkRole.dates,
-      summary: networkRole.summary,
-      responsibilities: networkRole.responsibilities,
-      evidence: networkRole.evidence.map((item) => item.value),
-      holdProgress: 0.76
+      summary:
+        "Chairs advisory-board work for a lab-manager network, including conference planning and recurring programming.",
+      responsibilities: [
+        "Sets board priorities and helps plan regional and national conferences.",
+        "Coordinates speakers, partner contact, member resources, and year-round programming."
+      ],
+      evidence: ["Conference locations appear chronologically.", "SF meeting photo closes the network chapter."],
+      holdProgress: 0.7
     }
   ] satisfies VNextChapter[],
   system: {
