@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   ConferenceMap,
   LabFloorLocator,
-  OperationsLedger,
   ProgramCycle,
+  ScopeIndex,
 } from "./components/OperationsVisuals";
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
@@ -41,7 +41,7 @@ const scopeAreas = [
   },
   {
     index: "06",
-    title: "Professional network",
+    title: "Board + conference planning",
     detail:
       "Board priorities, monthly speakers, member resources, institute partners, and regional and national conference planning.",
   },
@@ -50,23 +50,23 @@ const scopeAreas = [
 const trajectory = [
   {
     year: "2019",
-    title: "Laboratory management",
-    detail: "Began managing research operations in Harvard Medical School Microbiology.",
+    title: "Bernhardt laboratory",
+    detail: "Began managing day-to-day operations for the Bernhardt laboratory.",
   },
   {
     year: "2022",
-    title: "Program + board scope",
+    title: "Community Phages and LMNOP",
     detail: "Added Community Phages operations and joined the LMNOP Advisory Board.",
   },
   {
     year: "2025",
-    title: "Expanded responsibility",
-    detail: "Became LMNOP chair in July and added a second HHMI Investigator laboratory in August.",
+    title: "Abraham laboratory and board chair",
+    detail: "Became LMNOP chair in July and added the Abraham laboratory in August.",
   },
   {
     year: "Now",
-    title: "Multi-lab research operations",
-    detail: "Manages two labs while continuing annual program and professional-network responsibilities.",
+    title: "Current work",
+    detail: "Manages two labs alongside annual program delivery and lab-manager conference work.",
   },
 ] as const;
 
@@ -228,19 +228,19 @@ function App() {
               </a>
             </div>
           </div>
-          <div className="hero__ledger" aria-hidden="false">
-            <OperationsLedger />
+          <div className="hero__scope" aria-hidden="false">
+            <ScopeIndex />
           </div>
         </section>
 
         <section className="scope" id="scope" aria-labelledby="scope-title">
           <div className="section-heading" data-reveal>
-            <p className="eyebrow">Scope of responsibility</p>
-            <h2 id="scope-title">What the role includes.</h2>
+            <p className="eyebrow">Professional expertise</p>
+            <h2 id="scope-title">Research operations from planning through delivery.</h2>
             <p>
-              Across the laboratories, James is responsible for the financial, people,
-              facility, equipment, and compliance work required to support active research.
-              The program and board roles add annual delivery and cross-institutional work.
+              James manages the financial, people, facilities, equipment, and compliance
+              work required to support active research. Community Phages adds student-program
+              delivery; LMNOP adds board and conference planning.
             </p>
           </div>
           <div className="scope__list">
@@ -322,7 +322,8 @@ function App() {
               </p>
               <p className="role__summary">
                 Runs annual operations for an eight-week internship serving eight RCC
-                students in Harvard Medical School laboratory space.
+                students with a 10–15-person instructional team in Harvard Medical School
+                laboratory space.
               </p>
               <dl className="role__details">
                 <div>
@@ -347,7 +348,7 @@ function App() {
           <article className="role role--network" id="lmnop" data-reveal>
             <div className="role__copy">
               <div className="role__meta">
-                <span>03 / Professional network</span>
+                <span>03 / Lab-manager network</span>
                 <span>Board since Dec 2022 · Chair since Jul 2025</span>
               </div>
               <h3>Chair, Advisory Board</h3>
@@ -402,8 +403,8 @@ function App() {
 
         <section className="trajectory" id="trajectory" aria-labelledby="trajectory-title">
           <div className="section-heading section-heading--compact" data-reveal>
-            <p className="eyebrow">Leadership trajectory</p>
-            <h2 id="trajectory-title">Responsibility has expanded over time.</h2>
+            <p className="eyebrow">Professional progression</p>
+            <h2 id="trajectory-title">From one laboratory to the current scope.</h2>
           </div>
           <ol className="trajectory__list">
             {trajectory.map((item) => (
@@ -418,12 +419,12 @@ function App() {
 
         <section className="background" id="background" aria-labelledby="background-title">
           <div className="background__heading" data-reveal>
-            <p className="eyebrow">Background</p>
-            <h2 id="background-title">Scientific training and early people leadership.</h2>
+            <p className="eyebrow">Earlier experience</p>
+            <h2 id="background-title">Scientific training and people management.</h2>
             <p>
-              Bench experience provides scientific context. Earlier residential-life roles
-              established the people, training, facilities, and incident-response experience
-              that now supports laboratory operations.
+              Bench research provides the scientific context for the current work. Earlier
+              residential-life roles built experience in staff training, facilities,
+              incident response, and supporting large communities.
             </p>
           </div>
           <div className="background__timeline">
@@ -491,7 +492,7 @@ function App() {
               />
               <img
                 src={asset("assets/images/james-m-spencer-studio-headshot.jpg")}
-                alt="James M. Spencer in a studio portrait."
+                alt="James M. Spencer in a studio portrait wearing a navy shirt."
                 width="1996"
                 height="3000"
                 loading="lazy"

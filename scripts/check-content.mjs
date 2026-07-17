@@ -39,6 +39,8 @@ const blocked = [
   { label: "same coordination work", pattern: /same coordination work/i },
   { label: "before, during, and after launch", pattern: /before, during, and after launch/i },
   { label: "Selected examples", pattern: /Selected examples/i },
+  { label: "What the role includes", pattern: /What the role includes/i },
+  { label: "Responsibility has expanded over time", pattern: /Responsibility has expanded over time/i },
   { label: "old cropped headshot filename", pattern: /(headshot-cropped|headshot-tall|skinny-headshot|tall-skinny)/i },
   { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i },
   { label: "React Three Fiber dependency", pattern: /@react-three\/fiber/i }

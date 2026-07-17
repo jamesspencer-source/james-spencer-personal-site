@@ -1,5 +1,5 @@
 import { useMemo, type CSSProperties } from "react";
-import { geoAlbersUsa, geoPath } from "d3-geo";
+import { geoAlbersUsa, geoMercator, geoPath } from "d3-geo";
 import type { FeatureCollection, Geometry } from "geojson";
 import { feature } from "topojson-client";
 import usAtlasData from "us-atlas/states-10m.json";
@@ -52,36 +52,31 @@ const conferenceCities = [
   },
 ] as const;
 
-export function OperationsLedger() {
+export function ScopeIndex() {
   const rows = [
-    ["Laboratories", "2 HHMI Investigator labs", "Typically 15–20 people each"],
-    ["Research space", "2 buildings", "BSL-2 operations in both"],
-    ["Community Phages", "8 interns · 8 weeks", "Annual setup through closeout"],
-    ["LMNOP", "Roughly 330 lab managers", "Board since 2022 · Chair since July 2025"],
+    ["2", "HHMI Investigator laboratories", "Distinct research groups in two HMS buildings"],
+    ["15–20", "people in each laboratory", "Daily support for trainees, staff, and investigators"],
+    ["8 × 8", "weeks × interns", "Community Phages with a 10–15-person instructional team"],
+    ["~330", "laboratory managers", "LMNOP membership across the HHMI community"],
   ];
 
   return (
-    <div className="operations-ledger" aria-label="Current operating scope">
-      <div className="operations-ledger__header">
-        <span>Current operating scope</span>
-        <span>Boston · 2026</span>
+    <div className="scope-index" aria-label="Current professional scope">
+      <div className="scope-index__header">
+        <span>Current scope</span>
+        <span>HMS · HHMI</span>
       </div>
-      <div className="operations-ledger__body">
-        {rows.map(([label, value, detail], index) => (
-          <div className="operations-ledger__row" key={label}>
+      <div className="scope-index__body">
+        {rows.map(([value, label, detail], index) => (
+          <div className="scope-index__row" key={label}>
             <span>{String(index + 1).padStart(2, "0")}</span>
-            <p>{label}</p>
             <strong>{value}</strong>
-            <small>{detail}</small>
+            <div>
+              <p>{label}</p>
+              <small>{detail}</small>
+            </div>
           </div>
         ))}
-      </div>
-      <div className="operations-ledger__footer">
-        <span>Finance</span>
-        <span>People</span>
-        <span>Facilities</span>
-        <span>Safety</span>
-        <span>Programs</span>
       </div>
     </div>
   );
@@ -237,6 +232,7 @@ export function ProgramCycle() {
         <div className="program-schedule__metrics">
           <p><strong>8</strong><span>weeks</span></p>
           <p><strong>8</strong><span>interns</span></p>
+          <p><strong>10–15</strong><span>instructors</span></p>
         </div>
       </div>
       <div className="program-schedule__track" aria-hidden="true">
@@ -263,48 +259,132 @@ export function ProgramCycle() {
 }
 
 export function ConferenceMap() {
-  const projection = useMemo(
-    () => geoAlbersUsa().translate([500, 315]).scale(1180),
+  const nationalProjection = useMemo(
+    () => geoAlbersUsa().translate([340, 310]).scale(790),
     [],
   );
-  const path = useMemo(() => geoPath(projection), [projection]);
-  const projectedCities = useMemo(
-    () =>
-      conferenceCities.flatMap((city) => {
-        const point = projection(city.coordinates);
-        return point ? [{ ...city, x: point[0], y: point[1] }] : [];
-      }),
-    [projection],
+  const northeastProjection = useMemo(
+    () => geoMercator().center([-74.6, 40.3]).translate([814, 190]).scale(1850),
+    [],
   );
+  const nationalPath = useMemo(() => geoPath(nationalProjection), [nationalProjection]);
+  const northeastPath = useMemo(() => geoPath(northeastProjection), [northeastProjection]);
+  const sanFrancisco = useMemo(() => {
+    const city = conferenceCities.find(({ label }) => label === "San Francisco");
+    if (!city) return null;
+    const point = nationalProjection(city.coordinates);
+    return point ? { ...city, x: point[0], y: point[1] } : null;
+  }, [nationalProjection]);
+  const northeastCities = useMemo(
+    () =>
+      conferenceCities
+        .filter(({ label }) => label !== "San Francisco")
+        .flatMap((city) => {
+          const point = northeastProjection(city.coordinates);
+          return point ? [{ ...city, x: point[0], y: point[1] }] : [];
+        }),
+    [northeastProjection],
+  );
+
+  const labelOffset = (label: string) => {
+    if (label === "Washington, DC") return { x: 18, y: 24, anchor: "start" as const };
+    if (label === "Boston") return { x: -18, y: -18, anchor: "end" as const };
+    return { x: 18, y: 24, anchor: "start" as const };
+  };
+
   return (
     <div className="conference-map">
-      <svg viewBox="0 0 1000 630" role="img" aria-labelledby="map-title map-desc">
+      <svg viewBox="0 0 1000 600" role="img" aria-labelledby="map-title map-desc">
         <title id="map-title">LMNOP conference locations in the United States</title>
         <desc id="map-desc">
-          Accurate markers identify conferences in Washington DC, Boston, San Francisco,
-          and New York City.
+          A national map identifies San Francisco and a larger Northeast detail identifies
+          Washington DC, Boston, and New York City.
         </desc>
+        <defs>
+          <clipPath id="conference-map-northeast-clip">
+            <rect x="655" y="48" width="318" height="300" />
+          </clipPath>
+        </defs>
+
+        <text className="conference-map__kicker" x="28" y="38">United States</text>
         <g className="conference-map__states">
           {states.features.map((state, index) => (
-            <path key={state.id ?? index} d={path(state) ?? undefined} />
+            <path key={state.id ?? index} d={nationalPath(state) ?? undefined} />
           ))}
         </g>
-        <g className="conference-map__pins">
-          {projectedCities.map((city, index) => (
-            <g
-              key={city.label}
-              className="conference-map__pin"
-              transform={`translate(${city.x} ${city.y})`}
-              style={{ "--pin": index } as CSSProperties}
-              role="img"
-              aria-label={`${city.label}: ${city.detail}`}
-            >
-              <circle className="conference-map__pin-ring" r="13" />
-              <circle className="conference-map__pin-dot" r="7" />
-              <text x="14" y="-13">{city.index}</text>
-            </g>
-          ))}
+
+        {sanFrancisco ? (
+          <g
+            className="conference-map__pin conference-map__pin--national"
+            transform={`translate(${sanFrancisco.x} ${sanFrancisco.y})`}
+            style={{ "--pin": 2 } as CSSProperties}
+            role="img"
+            aria-label={`${sanFrancisco.label}: ${sanFrancisco.detail}`}
+          >
+            <circle className="conference-map__pin-ring" r="15" />
+            <circle className="conference-map__pin-dot" r="7" />
+            <path className="conference-map__leader" d="M10 -8L72 -42" />
+            <text className="conference-map__city-label" x="78" y="-44">San Francisco</text>
+            <text className="conference-map__city-detail" x="78" y="-25">Regional · 2026</text>
+          </g>
+        ) : null}
+
+        <path className="conference-map__corridor" d="M465 178L590 167L615 338L487 347Z" />
+        <path className="conference-map__inset-link" d="M590 167L655 98M615 338L655 320" />
+
+        <rect className="conference-map__inset-field" x="655" y="48" width="318" height="300" />
+        <g clipPath="url(#conference-map-northeast-clip)">
+          <g className="conference-map__states conference-map__states--inset">
+            {states.features.map((state, index) => (
+              <path key={state.id ?? index} d={northeastPath(state) ?? undefined} />
+            ))}
+          </g>
+          <g className="conference-map__pins">
+            {northeastCities.map((city) => {
+              const offset = labelOffset(city.label);
+              return (
+                <g
+                  key={city.label}
+                  className="conference-map__pin"
+                  transform={`translate(${city.x} ${city.y})`}
+                  style={{
+                    "--pin": city.index === "01" ? 0 : city.index === "02" ? 1 : 3,
+                  } as CSSProperties}
+                  role="img"
+                  aria-label={`${city.label}: ${city.detail}`}
+                >
+                  <circle className="conference-map__pin-ring" r="13" />
+                  <circle className="conference-map__pin-dot" r="7" />
+                  <path
+                    className="conference-map__leader"
+                    d={`M${offset.x > 0 ? 8 : -8} ${offset.y > 0 ? 8 : -8}L${offset.x} ${offset.y - 5}`}
+                  />
+                  <text
+                    className="conference-map__city-label"
+                    x={offset.x}
+                    y={offset.y}
+                    textAnchor={offset.anchor}
+                  >
+                    {city.label}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
         </g>
+        <rect
+          className="conference-map__inset-frame"
+          x="655"
+          y="48"
+          width="318"
+          height="300"
+        />
+        <text className="conference-map__inset-title" x="676" y="76">
+          Northeast detail
+        </text>
+        <text className="conference-map__context" x="655" y="382">
+          Northeast sites enlarged for geographic clarity.
+        </text>
       </svg>
       <ol className="conference-map__legend" aria-label="Conference locations">
         {conferenceCities.map((city) => (
