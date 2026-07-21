@@ -60,11 +60,6 @@ export function ScopeIndex() {
       "Two distinct research groups in separate HMS buildings",
     ],
     [
-      "9 / 10",
-      "lab floor locations",
-      "Abraham Lab on the 9th floor; Bernhardt Lab on the 10th",
-    ],
-    [
       "8",
       "Community Phages interns",
       "Eight-week program supported by a 10–15-person instructional team",
@@ -73,6 +68,11 @@ export function ScopeIndex() {
       "~330",
       "LMNOP members",
       "Board leadership for HHMI's lab-manager network",
+    ],
+    [
+      "4",
+      "LMNOP conference locations",
+      "Washington, DC; Boston; San Francisco; and New York City",
     ],
   ];
 

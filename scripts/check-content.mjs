@@ -45,6 +45,7 @@ const blocked = [
   { label: "From one laboratory to the current scope", pattern: /From one laboratory to the current scope/i },
   { label: "Research operations from planning through delivery", pattern: /Research operations from planning through delivery/i },
   { label: "unverified 15-20 lab headcount", pattern: /15[–-]20 people/i },
+  { label: "meaningless lab floor metric", pattern: /lab floor locations/i },
   { label: "old cropped headshot filename", pattern: /(headshot-cropped|headshot-tall|skinny-headshot|tall-skinny)/i },
   { label: "former building name label", pattern: /(formerly HIM|formerly NRB|Harvard Institutes of Medicine|New Research Building)/i },
   { label: "React Three Fiber dependency", pattern: /@react-three\/fiber/i }
