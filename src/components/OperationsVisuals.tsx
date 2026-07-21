@@ -56,23 +56,23 @@ export function ScopeIndex() {
   const rows = [
     [
       "2",
-      "HHMI Investigator laboratories",
-      "Separate scientific programs, research spaces, budgets, and infrastructure",
+      "HHMI Investigator labs",
+      "Two distinct research groups in separate HMS buildings",
     ],
     [
       "15–20",
-      "people per laboratory",
-      "Hiring, onboarding, space, equipment, and daily operations",
+      "researchers and staff in each lab",
+      "Hiring, onboarding, budgets, equipment, facilities, and daily support",
     ],
     [
-      "8 × 8",
-      "weeks × interns",
-      "Annual program with a 10–15-person instructional team",
+      "8",
+      "Community Phages interns",
+      "Eight-week program supported by a 10–15-person instructional team",
     ],
     [
       "~330",
-      "laboratory managers",
-      "Advisory-board and conference leadership across HHMI",
+      "LMNOP members",
+      "Board leadership for HHMI's lab-manager network",
     ],
   ];
 
