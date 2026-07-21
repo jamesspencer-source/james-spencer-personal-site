@@ -60,9 +60,9 @@ export function ScopeIndex() {
       "Two distinct research groups in separate HMS buildings",
     ],
     [
-      "15–20",
-      "researchers and staff in each lab",
-      "Hiring, onboarding, budgets, equipment, facilities, and daily support",
+      "9 / 10",
+      "lab floor locations",
+      "Abraham Lab on the 9th floor; Bernhardt Lab on the 10th",
     ],
     [
       "8",

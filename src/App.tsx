@@ -287,9 +287,9 @@ function App() {
               </p>
               <p className="role__summary">
                 Trusted with day-to-day and long-range operations for two distinct HHMI
-                Investigator laboratories, each with 15–20 people, separate scientific
-                programs, and BSL-2 space in different HMS buildings. James advises the
-                investigators on budgets, staffing, equipment, facilities, and operational risk.
+                Investigator laboratories with separate scientific programs and BSL-2 space
+                in different HMS buildings. James advises the investigators on budgets,
+                staffing, equipment, facilities, and operational risk.
               </p>
               <dl className="role__details">
                 <div>
