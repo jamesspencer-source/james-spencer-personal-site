@@ -13,37 +13,37 @@ const scopeAreas = [
     index: "01",
     title: "Financial stewardship",
     detail:
-      "Budget planning across sponsors, burn-rate tracking, major-purchase timing, and headcount planning with investigators.",
+      "Owns budget planning and burn-rate monitoring across sponsors; advises investigators on headcount, major purchases, and spending priorities.",
   },
   {
     index: "02",
-    title: "Hiring + onboarding",
+    title: "Hiring + talent operations",
     detail:
-      "Staff recruiting and selection, postdoctoral-candidate visits, start planning, access, training, and onboarding.",
+      "Leads recruiting and selection for staff roles and coordinates postdoctoral visits, start planning, onboarding, and development.",
   },
   {
     index: "03",
-    title: "Equipment + facilities",
+    title: "Research infrastructure",
     detail:
-      "Capital equipment, service coverage, renovations, site planning, installations, facilities requests, and shared equipment.",
+      "Directs vendor strategy, capital equipment, service coverage, renovations, site planning, installations, and shared equipment.",
   },
   {
     index: "04",
     title: "Safety + compliance",
     detail:
-      "Lab-specific BSL-2 onboarding, institutional training, COMS and IACUC documentation, approvals, and inspection readiness.",
+      "Maintains COMS and IACUC documentation and approvals, delivers lab-specific BSL-2 onboarding, and keeps laboratories inspection-ready.",
   },
   {
     index: "05",
-    title: "Program operations",
+    title: "Scientific program delivery",
     detail:
-      "Annual laboratory setup, access, safety, purchasing, partner visits, field sampling, student support, and closeout.",
+      "Builds the annual Community Phages operating plan from funding and hiring through lab setup, delivery, and closeout.",
   },
   {
     index: "06",
-    title: "Board + conference planning",
+    title: "Board + conference leadership",
     detail:
-      "Board priorities, monthly speakers, member resources, institute partners, and regional and national conference planning.",
+      "Sets LMNOP board priorities and leads speaker programs, member resources, institute partnerships, and regional and national conferences.",
   },
 ] as const;
 
@@ -51,7 +51,7 @@ const trajectory = [
   {
     year: "2019",
     title: "Bernhardt laboratory",
-    detail: "Began managing day-to-day operations for the Bernhardt laboratory.",
+    detail: "Took responsibility for day-to-day operations in the Bernhardt laboratory.",
   },
   {
     year: "2022",
@@ -61,12 +61,12 @@ const trajectory = [
   {
     year: "2025",
     title: "Abraham laboratory and board chair",
-    detail: "Became LMNOP chair in July and added the Abraham laboratory in August.",
+    detail: "Became LMNOP chair and took on operations for the Abraham laboratory.",
   },
   {
     year: "Now",
-    title: "Current work",
-    detail: "Manages two labs alongside annual program delivery and lab-manager conference work.",
+    title: "Multi-lab and institutional work",
+    detail: "Runs two laboratories while continuing annual program delivery and lab-manager conference leadership.",
   },
 ] as const;
 
@@ -78,9 +78,9 @@ const backgroundItems = [
       "Peter Chien Laboratory · Biochemistry and Molecular Biology · UMass Amherst",
     body: (
       <>
-        Studied the effects of beta-lactam antibiotic stress in lon protease-deficient{" "}
-        <i>Caulobacter crescentus</i>, building practical experience with bench work,
-        experimental records, strains, and reagents.
+        Studied beta-lactam antibiotic stress in lon protease-deficient{" "}
+        <i>Caulobacter crescentus</i>. Three years at the bench built fluency in experimental
+        work, documentation, strains, reagents, and day-to-day laboratory practice.
       </>
     ),
   },
@@ -90,8 +90,9 @@ const backgroundItems = [
     organization: "UMass Amherst Residential Life",
     body: (
       <>
-        Elected to lead a residential community of roughly 6,000 students, recruit and
-        train a 14-person executive board, secure funding, and run large-scale programming.
+        Elected annually to lead a residential community of roughly 6,000 students; recruited
+        and trained a 14-person executive board, secured funding, and delivered large campus
+        programs with cross-institutional partners.
       </>
     ),
   },
@@ -101,8 +102,8 @@ const backgroundItems = [
     organization: "UMass Amherst Residential Life",
     body: (
       <>
-        Supported roughly 50 residents day to day and about 600 while on call; selected as
-        a training mentor for new staff and coordinated urgent facilities and safety issues.
+        Supported roughly 50 residents day to day and about 600 while on call; selected to
+        train new staff and coordinate urgent facilities, safety, and incident-response work.
       </>
     ),
   },
@@ -208,11 +209,12 @@ function App() {
         <section className="hero" id="overview" aria-labelledby="hero-title">
           <div className="hero__copy">
             <p className="eyebrow">Research operations · Boston, Massachusetts</p>
-            <h1 id="hero-title">Research operations leadership for academic science.</h1>
+            <h1 id="hero-title">Research operations leadership for complex academic science.</h1>
             <p className="hero__summary">
-              James M. Spencer manages two HHMI Investigator laboratories at Harvard
-              Medical School, runs annual operations for the Community Phages internship,
-              and chairs HHMI&apos;s Lab Management Network of Professionals Advisory Board.
+              James M. Spencer leads the financial, people, facilities, equipment, and
+              compliance work for two HHMI Investigator laboratories in Harvard Medical
+              School Microbiology. He also runs Community Phages operations and chairs the
+              advisory board for HHMI&apos;s network of roughly 330 laboratory managers.
             </p>
             <div className="hero__actions">
               <a className="action action--primary" href="#work">
@@ -236,11 +238,12 @@ function App() {
         <section className="scope" id="scope" aria-labelledby="scope-title">
           <div className="section-heading" data-reveal>
             <p className="eyebrow">Professional expertise</p>
-            <h2 id="scope-title">Research operations from planning through delivery.</h2>
+            <h2 id="scope-title">Operational leadership across research, people, and infrastructure.</h2>
             <p>
-              James manages the financial, people, facilities, equipment, and compliance
-              work required to support active research. Community Phages adds student-program
-              delivery; LMNOP adds board and conference planning.
+              James works with investigators to turn scientific priorities into budgets,
+              staffing plans, reliable lab space, compliant operations, and well-timed
+              equipment and facilities work. Community Phages and LMNOP add program delivery,
+              board leadership, and conference planning.
             </p>
           </div>
           <div className="scope__list">
@@ -257,11 +260,12 @@ function App() {
         <section className="work" id="work" aria-labelledby="work-title">
           <div className="work__heading" data-reveal>
             <p className="eyebrow">Current roles</p>
-            <h2 id="work-title">Responsibilities at HMS and HHMI.</h2>
+            <h2 id="work-title">Research operations at HMS and HHMI.</h2>
             <p>
-              Laboratory management is the core position. Community Phages adds annual
-              student-program operations; LMNOP adds advisory-board and conference work for
-              laboratory managers across HHMI.
+              James&apos;s primary role is managing two active research laboratories. He also
+              runs Community Phages operations and chairs LMNOP&apos;s Advisory Board, bringing
+              laboratory-operations experience into student training and professional
+              development for lab managers.
             </p>
           </div>
 
@@ -282,26 +286,27 @@ function App() {
                 Bernhardt and Abraham Laboratories · Harvard Medical School Microbiology
               </p>
               <p className="role__summary">
-                Manages operations for two distinct HHMI Investigator laboratories, with
-                BSL-2 research space in two buildings. Each lab typically includes 15–20
-                people; the Abraham laboratory was added in August 2025.
+                Trusted with day-to-day and long-range operations for two distinct HHMI
+                Investigator laboratories, each with 15–20 people, separate scientific
+                programs, and BSL-2 space in different HMS buildings. James advises the
+                investigators on budgets, staffing, equipment, facilities, and operational risk.
               </p>
               <dl className="role__details">
                 <div>
-                  <dt>Finance</dt>
-                  <dd>Budgets across sponsors, burn-rate tracking, spending decisions, and headcount planning.</dd>
+                  <dt>Financial planning</dt>
+                  <dd>Owns budgets across sponsors, burn-rate monitoring, headcount planning, spending priorities, and timing of major purchases.</dd>
                 </div>
                 <div>
-                  <dt>People</dt>
-                  <dd>Hiring manager for staff roles; postdoctoral-candidate visits, onboarding, development, and daily support.</dd>
+                  <dt>Hiring + onboarding</dt>
+                  <dd>Hiring manager for staff roles and primary operations contact for postdoctoral candidates from interview through start date.</dd>
                 </div>
                 <div>
                   <dt>Infrastructure</dt>
-                  <dd>Vendors, contracts, capital equipment, renovations, installations, and service strategy.</dd>
+                  <dd>Leads vendor selection, contracts, capital equipment, renovations, installations, shared equipment, and service strategy.</dd>
                 </div>
                 <div>
-                  <dt>Compliance</dt>
-                  <dd>BSL-2 training, COMS and IACUC records, approvals, updates, and equipment accountability.</dd>
+                  <dt>Safety + compliance</dt>
+                  <dd>Maintains COMS and IACUC records and approvals, delivers BSL-2 onboarding, and keeps both laboratories inspection-ready.</dd>
                 </div>
               </dl>
             </div>
@@ -321,22 +326,22 @@ function App() {
                 HMS Community Phages · Roxbury Community College Internship
               </p>
               <p className="role__summary">
-                Runs annual operations for an eight-week internship serving eight RCC
-                students with a 10–15-person instructional team in Harvard Medical School
-                laboratory space.
+                Leads the operating plan for an eight-week research internship: eight RCC
+                interns, a 10–15-person instructional team, and dedicated HMS lab space
+                rebuilt for each annual cycle.
               </p>
               <dl className="role__details">
                 <div>
-                  <dt>Readiness</dt>
-                  <dd>Planning, purchasing, access, benches, supplies, PPE, equipment, and waste streams.</dd>
+                  <dt>Program launch</dt>
+                  <dd>Coordinates funding, hiring, access, onboarding, lab buildout, supplies, equipment, PPE, biosafety, and instructor preparation.</dd>
                 </div>
                 <div>
-                  <dt>Training</dt>
-                  <dd>Lab fundamentals, safety, documentation, culture, and support for new instructors.</dd>
+                  <dt>Delivery</dt>
+                  <dd>Keeps students, instructors, partner visits, field sampling, purchasing, schedules, and daily logistics aligned.</dd>
                 </div>
                 <div>
-                  <dt>Program delivery</dt>
-                  <dd>Student logistics, partner site visits, field sampling, budget management, and closeout.</dd>
+                  <dt>Closeout</dt>
+                  <dd>Offboards participants, reconciles materials and spending, and resets the laboratory for its next use.</dd>
                 </div>
               </dl>
             </div>
@@ -356,22 +361,22 @@ function App() {
                 Lab Management Network of Professionals · Howard Hughes Medical Institute
               </p>
               <p className="role__summary">
-                Chairs the executive board for HHMI&apos;s network of roughly 330 laboratory
-                managers, setting priorities and leading work on training, shared resources,
-                member support, and conferences.
+                Chairs the advisory board for HHMI&apos;s network of roughly 330 laboratory
+                managers, setting priorities for peer learning, shared resources, institute
+                collaboration, and conference programming.
               </p>
               <dl className="role__details">
                 <div>
-                  <dt>Year-round work</dt>
-                  <dd>Monthly guest speakers, an institute-wide Slack workspace, board agendas, and member resources.</dd>
+                  <dt>Board leadership</dt>
+                  <dd>Sets agendas and priorities, coordinates monthly speakers, maintains member resources, and connects institute teams with lab managers.</dd>
                 </div>
                 <div>
-                  <dt>Regional meetings</dt>
-                  <dd>One-day programs for roughly 100 attendees, including speakers, partners, and site logistics.</dd>
+                  <dt>Regional conferences</dt>
+                  <dd>Leads one-day programs for roughly 100 attendees, including speakers, partners, agendas, site logistics, and facilitation.</dd>
                 </div>
                 <div>
-                  <dt>National conference</dt>
-                  <dd>A week-long 2025 meeting for 60 selected lab managers and about 20 institute partners.</dd>
+                  <dt>National conferences</dt>
+                  <dd>Planned national meetings in 2023 and 2025, including a week-long 2025 program for 60 lab managers and about 20 institute partners.</dd>
                 </div>
               </dl>
             </div>
@@ -391,11 +396,11 @@ function App() {
               />
             </div>
             <figcaption>
-              <span>Conference delivery</span>
-              <strong>Leading an LMNOP session in San Francisco · 2026</strong>
+              <span>Conference leadership</span>
+              <strong>Leading an LMNOP regional conference in San Francisco · 2026</strong>
               <p>
-                Conference planning continues through delivery: agenda, speakers, partner
-                coordination, site logistics, and facilitation in the room.
+                James led the program in the room after coordinating the agenda, speakers,
+                partners, and site logistics.
               </p>
             </figcaption>
           </figure>
@@ -404,7 +409,7 @@ function App() {
         <section className="trajectory" id="trajectory" aria-labelledby="trajectory-title">
           <div className="section-heading section-heading--compact" data-reveal>
             <p className="eyebrow">Professional progression</p>
-            <h2 id="trajectory-title">From one laboratory to the current scope.</h2>
+            <h2 id="trajectory-title">From one lab to multi-lab and institutional work.</h2>
           </div>
           <ol className="trajectory__list">
             {trajectory.map((item) => (
@@ -420,11 +425,12 @@ function App() {
         <section className="background" id="background" aria-labelledby="background-title">
           <div className="background__heading" data-reveal>
             <p className="eyebrow">Earlier experience</p>
-            <h2 id="background-title">Scientific training and people management.</h2>
+            <h2 id="background-title">Bench science and early people leadership.</h2>
             <p>
-              Bench research provides the scientific context for the current work. Earlier
-              residential-life roles built experience in staff training, facilities,
-              incident response, and supporting large communities.
+              James began in research, not administration. Three years in the Peter Chien
+              laboratory built fluency in experimental work and day-to-day lab practice.
+              UMass residential-life roles added staff training, budget and event management,
+              facilities coordination, and incident response at community scale.
             </p>
           </div>
           <div className="background__timeline">
@@ -453,12 +459,12 @@ function App() {
             <p className="eyebrow">Contact</p>
             <h2 id="contact-title">Connect.</h2>
             <p>
-              For conversations about multi-lab operations, laboratory management,
-              scientific program delivery, or conference planning for lab managers,
-              LinkedIn is the best way to reach James.
+              James is interested in conversations about research operations leadership,
+              multi-lab management, scientific program delivery, and professional development
+              for laboratory managers. LinkedIn is the best way to connect.
             </p>
             <div className="contact__topics" aria-label="Relevant topics">
-              <span>Lab operations</span>
+              <span>Research operations</span>
               <span>Scientific programs</span>
               <span>Facilities + equipment</span>
               <span>Lab-manager conferences</span>

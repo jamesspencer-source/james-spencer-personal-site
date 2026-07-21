@@ -54,10 +54,26 @@ const conferenceCities = [
 
 export function ScopeIndex() {
   const rows = [
-    ["2", "HHMI Investigator laboratories", "Distinct research groups in two HMS buildings"],
-    ["15–20", "people in each laboratory", "Daily support for trainees, staff, and investigators"],
-    ["8 × 8", "weeks × interns", "Community Phages with a 10–15-person instructional team"],
-    ["~330", "laboratory managers", "LMNOP membership across the HHMI community"],
+    [
+      "2",
+      "HHMI Investigator laboratories",
+      "Separate scientific programs, research spaces, budgets, and infrastructure",
+    ],
+    [
+      "15–20",
+      "people per laboratory",
+      "Hiring, onboarding, space, equipment, and daily operations",
+    ],
+    [
+      "8 × 8",
+      "weeks × interns",
+      "Annual program with a 10–15-person instructional team",
+    ],
+    [
+      "~330",
+      "laboratory managers",
+      "Advisory-board and conference leadership across HHMI",
+    ],
   ];
 
   return (
@@ -95,8 +111,8 @@ export function LabFloorLocator() {
       >
         <title id="lab-locator-title">Laboratory locations in two Longwood buildings</title>
         <desc id="lab-locator-desc">
-          A precise sectional illustration highlights the Bernhardt Lab on the tenth floor
-          of 4 Blackfan Circle and the Abraham Lab on the ninth floor of Veritas Science Center.
+          A sectional illustration highlights the Bernhardt Lab on the tenth floor of 4
+          Blackfan Circle and the Abraham Lab on the ninth floor of Veritas Science Center.
         </desc>
         <defs>
           <pattern id="concrete-grid" width="34" height="39" patternUnits="userSpaceOnUse">
@@ -227,7 +243,7 @@ export function ProgramCycle() {
       <div className="program-schedule__header">
         <div>
           <span>Annual program</span>
-          <strong id="program-schedule-title">Community Phages operating schedule</strong>
+          <strong id="program-schedule-title">Community Phages annual delivery plan</strong>
         </div>
         <div className="program-schedule__metrics">
           <p><strong>8</strong><span>weeks</span></p>
@@ -252,7 +268,7 @@ export function ProgramCycle() {
         ))}
       </ol>
       <p className="program-schedule__footer">
-        The sequence repeats each year, with laboratory readiness completed before students arrive.
+        A dedicated HMS laboratory is built out, operated, and returned to regular use every year.
       </p>
     </div>
   );
