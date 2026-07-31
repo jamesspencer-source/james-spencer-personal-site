@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import {
   ConferenceMap,
   LabFloorLocator,
@@ -7,6 +7,14 @@ import {
 } from "./components/OperationsVisuals";
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
+type RoleId = "laboratories" | "community-phages" | "lmnop";
+
+const roleNavItems: ReadonlyArray<[string, string, RoleId]> = [
+  ["01", "Laboratories", "laboratories"],
+  ["02", "Community Phages", "community-phages"],
+  ["03", "LMNOP", "lmnop"],
+];
 
 const scopeAreas = [
   {
@@ -111,6 +119,8 @@ const backgroundItems = [
 
 function App() {
   const [activeSection, setActiveSection] = useState("overview");
+  const [activeRole, setActiveRole] = useState<RoleId>("laboratories");
+  const [darkHeader, setDarkHeader] = useState(false);
 
   const navItems = useMemo(
     () => [
@@ -158,6 +168,31 @@ function App() {
         }
       });
       setActiveSection((current) => (current === nextSection ? current : nextSection));
+
+      let nextRole: RoleId = "laboratories";
+      roleNavItems.forEach(([, , id]) => {
+        const role = document.getElementById(id);
+        if (!role) return;
+        const bounds = role.getBoundingClientRect();
+        const roleProgress = Math.max(
+          0,
+          Math.min(1, (viewport * 0.72 - bounds.top) / (bounds.height + viewport * 0.18)),
+        );
+        role.style.setProperty("--role-progress", String(roleProgress));
+        if (bounds.top <= viewport * 0.46) {
+          nextRole = id;
+        }
+      });
+      setActiveRole((current) => (current === nextRole ? current : nextRole));
+
+      const headerLine = window.innerWidth <= 760 ? 103 : 74;
+      const isDarkSection = ["work", "contact"].some((id) => {
+        const section = document.getElementById(id);
+        if (!section) return false;
+        const bounds = section.getBoundingClientRect();
+        return bounds.top <= headerLine && bounds.bottom > headerLine;
+      });
+      setDarkHeader((current) => (current === isDarkSection ? current : isDarkSection));
     };
     const onScroll = () => {
       if (!frame) frame = window.requestAnimationFrame(updateScrollState);
@@ -179,6 +214,18 @@ function App() {
   const normalizedSection =
     activeSection === "scope" || activeSection === "trajectory" ? "work" : activeSection;
 
+  const jumpToRole = (event: MouseEvent<HTMLAnchorElement>, id: RoleId) => {
+    event.preventDefault();
+    const role = document.getElementById(id);
+    if (!role) return;
+    const offset = window.innerWidth <= 760 ? 154 : 144;
+    window.scrollTo({
+      top: window.scrollY + role.getBoundingClientRect().top - offset,
+      behavior: "auto",
+    });
+    window.history.replaceState(null, "", `#${id}`);
+  };
+
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -186,7 +233,7 @@ function App() {
       </a>
       <div className="page-progress" aria-hidden="true" />
 
-      <header className="site-header">
+      <header className={`site-header${darkHeader ? " site-header--dark" : ""}`}>
         <a className="site-brand" href="#overview" aria-label="James M. Spencer, home">
           <strong>James M. Spencer</strong>
           <span>Research operations</span>
@@ -259,8 +306,10 @@ function App() {
 
         <section className="work" id="work" aria-labelledby="work-title">
           <div className="work__heading" data-reveal>
-            <p className="eyebrow">Current roles</p>
-            <h2 id="work-title">Research operations at HMS and HHMI.</h2>
+            <div className="work__heading-title">
+              <p className="eyebrow">Current roles</p>
+              <h2 id="work-title">Research operations at HMS and HHMI.</h2>
+            </div>
             <p>
               James&apos;s primary role is managing two active research laboratories. He also
               runs Community Phages operations and chairs LMNOP&apos;s Advisory Board, bringing
@@ -270,12 +319,24 @@ function App() {
           </div>
 
           <nav className="chapter-nav" aria-label="Current roles">
-            <a href="#laboratories"><span>01</span> Laboratories</a>
-            <a href="#community-phages"><span>02</span> Community Phages</a>
-            <a href="#lmnop"><span>03</span> LMNOP</a>
+            {roleNavItems.map(([index, label, id]) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                className={activeRole === id ? "is-active" : ""}
+                aria-current={activeRole === id ? "step" : undefined}
+                onClick={(event) => jumpToRole(event, id)}
+              >
+                <span>{index}</span>
+                {label}
+              </a>
+            ))}
           </nav>
 
-          <article className="role role--labs" id="laboratories" data-reveal>
+          <article
+            className={`role role--labs${activeRole === "laboratories" ? " is-active" : ""}`}
+            id="laboratories"
+          >
             <div className="role__copy">
               <div className="role__meta">
                 <span>01 / Laboratory operations</span>
@@ -315,7 +376,10 @@ function App() {
             </div>
           </article>
 
-          <article className="role role--program" id="community-phages" data-reveal>
+          <article
+            className={`role role--program${activeRole === "community-phages" ? " is-active" : ""}`}
+            id="community-phages"
+          >
             <div className="role__copy">
               <div className="role__meta">
                 <span>02 / Scientific program operations</span>
@@ -350,7 +414,10 @@ function App() {
             </div>
           </article>
 
-          <article className="role role--network" id="lmnop" data-reveal>
+          <article
+            className={`role role--network${activeRole === "lmnop" ? " is-active" : ""}`}
+            id="lmnop"
+          >
             <div className="role__copy">
               <div className="role__meta">
                 <span>03 / Lab-manager network</span>

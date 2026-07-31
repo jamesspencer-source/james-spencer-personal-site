@@ -219,6 +219,7 @@ export function LabFloorLocator() {
           <path d="M392 391L510 373V419L392 437Z" fill="#92a4a4" fillOpacity=".74" />
           <path d="M402 398L500 383" stroke="#d9e4df" strokeOpacity=".65" />
           <path d="M402 425L500 410" stroke="#d9e4df" strokeOpacity=".35" />
+          <path className="lab-locator__coordination-trace" d="M402 411L500 396" />
         </g>
 
       </svg>
@@ -285,6 +286,26 @@ export function ConferenceMap() {
   );
   const nationalPath = useMemo(() => geoPath(nationalProjection), [nationalProjection]);
   const northeastPath = useMemo(() => geoPath(northeastProjection), [northeastProjection]);
+  const nationalCities = useMemo(
+    () =>
+      conferenceCities.flatMap((city) => {
+        const point = nationalProjection(city.coordinates);
+        return point ? [{ ...city, x: point[0], y: point[1] }] : [];
+      }),
+    [nationalProjection],
+  );
+  const conferenceRoute = useMemo(() => {
+    if (nationalCities.length < 2) return "";
+    return nationalCities
+      .slice(1)
+      .map((city, index) => {
+        const previous = nationalCities[index];
+        const controlX = (previous.x + city.x) / 2;
+        const controlY = Math.min(previous.y, city.y) - 42 - index * 8;
+        return `M${previous.x} ${previous.y}Q${controlX} ${controlY} ${city.x} ${city.y}`;
+      })
+      .join(" ");
+  }, [nationalCities]);
   const sanFrancisco = useMemo(() => {
     const city = conferenceCities.find(({ label }) => label === "San Francisco");
     if (!city) return null;
@@ -328,6 +349,9 @@ export function ConferenceMap() {
             <path key={state.id ?? index} d={nationalPath(state) ?? undefined} />
           ))}
         </g>
+
+        <path className="conference-map__route conference-map__route--base" d={conferenceRoute} />
+        <path className="conference-map__route conference-map__route--signal" d={conferenceRoute} />
 
         {sanFrancisco ? (
           <g
