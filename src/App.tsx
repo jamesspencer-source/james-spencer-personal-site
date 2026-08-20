@@ -3,17 +3,68 @@ import {
   ConferenceMap,
   LabFloorLocator,
   ProgramCycle,
-  ScopeIndex,
 } from "./components/OperationsVisuals";
 
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 type RoleId = "laboratories" | "community-phages" | "lmnop";
+type Daypart = "day" | "dusk" | "night";
+
+const heroImages: Record<Daypart, { full: string; compact: string }> = {
+  day: {
+    full: asset("assets/images/hero/hero-day-1536.jpg"),
+    compact: asset("assets/images/hero/hero-day-960.jpg"),
+  },
+  dusk: {
+    full: asset("assets/images/hero/hero-dusk-1536.jpg"),
+    compact: asset("assets/images/hero/hero-dusk-960.jpg"),
+  },
+  night: {
+    full: asset("assets/images/hero/hero-night-1536.jpg"),
+    compact: asset("assets/images/hero/hero-night-960.jpg"),
+  },
+};
+
+const getDaypart = (): Daypart => {
+  const preset = document.documentElement.dataset.daypart;
+  if (preset === "day" || preset === "dusk" || preset === "night") return preset;
+
+  const hour = new Date().getHours();
+  if (hour >= 6 && hour < 16) return "day";
+  if (hour >= 16 && hour < 20) return "dusk";
+  return "night";
+};
 
 const roleNavItems: ReadonlyArray<[string, string, RoleId]> = [
   ["01", "Laboratories", "laboratories"],
   ["02", "Community Phages", "community-phages"],
   ["03", "LMNOP", "lmnop"],
+];
+
+const heroIndexItems: ReadonlyArray<{
+  index: string;
+  title: string;
+  detail: string;
+  id: RoleId;
+}> = [
+  {
+    index: "01",
+    title: "Laboratory operations",
+    detail: "Budgets, facilities, equipment, vendors, and compliance",
+    id: "laboratories",
+  },
+  {
+    index: "02",
+    title: "Community Phages",
+    detail: "Hiring, setup, biosafety, logistics, and program delivery",
+    id: "community-phages",
+  },
+  {
+    index: "03",
+    title: "LMNOP",
+    detail: "Board priorities, speakers, partners, and conference planning",
+    id: "lmnop",
+  },
 ];
 
 const scopeAreas = [
@@ -121,6 +172,7 @@ function App() {
   const [activeSection, setActiveSection] = useState("overview");
   const [activeRole, setActiveRole] = useState<RoleId>("laboratories");
   const [darkHeader, setDarkHeader] = useState(false);
+  const [daypart] = useState<Daypart>(() => getDaypart());
 
   const navItems = useMemo(
     () => [
@@ -134,6 +186,7 @@ function App() {
 
   useEffect(() => {
     const root = document.documentElement;
+    root.dataset.daypart = daypart;
     const revealNodes = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
     let revealObserver: IntersectionObserver | null = null;
 
@@ -159,6 +212,10 @@ function App() {
       const scrollable = document.documentElement.scrollHeight - viewport;
       const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
       root.style.setProperty("--page-progress", String(Math.max(0, Math.min(1, progress))));
+      root.style.setProperty(
+        "--hero-progress",
+        String(Math.max(0, Math.min(1, window.scrollY / Math.max(viewport, 1)))),
+      );
 
       let nextSection = "overview";
       ["overview", "scope", "work", "trajectory", "background", "contact"].forEach((id) => {
@@ -209,10 +266,12 @@ function App() {
       window.removeEventListener("resize", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [daypart]);
 
   const normalizedSection =
     activeSection === "scope" || activeSection === "trajectory" ? "work" : activeSection;
+  const isHeroSection = normalizedSection === "overview";
+  const activeHeroImage = heroImages[daypart];
 
   const jumpToRole = (event: MouseEvent<HTMLAnchorElement>, id: RoleId) => {
     event.preventDefault();
@@ -233,7 +292,11 @@ function App() {
       </a>
       <div className="page-progress" aria-hidden="true" />
 
-      <header className={`site-header${darkHeader ? " site-header--dark" : ""}`}>
+      <header
+        className={`site-header${darkHeader || isHeroSection ? " site-header--dark" : ""}${
+          isHeroSection ? " site-header--hero" : ""
+        }`}
+      >
         <a className="site-brand" href="#overview" aria-label="James M. Spencer, home">
           <strong>James M. Spencer</strong>
           <span>Research operations</span>
@@ -253,22 +316,38 @@ function App() {
       </header>
 
       <main id="main-content" tabIndex={-1}>
-        <section className="hero" id="overview" aria-labelledby="hero-title">
+        <section
+          className={`hero hero--${daypart}`}
+          id="overview"
+          aria-labelledby="hero-title"
+        >
+          <picture className="hero__media" aria-hidden="true">
+            <source media="(max-width: 760px)" srcSet={activeHeroImage.compact} />
+            <img
+              src={activeHeroImage.full}
+              srcSet={`${activeHeroImage.compact} 960w, ${activeHeroImage.full} 1536w`}
+              sizes="100vw"
+              alt=""
+              width="1536"
+              height="1024"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </picture>
           <div className="hero__copy">
             <p className="eyebrow">Research operations · Boston, Massachusetts</p>
-            <h1 id="hero-title">Research operations leadership for complex academic science.</h1>
+            <h1 id="hero-title">Research operations leadership</h1>
             <p className="hero__summary">
-              James M. Spencer leads the financial, people, facilities, equipment, and
-              compliance work for two HHMI Investigator laboratories in Harvard Medical
-              School Microbiology. He also runs Community Phages operations and chairs the
-              advisory board for HHMI&apos;s network of roughly 330 laboratory managers.
+              James M. Spencer leads laboratory operations across two HHMI Investigator labs
+              at Harvard Medical School. His work covers budgets, hiring, facilities,
+              equipment, vendors, safety, program delivery, and conference planning.
             </p>
             <div className="hero__actions">
               <a className="action action--primary" href="#work">
-                Review current work <span aria-hidden="true">↓</span>
+                View current work <span aria-hidden="true">↓</span>
               </a>
               <a
-                className="action"
+                className="action action--text"
                 href={asset("assets/resume/james-m-spencer-resume.pdf")}
                 target="_blank"
                 rel="noreferrer"
@@ -277,9 +356,19 @@ function App() {
               </a>
             </div>
           </div>
-          <div className="hero__scope" aria-hidden="false">
-            <ScopeIndex />
-          </div>
+          <nav className="hero__index" aria-label="Explore current work">
+            {heroIndexItems.map((item) => (
+              <a
+                key={item.id}
+                href={`#${item.id}`}
+                onClick={(event) => jumpToRole(event, item.id)}
+              >
+                <span>{item.index}</span>
+                <strong>{item.title}</strong>
+                <small>{item.detail}</small>
+              </a>
+            ))}
+          </nav>
         </section>
 
         <section className="scope" id="scope" aria-labelledby="scope-title">

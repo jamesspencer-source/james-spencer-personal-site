@@ -42,6 +42,13 @@ Current public assets:
 - Resume PDF: `public/assets/resume/james-m-spencer-resume.pdf`
 - Favicon: `public/assets/favicon.svg`
 - Contact headshot: `public/assets/images/james-m-spencer-studio-headshot.jpg`
+- Adaptive campus hero: `public/assets/images/hero/`
+
+The hero selects one HMS/Longwood campus view once when the page loads, using the
+visitor's local time: day from 6:00 a.m. to 3:59 p.m., dusk from 4:00 p.m. to
+7:59 p.m., and night from 8:00 p.m. to 5:59 a.m. The selection stays fixed for
+that visit. For review, append `?daypart=day`, `?daypart=dusk`, or
+`?daypart=night` to the URL.
 
 Resume source note: the site PDF should match the current public 2026 resume source, currently `JSpencer_Resume_Public_2026.pdf`.
 

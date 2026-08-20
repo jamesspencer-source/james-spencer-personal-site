@@ -28,6 +28,29 @@
     >
     <meta name="twitter:image" content="%BASE_URL%og.png">
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%assets/favicon.svg">
+    <script>
+      (() => {
+        const requested = new URLSearchParams(window.location.search).get("daypart");
+        const hour = new Date().getHours();
+        const daypart = ["day", "dusk", "night"].includes(requested)
+          ? requested
+          : hour >= 6 && hour < 16
+            ? "day"
+            : hour >= 16 && hour < 20
+              ? "dusk"
+              : "night";
+        const base = "%BASE_URL%";
+        const preload = document.createElement("link");
+
+        document.documentElement.dataset.daypart = daypart;
+        preload.rel = "preload";
+        preload.as = "image";
+        preload.href = `${base}assets/images/hero/hero-${daypart}-1536.jpg`;
+        preload.imageSrcset = `${base}assets/images/hero/hero-${daypart}-960.jpg 960w, ${base}assets/images/hero/hero-${daypart}-1536.jpg 1536w`;
+        preload.imageSizes = "100vw";
+        document.head.appendChild(preload);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
