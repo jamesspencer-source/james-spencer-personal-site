@@ -10,16 +10,19 @@ const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 type RoleId = "laboratories" | "community-phages" | "lmnop";
 type Daypart = "day" | "dusk" | "night";
 
-const heroImages: Record<Daypart, { full: string; compact: string }> = {
+const heroImages: Record<Daypart, { large: string; full: string; compact: string }> = {
   day: {
+    large: asset("assets/images/hero/hero-day-2560.jpg"),
     full: asset("assets/images/hero/hero-day-1536.jpg"),
     compact: asset("assets/images/hero/hero-day-960.jpg"),
   },
   dusk: {
+    large: asset("assets/images/hero/hero-dusk-2560.jpg"),
     full: asset("assets/images/hero/hero-dusk-1536.jpg"),
     compact: asset("assets/images/hero/hero-dusk-960.jpg"),
   },
   night: {
+    large: asset("assets/images/hero/hero-night-2560.jpg"),
     full: asset("assets/images/hero/hero-night-1536.jpg"),
     compact: asset("assets/images/hero/hero-night-960.jpg"),
   },
@@ -324,12 +327,12 @@ function App() {
           <picture className="hero__media" aria-hidden="true">
             <source media="(max-width: 760px)" srcSet={activeHeroImage.compact} />
             <img
-              src={activeHeroImage.full}
-              srcSet={`${activeHeroImage.compact} 960w, ${activeHeroImage.full} 1536w`}
+              src={activeHeroImage.large}
+              srcSet={`${activeHeroImage.compact} 960w, ${activeHeroImage.full} 1536w, ${activeHeroImage.large} 2560w`}
               sizes="100vw"
               alt=""
-              width="1536"
-              height="1024"
+              width="2560"
+              height="1707"
               fetchPriority="high"
               decoding="async"
             />

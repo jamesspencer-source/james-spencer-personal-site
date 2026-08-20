@@ -50,6 +50,11 @@ visitor's local time: day from 6:00 a.m. to 3:59 p.m., dusk from 4:00 p.m. to
 that visit. For review, append `?daypart=day`, `?daypart=dusk`, or
 `?daypart=night` to the URL.
 
+Hero asset policy: all three dayparts must derive from one shared architectural
+composition, use public campus references only as factual guidance, and ship at
+960, 1536, and 2560 pixels wide. Do not substitute unrelated skyline or campus
+imagery for one daypart.
+
 Resume source note: the site PDF should match the current public 2026 resume source, currently `JSpencer_Resume_Public_2026.pdf`.
 
 Portrait asset policy: the contact section should use the approved studio headshot and its responsive derivatives only. Do not replace it with a narrow portrait export.
