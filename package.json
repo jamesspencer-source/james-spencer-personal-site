@@ -7,7 +7,8 @@
     "dev": "vite",
     "typecheck": "tsc --noEmit",
     "check:content": "node scripts/check-content.mjs",
-    "check": "npm run check:content && npm run typecheck && npm run build",
+    "check:site": "node scripts/check-site.mjs",
+    "check": "npm run check:content && npm run check:site && npm run typecheck && npm run build",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },

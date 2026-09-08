@@ -1,682 +1,178 @@
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
-import {
-  ConferenceMap,
-  LabFloorLocator,
-  ProgramCycle,
-} from "./components/OperationsVisuals";
+import { Component, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
+import { expertise, programPhases, roleLinks } from "./professionalContent";
 
+const ConferenceAtlas = lazy(() => import("./components/ConferenceAtlas"));
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
-
-type RoleId = "laboratories" | "community-phages" | "lmnop";
 type Daypart = "day" | "dusk" | "night";
+function initialDaypart(): Daypart {
+  const value = document.documentElement.dataset.daypart;
+  return value === "day" || value === "dusk" || value === "night" ? value : "dusk";
+}
+function Arrow() { return <span aria-hidden="true">↗</span>; }
 
-const heroImages: Record<Daypart, { large: string; full: string; compact: string }> = {
-  day: {
-    large: asset("assets/images/hero/hero-day-2560.jpg"),
-    full: asset("assets/images/hero/hero-day-1536.jpg"),
-    compact: asset("assets/images/hero/hero-day-960.jpg"),
-  },
-  dusk: {
-    large: asset("assets/images/hero/hero-dusk-2560.jpg"),
-    full: asset("assets/images/hero/hero-dusk-1536.jpg"),
-    compact: asset("assets/images/hero/hero-dusk-960.jpg"),
-  },
-  night: {
-    large: asset("assets/images/hero/hero-night-2560.jpg"),
-    full: asset("assets/images/hero/hero-night-1536.jpg"),
-    compact: asset("assets/images/hero/hero-night-960.jpg"),
-  },
-};
-
-const getDaypart = (): Daypart => {
-  const preset = document.documentElement.dataset.daypart;
-  if (preset === "day" || preset === "dusk" || preset === "night") return preset;
-
-  const hour = new Date().getHours();
-  if (hour >= 6 && hour < 16) return "day";
-  if (hour >= 16 && hour < 20) return "dusk";
-  return "night";
-};
-
-const roleNavItems: ReadonlyArray<[string, string, RoleId]> = [
-  ["01", "Laboratories", "laboratories"],
-  ["02", "Community Phages", "community-phages"],
-  ["03", "LMNOP", "lmnop"],
-];
-
-const heroIndexItems: ReadonlyArray<{
-  index: string;
-  title: string;
-  detail: string;
-  id: RoleId;
-}> = [
-  {
-    index: "01",
-    title: "Laboratory operations",
-    detail: "Budgets, facilities, equipment, vendors, and compliance",
-    id: "laboratories",
-  },
-  {
-    index: "02",
-    title: "Community Phages",
-    detail: "Hiring, setup, biosafety, logistics, and program delivery",
-    id: "community-phages",
-  },
-  {
-    index: "03",
-    title: "LMNOP",
-    detail: "Board priorities, speakers, partners, and conference planning",
-    id: "lmnop",
-  },
-];
-
-const scopeAreas = [
-  {
-    index: "01",
-    title: "Financial stewardship",
-    detail:
-      "Owns budget planning and burn-rate monitoring across sponsors; advises investigators on headcount, major purchases, and spending priorities.",
-  },
-  {
-    index: "02",
-    title: "Hiring + talent operations",
-    detail:
-      "Leads recruiting and selection for staff roles and coordinates postdoctoral visits, start planning, onboarding, and development.",
-  },
-  {
-    index: "03",
-    title: "Research infrastructure",
-    detail:
-      "Directs vendor strategy, capital equipment, service coverage, renovations, site planning, installations, and shared equipment.",
-  },
-  {
-    index: "04",
-    title: "Safety + compliance",
-    detail:
-      "Maintains COMS and IACUC documentation and approvals, delivers lab-specific BSL-2 onboarding, and keeps laboratories inspection-ready.",
-  },
-  {
-    index: "05",
-    title: "Scientific program delivery",
-    detail:
-      "Builds the annual Community Phages operating plan from funding and hiring through lab setup, delivery, and closeout.",
-  },
-  {
-    index: "06",
-    title: "Board + conference leadership",
-    detail:
-      "Sets LMNOP board priorities and leads speaker programs, member resources, institute partnerships, and regional and national conferences.",
-  },
-] as const;
-
-const trajectory = [
-  {
-    year: "2019",
-    title: "Bernhardt laboratory",
-    detail: "Took responsibility for day-to-day operations in the Bernhardt laboratory.",
-  },
-  {
-    year: "2022",
-    title: "Community Phages and LMNOP",
-    detail: "Added Community Phages operations and joined the LMNOP Advisory Board.",
-  },
-  {
-    year: "2025",
-    title: "Abraham laboratory and board chair",
-    detail: "Became LMNOP chair and took on operations for the Abraham laboratory.",
-  },
-  {
-    year: "Now",
-    title: "Multi-lab and institutional work",
-    detail: "Runs two laboratories while continuing annual program delivery and lab-manager conference leadership.",
-  },
-] as const;
-
-const backgroundItems = [
-  {
-    dates: "2015–2018",
-    title: "Research Assistant",
-    organization:
-      "Peter Chien Laboratory · Biochemistry and Molecular Biology · UMass Amherst",
-    body: (
-      <>
-        Studied beta-lactam antibiotic stress in lon protease-deficient{" "}
-        <i>Caulobacter crescentus</i>. Three years at the bench built fluency in experimental
-        work, documentation, strains, reagents, and day-to-day laboratory practice.
-      </>
-    ),
-  },
-  {
-    dates: "2016–2018",
-    title: "Area Governor",
-    organization: "UMass Amherst Residential Life",
-    body: (
-      <>
-        Elected annually to lead a residential community of roughly 6,000 students; recruited
-        and trained a 14-person executive board, secured funding, and delivered large campus
-        programs with cross-institutional partners.
-      </>
-    ),
-  },
-  {
-    dates: "2016–2018",
-    title: "Resident Advisor + Peer Trainer",
-    organization: "UMass Amherst Residential Life",
-    body: (
-      <>
-        Supported roughly 50 residents day to day and about 600 while on call; selected to
-        train new staff and coordinate urgent facilities, safety, and incident-response work.
-      </>
-    ),
-  },
-] as const;
-
-function App() {
-  const [activeSection, setActiveSection] = useState("overview");
-  const [activeRole, setActiveRole] = useState<RoleId>("laboratories");
-  const [darkHeader, setDarkHeader] = useState(false);
-  const [daypart] = useState<Daypart>(() => getDaypart());
-
-  const navItems = useMemo(
-    () => [
-      ["Overview", "overview"],
-      ["Current work", "work"],
-      ["Background", "background"],
-      ["Contact", "contact"],
-    ],
-    [],
-  );
-
+function ProgramPlan() {
+  const [phase, setPhase] = useState(0);
+  const phaseList = useRef<HTMLOListElement>(null);
   useEffect(() => {
-    const root = document.documentElement;
-    root.dataset.daypart = daypart;
-    const revealNodes = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
-    let revealObserver: IntersectionObserver | null = null;
-
-    if ("IntersectionObserver" in window) {
-      revealObserver = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
-            entry.target.classList.add("is-visible");
-            revealObserver?.unobserve(entry.target);
-          });
-        },
-        { threshold: 0.13, rootMargin: "0px 0px -8%" },
-      );
-      root.classList.add("is-enhanced");
-      revealNodes.forEach((node) => revealObserver?.observe(node));
-    }
-
-    let frame = 0;
-    const updateScrollState = () => {
-      frame = 0;
-      const viewport = window.innerHeight;
-      const scrollable = document.documentElement.scrollHeight - viewport;
-      const progress = scrollable > 0 ? window.scrollY / scrollable : 0;
-      root.style.setProperty("--page-progress", String(Math.max(0, Math.min(1, progress))));
-      root.style.setProperty(
-        "--hero-progress",
-        String(Math.max(0, Math.min(1, window.scrollY / Math.max(viewport, 1)))),
-      );
-
-      let nextSection = "overview";
-      ["overview", "scope", "work", "trajectory", "background", "contact"].forEach((id) => {
-        const section = document.getElementById(id);
-        if (section && section.getBoundingClientRect().top <= viewport * 0.34) {
-          nextSection = id;
-        }
-      });
-      setActiveSection((current) => (current === nextSection ? current : nextSection));
-
-      let nextRole: RoleId = "laboratories";
-      roleNavItems.forEach(([, , id]) => {
-        const role = document.getElementById(id);
-        if (!role) return;
-        const bounds = role.getBoundingClientRect();
-        const roleProgress = Math.max(
-          0,
-          Math.min(1, (viewport * 0.72 - bounds.top) / (bounds.height + viewport * 0.18)),
-        );
-        role.style.setProperty("--role-progress", String(roleProgress));
-        if (bounds.top <= viewport * 0.46) {
-          nextRole = id;
-        }
-      });
-      setActiveRole((current) => (current === nextRole ? current : nextRole));
-
-      const headerLine = window.innerWidth <= 760 ? 103 : 74;
-      const isDarkSection = ["work", "contact"].some((id) => {
-        const section = document.getElementById(id);
-        if (!section) return false;
-        const bounds = section.getBoundingClientRect();
-        return bounds.top <= headerLine && bounds.bottom > headerLine;
-      });
-      setDarkHeader((current) => (current === isDarkSection ? current : isDarkSection));
+    const query = matchMedia("(min-width: 801px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)");
+    let observer: IntersectionObserver | undefined;
+    const connect = () => {
+      observer?.disconnect();
+      if (!query.matches) return;
+      observer = new IntersectionObserver(entries => {
+        for (const entry of entries) if (entry.isIntersecting) setPhase(Number((entry.target as HTMLElement).dataset.phase));
+      }, { rootMargin: "-40% 0px -40% 0px", threshold: 0 });
+      phaseList.current?.querySelectorAll("li").forEach(row => observer?.observe(row));
     };
-    const onScroll = () => {
-      if (!frame) frame = window.requestAnimationFrame(updateScrollState);
-    };
-
-    updateScrollState();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
-    return () => {
-      root.classList.remove("is-enhanced");
-      revealObserver?.disconnect();
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      if (frame) window.cancelAnimationFrame(frame);
-    };
-  }, [daypart]);
-
-  const normalizedSection =
-    activeSection === "scope" || activeSection === "trajectory" ? "work" : activeSection;
-  const isHeroSection = normalizedSection === "overview";
-  const activeHeroImage = heroImages[daypart];
-
-  const jumpToRole = (event: MouseEvent<HTMLAnchorElement>, id: RoleId) => {
-    event.preventDefault();
-    const role = document.getElementById(id);
-    if (!role) return;
-    const offset = window.innerWidth <= 760 ? 154 : 144;
-    window.scrollTo({
-      top: window.scrollY + role.getBoundingClientRect().top - offset,
-      behavior: "auto",
-    });
-    window.history.replaceState(null, "", `#${id}`);
-  };
-
-  return (
-    <>
-      <a className="skip-link" href="#main-content">
-        Skip to content
-      </a>
-      <div className="page-progress" aria-hidden="true" />
-
-      <header
-        className={`site-header${darkHeader || isHeroSection ? " site-header--dark" : ""}${
-          isHeroSection ? " site-header--hero" : ""
-        }`}
-      >
-        <a className="site-brand" href="#overview" aria-label="James M. Spencer, home">
-          <strong>James M. Spencer</strong>
-          <span>Research operations</span>
-        </a>
-        <nav aria-label="Primary navigation">
-          {navItems.map(([label, id]) => (
-            <a
-              key={id}
-              href={`#${id}`}
-              className={normalizedSection === id ? "is-active" : ""}
-              aria-current={normalizedSection === id ? "location" : undefined}
-            >
-              {label}
-            </a>
-          ))}
-        </nav>
-      </header>
-
-      <main id="main-content" tabIndex={-1}>
-        <section
-          className={`hero hero--${daypart}`}
-          id="overview"
-          aria-labelledby="hero-title"
-        >
-          <picture className="hero__media" aria-hidden="true">
-            <source media="(max-width: 760px)" srcSet={activeHeroImage.compact} />
-            <img
-              src={activeHeroImage.large}
-              srcSet={`${activeHeroImage.compact} 960w, ${activeHeroImage.full} 1536w, ${activeHeroImage.large} 2560w`}
-              sizes="100vw"
-              alt=""
-              width="2560"
-              height="1707"
-              fetchPriority="high"
-              decoding="async"
-            />
-          </picture>
-          <div className="hero__copy">
-            <p className="eyebrow">Research operations · Boston, Massachusetts</p>
-            <h1 id="hero-title">Research operations leadership</h1>
-            <p className="hero__summary">
-              James M. Spencer leads laboratory operations across two HHMI Investigator labs
-              at Harvard Medical School. His work covers budgets, hiring, facilities,
-              equipment, vendors, safety, program delivery, and conference planning.
-            </p>
-            <div className="hero__actions">
-              <a className="action action--primary" href="#work">
-                View current work <span aria-hidden="true">↓</span>
-              </a>
-              <a
-                className="action action--text"
-                href={asset("assets/resume/james-m-spencer-resume.pdf")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Resume <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-          </div>
-          <nav className="hero__index" aria-label="Explore current work">
-            {heroIndexItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                onClick={(event) => jumpToRole(event, item.id)}
-              >
-                <span>{item.index}</span>
-                <strong>{item.title}</strong>
-                <small>{item.detail}</small>
-              </a>
-            ))}
-          </nav>
-        </section>
-
-        <section className="scope" id="scope" aria-labelledby="scope-title">
-          <div className="section-heading" data-reveal>
-            <p className="eyebrow">Professional expertise</p>
-            <h2 id="scope-title">Operational leadership across research, people, and infrastructure.</h2>
-            <p>
-              James works with investigators to turn scientific priorities into budgets,
-              staffing plans, reliable lab space, compliant operations, and well-timed
-              equipment and facilities work. Community Phages and LMNOP add program delivery,
-              board leadership, and conference planning.
-            </p>
-          </div>
-          <div className="scope__list">
-            {scopeAreas.map((item) => (
-              <article key={item.title} data-reveal>
-                <span>{item.index}</span>
-                <h3>{item.title}</h3>
-                <p>{item.detail}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="work" id="work" aria-labelledby="work-title">
-          <div className="work__heading" data-reveal>
-            <div className="work__heading-title">
-              <p className="eyebrow">Current roles</p>
-              <h2 id="work-title">Research operations at HMS and HHMI.</h2>
-            </div>
-            <p>
-              James&apos;s primary role is managing two active research laboratories. He also
-              runs Community Phages operations and chairs LMNOP&apos;s Advisory Board, bringing
-              laboratory-operations experience into student training and professional
-              development for lab managers.
-            </p>
-          </div>
-
-          <nav className="chapter-nav" aria-label="Current roles">
-            {roleNavItems.map(([index, label, id]) => (
-              <a
-                key={id}
-                href={`#${id}`}
-                className={activeRole === id ? "is-active" : ""}
-                aria-current={activeRole === id ? "step" : undefined}
-                onClick={(event) => jumpToRole(event, id)}
-              >
-                <span>{index}</span>
-                {label}
-              </a>
-            ))}
-          </nav>
-
-          <article
-            className={`role role--labs${activeRole === "laboratories" ? " is-active" : ""}`}
-            id="laboratories"
-          >
-            <div className="role__copy">
-              <div className="role__meta">
-                <span>01 / Laboratory operations</span>
-                <span>2019–Present</span>
-              </div>
-              <h3>Laboratory Manager</h3>
-              <p className="role__organization">
-                Bernhardt and Abraham Laboratories · Harvard Medical School Microbiology
-              </p>
-              <p className="role__summary">
-                Trusted with day-to-day and long-range operations for two distinct HHMI
-                Investigator laboratories with separate scientific programs and BSL-2 space
-                in different HMS buildings. James advises the investigators on budgets,
-                staffing, equipment, facilities, and operational risk.
-              </p>
-              <dl className="role__details">
-                <div>
-                  <dt>Financial planning</dt>
-                  <dd>Owns budgets across sponsors, burn-rate monitoring, headcount planning, spending priorities, and timing of major purchases.</dd>
-                </div>
-                <div>
-                  <dt>Hiring + onboarding</dt>
-                  <dd>Hiring manager for staff roles and primary operations contact for postdoctoral candidates from interview through start date.</dd>
-                </div>
-                <div>
-                  <dt>Infrastructure</dt>
-                  <dd>Leads vendor selection, contracts, capital equipment, renovations, installations, shared equipment, and service strategy.</dd>
-                </div>
-                <div>
-                  <dt>Safety + compliance</dt>
-                  <dd>Maintains COMS and IACUC records and approvals, delivers BSL-2 onboarding, and keeps both laboratories inspection-ready.</dd>
-                </div>
-              </dl>
-            </div>
-            <div className="role__visual role__visual--labs">
-              <LabFloorLocator />
-            </div>
-          </article>
-
-          <article
-            className={`role role--program${activeRole === "community-phages" ? " is-active" : ""}`}
-            id="community-phages"
-          >
-            <div className="role__copy">
-              <div className="role__meta">
-                <span>02 / Scientific program operations</span>
-                <span>2022–Present</span>
-              </div>
-              <h3>Operations Lead</h3>
-              <p className="role__organization">
-                HMS Community Phages · Roxbury Community College Internship
-              </p>
-              <p className="role__summary">
-                Leads the operating plan for an eight-week research internship: eight RCC
-                interns, a 10–15-person instructional team, and dedicated HMS lab space
-                rebuilt for each annual cycle.
-              </p>
-              <dl className="role__details">
-                <div>
-                  <dt>Program launch</dt>
-                  <dd>Coordinates funding, hiring, access, onboarding, lab buildout, supplies, equipment, PPE, biosafety, and instructor preparation.</dd>
-                </div>
-                <div>
-                  <dt>Delivery</dt>
-                  <dd>Keeps students, instructors, partner visits, field sampling, purchasing, schedules, and daily logistics aligned.</dd>
-                </div>
-                <div>
-                  <dt>Closeout</dt>
-                  <dd>Offboards participants, reconciles materials and spending, and resets the laboratory for its next use.</dd>
-                </div>
-              </dl>
-            </div>
-            <div className="role__visual role__visual--program">
-              <ProgramCycle />
-            </div>
-          </article>
-
-          <article
-            className={`role role--network${activeRole === "lmnop" ? " is-active" : ""}`}
-            id="lmnop"
-          >
-            <div className="role__copy">
-              <div className="role__meta">
-                <span>03 / Lab-manager network</span>
-                <span>Board since Dec 2022 · Chair since Jul 2025</span>
-              </div>
-              <h3>Chair, Advisory Board</h3>
-              <p className="role__organization">
-                Lab Management Network of Professionals · Howard Hughes Medical Institute
-              </p>
-              <p className="role__summary">
-                Chairs the advisory board for HHMI&apos;s network of roughly 330 laboratory
-                managers, setting priorities for peer learning, shared resources, institute
-                collaboration, and conference programming.
-              </p>
-              <dl className="role__details">
-                <div>
-                  <dt>Board leadership</dt>
-                  <dd>Sets agendas and priorities, coordinates monthly speakers, maintains member resources, and connects institute teams with lab managers.</dd>
-                </div>
-                <div>
-                  <dt>Regional conferences</dt>
-                  <dd>Leads one-day programs for roughly 100 attendees, including speakers, partners, agendas, site logistics, and facilitation.</dd>
-                </div>
-                <div>
-                  <dt>National conferences</dt>
-                  <dd>Planned national meetings in 2023 and 2025, including a week-long 2025 program for 60 lab managers and about 20 institute partners.</dd>
-                </div>
-              </dl>
-            </div>
-            <div className="role__visual role__visual--network">
-              <ConferenceMap />
-            </div>
-          </article>
-
-          <figure className="conference-proof" data-reveal>
-            <div className="conference-proof__image">
-              <img
-                src={asset("assets/images/lmnop-conference-photo-2026-sf.jpg")}
-                alt="James M. Spencer speaking during an LMNOP conference session in San Francisco."
-                width="1800"
-                height="1350"
-                loading="lazy"
-              />
-            </div>
-            <figcaption>
-              <span>Conference leadership</span>
-              <strong>Leading an LMNOP regional conference in San Francisco · 2026</strong>
-              <p>
-                James led the program in the room after coordinating the agenda, speakers,
-                partners, and site logistics.
-              </p>
-            </figcaption>
-          </figure>
-        </section>
-
-        <section className="trajectory" id="trajectory" aria-labelledby="trajectory-title">
-          <div className="section-heading section-heading--compact" data-reveal>
-            <p className="eyebrow">Professional progression</p>
-            <h2 id="trajectory-title">From one lab to multi-lab and institutional work.</h2>
-          </div>
-          <ol className="trajectory__list">
-            {trajectory.map((item) => (
-              <li key={item.year} data-reveal>
-                <span>{item.year}</span>
-                <strong>{item.title}</strong>
-                <p>{item.detail}</p>
-              </li>
-            ))}
-          </ol>
-        </section>
-
-        <section className="background" id="background" aria-labelledby="background-title">
-          <div className="background__heading" data-reveal>
-            <p className="eyebrow">Earlier experience</p>
-            <h2 id="background-title">Bench science and early people leadership.</h2>
-            <p>
-              James began in research, not administration. Three years in the Peter Chien
-              laboratory built fluency in experimental work and day-to-day lab practice.
-              UMass residential-life roles added staff training, budget and event management,
-              facilities coordination, and incident response at community scale.
-            </p>
-          </div>
-          <div className="background__timeline">
-            {backgroundItems.map((item) => (
-              <article key={item.title} data-reveal>
-                <span>{item.dates}</span>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p className="background__organization">{item.organization}</p>
-                  <p>{item.body}</p>
-                </div>
-              </article>
-            ))}
-            <article className="background__education" data-reveal>
-              <span>2018</span>
-              <div>
-                <h3>B.S., Science &amp; Biochemistry</h3>
-                <p className="background__organization">University of Massachusetts Amherst</p>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section className="contact" id="contact" aria-labelledby="contact-title">
-          <div className="contact__copy" data-reveal>
-            <p className="eyebrow">Contact</p>
-            <h2 id="contact-title">Connect.</h2>
-            <p>
-              James is interested in conversations about research operations leadership,
-              multi-lab management, scientific program delivery, and professional development
-              for laboratory managers. LinkedIn is the best way to connect.
-            </p>
-            <div className="contact__topics" aria-label="Relevant topics">
-              <span>Research operations</span>
-              <span>Scientific programs</span>
-              <span>Facilities + equipment</span>
-              <span>Lab-manager conferences</span>
-            </div>
-            <div className="contact__actions">
-              <a
-                className="contact__action contact__action--primary"
-                href="https://www.linkedin.com/in/jamesmspencer/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>Connect on LinkedIn</span>
-                <i aria-hidden="true">↗</i>
-              </a>
-              <a
-                className="contact__action"
-                href={asset("assets/resume/james-m-spencer-resume.pdf")}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span>View resume</span>
-                <i aria-hidden="true">↗</i>
-              </a>
-            </div>
-          </div>
-          <figure className="contact__portrait" data-reveal>
-            <picture>
-              <source
-                srcSet={`${asset("assets/images/james-m-spencer-studio-headshot-720.jpg")} 720w, ${asset("assets/images/james-m-spencer-studio-headshot-1100.jpg")} 1100w, ${asset("assets/images/james-m-spencer-studio-headshot-1500.jpg")} 1500w`}
-                sizes="(max-width: 860px) 100vw, 40vw"
-              />
-              <img
-                src={asset("assets/images/james-m-spencer-studio-headshot.jpg")}
-                alt="James M. Spencer in a studio portrait wearing a navy shirt."
-                width="1996"
-                height="3000"
-                loading="lazy"
-              />
-            </picture>
-          </figure>
-        </section>
-      </main>
-
-      <footer>
-        <strong>James M. Spencer</strong>
-        <p>
-          Personal site. Not an official website of Harvard Medical School, HHMI, or any
-          affiliated laboratory or program.
-        </p>
-        <a href="#overview">Back to top ↑</a>
-      </footer>
-    </>
-  );
+    connect();
+    query.addEventListener("change", connect);
+    return () => { observer?.disconnect(); query.removeEventListener("change", connect); };
+  }, []);
+  return <div className="program-plan">
+    <div className="program-dial" aria-hidden="true"><svg viewBox="0 0 480 480">
+      <defs><linearGradient id="cycle-light" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#d8f3cf"/><stop offset="1" stopColor="#78bcb0"/></linearGradient></defs>
+      <circle cx="240" cy="240" r="205" fill="none" stroke="currentColor" strokeOpacity=".12"/>
+      <circle cx="240" cy="240" r="150" fill="none" stroke="currentColor" strokeOpacity=".16"/>
+      {[0,1,2,3].map(step => <g key={step} transform={`rotate(${step*90} 240 240)`}>
+        <path d="M240 58 A182 182 0 0 1 419 207" fill="none" stroke={step <= phase ? "url(#cycle-light)" : "#426257"} strokeWidth={step === phase ? 14 : 7} className="cycle-segment"/>
+        <path d="M409 199 L420 211 L430 198" fill="none" stroke={step <= phase ? "#d8f3cf" : "#426257"} strokeWidth="3"/>
+      </g>)}
+      <text x="240" y="210" textAnchor="middle" className="dial-number">0{phase+1}</text>
+      <text x="240" y="258" textAnchor="middle" className="dial-title">{programPhases[phase].title}</text>
+      <text x="240" y="294" textAnchor="middle" className="dial-note">Community Phages</text>
+      {[[240,35],[445,240],[240,445],[35,240]].map(([x,y],i) => <circle key={i} cx={x} cy={y} r={i === phase ? 7 : 4} fill={i <= phase ? "#d8f3cf" : "#426257"}/>)}
+    </svg><p>From funding to final closeout.<br/>Prepared again for each annual cohort.</p></div>
+    <ol ref={phaseList} className="phase-list" aria-label="Annual program phases">{programPhases.map((item,i) => <li key={item.title} data-phase={i} data-active={phase === i}>
+      <button type="button" aria-pressed={phase === i} onClick={() => setPhase(i)} onFocus={() => setPhase(i)}><span className="phase-number">0{i+1}</span><span><strong>{item.title}</strong><span>{item.description}</span></span><span className="phase-indicator" aria-hidden="true">↗</span></button>
+    </li>)}</ol>
+  </div>;
 }
 
-export default App;
+class MapBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() {
+    if (!this.state.failed) return this.props.children;
+    return <div className="map-fallback">
+      <h3>Conference locations</h3>
+      <p>Washington, DC · National conferences, 2023 and 2025</p>
+      <p>Boston · Regional conference, 2024</p>
+      <p>San Francisco and New York City · Regional conferences, 2026</p>
+    </div>;
+  }
+}
+
+function NetworkMap() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [ready,setReady] = useState(false);
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => { if(entry.isIntersecting){setReady(true);observer.disconnect();} },{rootMargin:"600px"});
+    if(ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  },[]);
+  return <div ref={ref} className="atlas-reserve">{ready && <MapBoundary><Suspense fallback={<p className="map-loading">Conference locations</p>}><ConferenceAtlas/></Suspense></MapBoundary>}</div>;
+}
+
+export default function App() {
+  const [daypart,setDaypart] = useState<Daypart>(initialDaypart);
+  const [active,setActive] = useState("overview");
+  const header = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const root = document.documentElement;
+    const resize = new ResizeObserver(([entry]) => root.style.setProperty("--header-height",`${entry.target.getBoundingClientRect().height}px`));
+    if(header.current) resize.observe(header.current);
+    const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-section]"));
+    let frame = 0;
+    const update = () => {
+      frame=0;
+      const offset=(header.current?.offsetHeight ?? 80)+32;
+      let id="overview";
+      for(const section of sections) if(section.getBoundingClientRect().top<=offset) id=section.dataset.section ?? "overview";
+      setActive(id);
+      const length=document.documentElement.scrollHeight-innerHeight;
+      root.style.setProperty("--reading-progress",String(length>0 ? scrollY/length : 0));
+    };
+    const onScroll=()=>{if(!frame) frame=requestAnimationFrame(update);};
+    addEventListener("scroll",onScroll,{passive:true});addEventListener("resize",onScroll);update();
+    return()=>{resize.disconnect();cancelAnimationFrame(frame);removeEventListener("scroll",onScroll);removeEventListener("resize",onScroll);};
+  },[]);
+  return <>
+    <a className="skip-link" href="#main-content">Skip to content</a>
+    <header className="site-header" ref={header}>
+      <a className="wordmark" href="#overview" aria-label="James M. Spencer, home">James M. Spencer<span>Research operations</span></a>
+      <nav aria-label="Primary navigation">{[["overview","Overview"],["work","Current work"],["background","Background"],["contact","Contact"]].map(([id,name])=><a key={id} href={`#${id}`} aria-current={active===id ? "location" : undefined}>{name}</a>)}</nav>
+    </header>
+    <main id="main-content" tabIndex={-1}>
+      <section className="hero" id="overview" data-section="overview" aria-labelledby="hero-title" tabIndex={-1}>
+        <img className="hero-image" src={asset(`assets/images/hero/hero-${daypart}-1536.jpg`)} srcSet={[960,1536,2560].map(w=>`${asset(`assets/images/hero/hero-${daypart}-${w}.jpg`)} ${w}w`).join(", ")} sizes="100vw" width="2560" height="1440" alt="" fetchPriority="high"/>
+        <div className="hero-shade"/>
+        <div className="hero-content page-width">
+          <p className="eyebrow">Harvard Medical School · Boston</p>
+          <h1 id="hero-title">Research operations<br/><em>leadership.</em></h1>
+          <p className="hero-summary">James M. Spencer leads operations for two HHMI Investigator laboratories, managing budgets, hiring, equipment, and facilities alongside scientific program delivery and professional-network leadership.</p>
+          <div className="hero-actions">
+            <a className="action action-light" href="#work">Explore the work <Arrow/></a>
+            <a className="text-link" href={asset("assets/resume/james-m-spencer-resume.pdf")}>Resume <Arrow/></a>
+          </div>
+        </div>
+        <div className="hero-foot page-width"><span>Longwood Medical Area, Boston<small>Architectural visualization</small></span><div className="lighting" role="group" aria-label="Scene lighting">{(["day","dusk","night"] as const).map(time=><button key={time} onClick={()=>setDaypart(time)} aria-pressed={daypart===time}>{time==="day" ? "Day" : time==="dusk" ? "Dusk" : "Night"}</button>)}</div></div>
+      </section>
+      <section className="scope-band page-width" aria-label="Professional scope"><p className="eyebrow">Current scope</p><a href="#laboratories"><strong>2</strong><span>HHMI Investigator labs<small>Distinct research groups at HMS</small></span><Arrow/></a><a href="#community-phages"><strong>8</strong><span>Weeks of student research<small>Community Phages annual program</small></span><Arrow/></a><a href="#lmnop"><strong>~330</strong><span>Laboratory managers<small>HHMI's LMNOP network</small></span><Arrow/></a></section>
+      <section id="work" data-section="work" className="work" aria-labelledby="work-title" tabIndex={-1}>
+        <div className="work-intro page-width"><p className="eyebrow">Current work</p><h2 id="work-title">From the laboratory<br/>to the national meeting.</h2><p>Financial planning, research infrastructure, hiring, and program delivery. The work is hands-on; the responsibility extends from daily decisions to long-term preparation.</p></div>
+        <nav className="chapter-nav" aria-label="Current roles"><div className="page-width">{roleLinks.map((role,i)=><a key={role.id} href={`#${role.id}`}><span>0{i+1}</span>{role.label}<Arrow/></a>)}</div></nav>
+        <article className="lab-story story page-width" id="laboratories" tabIndex={-1} aria-labelledby="lab-title">
+          <div className="story-heading"><p className="eyebrow">01 / Laboratory operations</p><p className="role-date">2019–present</p></div>
+          <div className="lab-grid">
+            <div>
+              <h2 id="lab-title">Two laboratories.<br/><em>Staffing, budgets &amp; facilities.</em></h2>
+              <p className="official-role">Laboratory Manager<span>Bernhardt &amp; Abraham Laboratories · HMS Microbiology</span></p>
+              <p className="lead-copy">James manages day-to-day operations for two HHMI Investigator laboratories with separate scientific programs, research spaces, and operating needs.</p>
+              <p>He works with investigators on budgets, staffing, major purchases, and facilities projects, while coordinating the equipment, vendors, access, and administrative work that research depends on.</p>
+              <dl className="lab-tenure">
+                <div><dt>Bernhardt Laboratory</dt><dd>Since January 2019</dd></div>
+                <div><dt>Abraham Laboratory</dt><dd>Since August 2025</dd></div>
+              </dl>
+            </div>
+            <div className="expertise">
+              <h3>Professional expertise</h3>
+              {expertise.map((item,i) => <details key={item.title} open={i === 0 ? true : undefined}>
+                <summary><span>0{i+1}</span>{item.title}<span className="disclosure-mark" aria-hidden="true">+</span></summary>
+                <p>{item.description}</p>
+              </details>)}
+            </div>
+          </div>
+          <figure className="campus-figure"><img src={asset("assets/images/hero/hero-day-1536.jpg")} srcSet={`${asset("assets/images/hero/hero-day-960.jpg")} 960w, ${asset("assets/images/hero/hero-day-1536.jpg")} 1536w, ${asset("assets/images/hero/hero-day-2560.jpg")} 2560w`} sizes="(min-width: 1440px) 1344px, 92vw" alt="Architectural visualization of the two laboratory buildings in Boston's Longwood Medical Area, with Back Bay beyond." width="2560" height="1440" loading="lazy"/><figcaption><span><strong>4 Blackfan Circle</strong>Bernhardt Laboratory · 10th floor</span><span><strong>Veritas Science Center</strong>Abraham Laboratory · 9th floor</span><small>Longwood Medical Area<br/>Architectural visualization</small></figcaption></figure>
+        </article>
+        <article className="program-story story" id="community-phages" tabIndex={-1} aria-labelledby="program-title"><div className="page-width">
+          <div className="story-heading"><p className="eyebrow">02 / Scientific program operations</p><p className="role-date">2022–present</p></div>
+          <div className="program-intro"><div><h2 id="program-title">Eight weeks of research.<br/><em>From funding to closeout.</em></h2><p className="official-role">Operations Lead<span>HMS Community Phages · Roxbury Community College internship</span></p></div><p className="lead-copy">James coordinates the annual operating plan: funding, hiring, dedicated laboratory space, biosafety preparation, and daily logistics. He supports students and instructors throughout the program, then handles closeout and laboratory reset.</p></div>
+          <dl className="program-stats"><div><dt>8</dt><dd>Program weeks</dd></div><div><dt>8</dt><dd>Student interns</dd></div><div><dt>10–15</dt><dd>Instructional team members</dd></div></dl><ProgramPlan/>
+        </div></article>
+        <article className="network-story story page-width" id="lmnop" tabIndex={-1} aria-labelledby="network-title">
+          <div className="story-heading"><p className="eyebrow">03 / Professional network leadership</p><p className="role-date">Board: December 2022 · Chair: July 2025</p></div>
+          <div className="network-intro"><div><h2 id="network-title">Connecting the people<br/><em>who manage research.</em></h2><p className="official-role">Chair, Advisory Board<span>Lab Management Network of Professionals · HHMI</span></p></div><div><p className="lead-copy">James chairs the advisory board for HHMI's network of approximately 330 laboratory managers.</p><p>He sets board priorities, coordinates speakers and member resources, and plans regional and national conferences with laboratory managers and institute partners.</p></div></div><NetworkMap/>
+          <div className="conference-proof"><figure><img src={asset("assets/images/lmnop-conference-photo-2026-sf.jpg")} alt="James M. Spencer speaking at the 2026 LMNOP meeting in San Francisco." width="1800" height="1350" loading="lazy"/><figcaption>LMNOP regional meeting · San Francisco, 2026</figcaption></figure><div><p className="eyebrow">Conference planning &amp; delivery</p><h3>From the agenda<br/>to the room.</h3><p>Speaker coordination, partner contact, site logistics, and facilitation are part of the same responsibility: preparing a useful professional meeting and seeing it through.</p><dl className="meeting-evidence"><div><dt>Regional meetings</dt><dd>One-day programs for approximately 100 attendees.</dd></div><div><dt>2025 national conference</dt><dd>A week-long program for 60 laboratory managers and approximately 20 institute partners.</dd></div><div><dt>Between conferences</dt><dd>Guest speakers, member resources, and continuing professional development.</dd></div></dl></div></div>
+        </article>
+      </section>
+      <section id="background" data-section="background" className="background" aria-labelledby="background-title" tabIndex={-1}>
+        <div className="page-width background-grid">
+          <div>
+            <p className="eyebrow">Background</p>
+            <h2 id="background-title">Scientific experience.<br/><em>Community leadership.</em></h2>
+            <p>Research experience and residential-life leadership inform how James approaches laboratory operations: with an understanding of experimental work, clear documentation, and responsibility for people.</p>
+            <a className="text-link" href={asset("assets/resume/james-m-spencer-resume.pdf")}>Full experience in the resume <Arrow/></a>
+          </div>
+          <ol className="background-list">
+            <li><span>2015–2018</span><div><h3>Research Assistant</h3><p>Peter Chien Laboratory, Biochemistry and Molecular Biology, UMass Amherst. Research on antibiotic stress in <i>Caulobacter crescentus</i>, alongside experimental documentation and day-to-day lab practice.</p></div></li>
+            <li><span>2016–2018</span><div><h3>Area Governor</h3><p>Elected annually to lead a residential community, recruit and train its executive board, secure funding, coordinate partners, and organize campus events at UMass Amherst, a university of approximately 30,000 students.</p></div></li>
+            <li><span>2016–2018</span><div><h3>Resident Advisor &amp; Peer Trainer</h3><p>Resident support, incident response, and facilities coordination. Selected to train incoming residential-life staff.</p></div></li>
+          </ol>
+        </div>
+      </section>
+      <section id="contact" data-section="contact" className="contact page-width" aria-labelledby="contact-title" tabIndex={-1}><div className="contact-copy"><p className="eyebrow">Contact</p><h2 id="contact-title">Connect.</h2><p className="lead-copy">For conversations about research operations, laboratory management, and scientific program leadership.</p><p>LinkedIn is the best way to reach James.</p><div className="contact-actions"><a href="https://www.linkedin.com/in/jamesmspencer/">Connect on LinkedIn <Arrow/></a><a href={asset("assets/resume/james-m-spencer-resume.pdf")}>View resume <span>PDF <Arrow/></span></a></div><p className="contact-location">Based in Boston, Massachusetts</p></div>
+        <figure className="contact-portrait"><img src={asset("assets/images/james-m-spencer-studio-headshot.jpg")} srcSet={[720,1100,1500].map(w=>`${asset(`assets/images/james-m-spencer-studio-headshot-${w}.jpg`)} ${w}w`).join(", ")} sizes="(max-width: 700px) 80vw, 430px" width="1996" height="3000" alt="James M. Spencer in his original studio portrait, wearing a navy shirt." loading="lazy"/></figure>
+      </section>
+    </main><footer className="site-footer page-width"><div><strong>James M. Spencer</strong><p>Personal website. Not an official website of Harvard Medical School, HHMI, or affiliated laboratories and programs.</p></div><a href="#overview">Back to top ↑</a></footer>
+  </>;
+}
