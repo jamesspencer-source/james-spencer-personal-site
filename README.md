@@ -46,8 +46,8 @@ Current public assets:
 
 The hero selects one HMS/Longwood campus view once when the page loads, using the
 visitor's local time: day from 6:00 a.m. to 3:59 p.m., dusk from 4:00 p.m. to
-7:59 p.m., and night from 8:00 p.m. to 5:59 a.m. Visitors can also select
-Day, Dusk, or Night using the hero controls. For review, append `?daypart=day`, `?daypart=dusk`, or
+7:59 p.m., and night from 8:00 p.m. to 5:59 a.m. There are no visible lighting controls.
+For review, append `?daypart=day`, `?daypart=dusk`, or
 `?daypart=night` to the URL.
 
 Hero asset policy: all three dayparts must derive from one shared architectural

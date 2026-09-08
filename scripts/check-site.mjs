@@ -26,6 +26,10 @@ for (const anchor of [...anchors, "laboratories", "community-phages", "lmnop"]) 
 assert(!/preventDefault|replaceState|ScrollTrigger/.test(app), "Keep role links native and the page free of scroll traps");
 assert(/lazy\(\(\) => import\("\.\/components\/ConferenceAtlas"\)\)/.test(app), "Load the map outside the initial page path");
 assert(!/from ["'].*OperationsVisuals/.test(app), "Do not reintroduce the eager legacy graphics bundle");
+assert(!/setDaypart|className="lighting"|Architectural visualization/.test(app), "Keep automatic lighting without visible rendering metadata");
+assert(app.includes("Approximately 20–22 members") && app.includes("Approximately 18–20 members"), "Keep James's confirmed lab population ranges");
+assert(app.includes("Lab members supported"), "Do not present supported lab populations as direct reports");
+assert(read("src/components/ConferenceAtlas.tsx").includes("2027 · In planning"), "Distinguish the planned DC conference from previous meetings");
 
 // A framing correction must never silently substitute or modify the approved portrait.
 const portraits = {

@@ -12,6 +12,7 @@ const conferenceCities = [
     coordinates: [-77.0369, 38.9072] as [number, number],
     event: "National conferences",
     years: "2023 and 2025",
+    upcoming: "2027 · In planning",
     caption: { x: 525, y: 391, side: "right" },
   },
   {
@@ -53,7 +54,7 @@ const statePaths = states.features.flatMap((state, index) => {
 const locations = conferenceCities.map((city) => {
   const point = projection(city.coordinates);
   if (!point) throw new Error(`Conference location is outside the atlas: ${city.city}`);
-  return { ...city, x: point[0], y: point[1] };
+  return { ...city, upcoming: "upcoming" in city ? city.upcoming : undefined, x: point[0], y: point[1] };
 });
 
 const StateBoundaries = memo(function StateBoundaries() {
@@ -84,7 +85,7 @@ function ConferenceAtlas() {
           <p className="conference-atlas__eyebrow">LMNOP</p>
           <h3 id={titleId}>Conference locations</h3>
         </div>
-        <span className="conference-atlas__period">2023 - 2026</span>
+        <span className="conference-atlas__period">2023–2027 · Including planned meetings</span>
       </figcaption>
 
       <svg
@@ -99,6 +100,7 @@ function ConferenceAtlas() {
         <desc id={mapDescriptionId}>
           Washington, DC: national conferences in 2023 and 2025. Boston: regional conference
           in 2024. San Francisco and New York City: regional conferences in 2026.
+          A Washington, DC conference is in planning for 2027.
           {` Selected: ${selected.city}, ${selected.event.toLowerCase()}, ${selected.years}.`}
         </desc>
         <StateBoundaries />
@@ -107,9 +109,10 @@ function ConferenceAtlas() {
           d={`M${selected.x},${selected.y} L${elbowX},${captionY} H${captionEdge}`}
         />
         <g className="conference-atlas__caption" transform={`translate(${selected.caption.x},${selected.caption.y})`}>
-          <rect width={captionWidth} height="76" rx="3" />
+          <rect width={captionWidth} height={selected.upcoming ? 102 : 76} rx="3" />
           <text className="conference-atlas__caption-city" x="16" y="31">{selected.city}</text>
           <text className="conference-atlas__caption-years" x="16" y="57">{selected.years}</text>
+          {selected.upcoming && <text className="conference-atlas__caption-years" x="16" y="83">{selected.upcoming}</text>}
         </g>
         {locations.map((location) => (
           <g
@@ -136,6 +139,7 @@ function ConferenceAtlas() {
             <span className="conference-atlas__city-number" aria-hidden="true">0{index + 1}</span>
             <span className="conference-atlas__city-name">{location.city}</span>
             <span className="conference-atlas__city-years">{location.years}</span>
+            <span className="conference-atlas__city-upcoming">{location.upcoming}</span>
           </button>
         ))}
       </div>
@@ -144,6 +148,7 @@ function ConferenceAtlas() {
         <p className="conference-atlas__detail-city">{selected.city}</p>
         <p className="conference-atlas__detail-event">{selected.event}</p>
         <p className="conference-atlas__detail-years">{selected.years}</p>
+        <p className="conference-atlas__detail-upcoming">{selected.upcoming}</p>
       </div>
     </figure>
   );

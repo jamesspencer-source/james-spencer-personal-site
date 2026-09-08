@@ -16,6 +16,8 @@ const scanTargets = [
 
 const allowedExtensions = new Set([".ts", ".tsx", ".css", ".html", ".md", ".json"]);
 const blocked = [
+  { label: "Rejected lab-to-meeting heading", pattern: /From the laboratory\s*(?:<br\s*\/>\s*)?to the national meeting/i },
+  { label: "Rejected agenda heading", pattern: /From the agenda\s*(?:<br\s*\/>\s*)?to the room/i },
   { label: "Preferred", pattern: /Preferred/i },
   { label: "remit", pattern: /\bremit\b/i },
   { label: "operating profile", pattern: /operating profile/i },

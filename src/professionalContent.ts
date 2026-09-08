@@ -9,8 +9,8 @@ export const roleLinks = [
 export const expertise = [
   { title: "Budgets & financial planning", description: "Manages budgets, purchasing, and spending across funding sources. Works with investigators on staffing costs, spending priorities, and the timing of major purchases." },
   { title: "Hiring & personnel operations", description: "Leads recruitment and selection for staff roles. Coordinates postdoctoral candidate visits, onboarding, access, and start-date preparation, and supports day-to-day personnel administration." },
-  { title: "Equipment, vendors & facilities", description: "Coordinates vendor selection, service contracts, capital equipment, installations, renovations, and facilities requests. Plans service coverage and purchasing around each laboratory's research needs." },
-  { title: "Safety & research administration", description: "Maintains laboratory compliance documentation, coordinates COMS and IACUC submissions and records, and supports lab-specific training, biosafety preparation, and inspections." },
+  { title: "Capital equipment, vendors & facilities", description: "Coordinates capital equipment purchases, vendor relationships, service contracts, installations, renovations, and facilities requests. Plans service coverage and purchasing around each laboratory's research needs." },
+  { title: "Internal compliance & research administration", description: "Maintains laboratory compliance documentation, coordinates COMS and IACUC submissions and records, and supports lab-specific training, biosafety preparation, and inspections." },
 ] as const;
 
 export const programPhases = [

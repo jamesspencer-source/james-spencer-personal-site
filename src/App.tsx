@@ -14,19 +14,30 @@ function ProgramPlan() {
   const [phase, setPhase] = useState(0);
   const phaseList = useRef<HTMLOListElement>(null);
   useEffect(() => {
-    const query = matchMedia("(min-width: 801px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)");
-    let observer: IntersectionObserver | undefined;
-    const connect = () => {
-      observer?.disconnect();
-      if (!query.matches) return;
-      observer = new IntersectionObserver(entries => {
-        for (const entry of entries) if (entry.isIntersecting) setPhase(Number((entry.target as HTMLElement).dataset.phase));
-      }, { rootMargin: "-40% 0px -40% 0px", threshold: 0 });
-      phaseList.current?.querySelectorAll("li").forEach(row => observer?.observe(row));
+    const query = matchMedia("(min-width: 801px) and (min-height: 700px) and (prefers-reduced-motion: no-preference)");
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      if (!query.matches || !phaseList.current) return;
+      // One reading line selects a phase; competing intersection callbacks cannot skip stages.
+      const readingLine = innerHeight * 0.5;
+      let current = 0;
+      phaseList.current.querySelectorAll("li").forEach((row, index) => {
+        if (row.getBoundingClientRect().top <= readingLine) current = index;
+      });
+      setPhase(current);
     };
-    connect();
-    query.addEventListener("change", connect);
-    return () => { observer?.disconnect(); query.removeEventListener("change", connect); };
+    const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
+    addEventListener("scroll", schedule, { passive: true });
+    addEventListener("resize", schedule);
+    query.addEventListener("change", schedule);
+    update();
+    return () => {
+      cancelAnimationFrame(frame);
+      removeEventListener("scroll", schedule);
+      removeEventListener("resize", schedule);
+      query.removeEventListener("change", schedule);
+    };
   }, []);
   return <div className="program-plan">
     <div className="program-dial" aria-hidden="true"><svg viewBox="0 0 480 480">
@@ -55,7 +66,7 @@ class MapBoundary extends Component<{ children: ReactNode }, { failed: boolean }
     if (!this.state.failed) return this.props.children;
     return <div className="map-fallback">
       <h3>Conference locations</h3>
-      <p>Washington, DC · National conferences, 2023 and 2025</p>
+      <p>Washington, DC · National conferences, 2023 and 2025. A 2027 conference is in planning.</p>
       <p>Boston · Regional conference, 2024</p>
       <p>San Francisco and New York City · Regional conferences, 2026</p>
     </div>;
@@ -74,7 +85,7 @@ function NetworkMap() {
 }
 
 export default function App() {
-  const [daypart,setDaypart] = useState<Daypart>(initialDaypart);
+  const [daypart] = useState<Daypart>(initialDaypart);
   const [active,setActive] = useState("overview");
   const header = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -109,29 +120,29 @@ export default function App() {
         <div className="hero-content page-width">
           <p className="eyebrow">Harvard Medical School · Boston</p>
           <h1 id="hero-title">Research operations<br/><em>leadership.</em></h1>
-          <p className="hero-summary">James M. Spencer leads operations for two HHMI Investigator laboratories, managing budgets, hiring, equipment, and facilities alongside scientific program delivery and professional-network leadership.</p>
+          <p className="hero-summary">James M. Spencer manages operations for two HHMI Investigator laboratories at Harvard Medical School, leads Community Phages program delivery, and chairs HHMI's lab-manager advisory board.</p>
           <div className="hero-actions">
             <a className="action action-light" href="#work">Explore the work <Arrow/></a>
             <a className="text-link" href={asset("assets/resume/james-m-spencer-resume.pdf")}>Resume <Arrow/></a>
           </div>
         </div>
-        <div className="hero-foot page-width"><span>Longwood Medical Area, Boston<small>Architectural visualization</small></span><div className="lighting" role="group" aria-label="Scene lighting">{(["day","dusk","night"] as const).map(time=><button key={time} onClick={()=>setDaypart(time)} aria-pressed={daypart===time}>{time==="day" ? "Day" : time==="dusk" ? "Dusk" : "Night"}</button>)}</div></div>
+        <div className="hero-foot page-width"><span>Longwood Medical Area, Boston</span></div>
       </section>
-      <section className="scope-band page-width" aria-label="Professional scope"><p className="eyebrow">Current scope</p><a href="#laboratories"><strong>2</strong><span>HHMI Investigator labs<small>Distinct research groups at HMS</small></span><Arrow/></a><a href="#community-phages"><strong>8</strong><span>Weeks of student research<small>Community Phages annual program</small></span><Arrow/></a><a href="#lmnop"><strong>~330</strong><span>Laboratory managers<small>HHMI's LMNOP network</small></span><Arrow/></a></section>
+      <section className="scope-band page-width" aria-label="Professional scope"><p className="eyebrow">Current scope</p><a href="#laboratories"><strong>~40</strong><span>Lab members supported<small>Across two HHMI Investigator labs</small></span><Arrow/></a><a href="#community-phages"><strong>8</strong><span>Weeks of student research<small>Community Phages annual program</small></span><Arrow/></a><a href="#lmnop"><strong>~330</strong><span>Laboratory managers<small>HHMI's LMNOP network</small></span><Arrow/></a></section>
       <section id="work" data-section="work" className="work" aria-labelledby="work-title" tabIndex={-1}>
-        <div className="work-intro page-width"><p className="eyebrow">Current work</p><h2 id="work-title">From the laboratory<br/>to the national meeting.</h2><p>Financial planning, research infrastructure, hiring, and program delivery. The work is hands-on; the responsibility extends from daily decisions to long-term preparation.</p></div>
+        <div className="work-intro page-width"><p className="eyebrow">Current work</p><h2 id="work-title">Research operations<br/>&amp; program management.</h2><p>Laboratory management at Harvard Medical School, Community Phages program delivery, and conference planning for HHMI's laboratory managers.</p></div>
         <nav className="chapter-nav" aria-label="Current roles"><div className="page-width">{roleLinks.map((role,i)=><a key={role.id} href={`#${role.id}`}><span>0{i+1}</span>{role.label}<Arrow/></a>)}</div></nav>
         <article className="lab-story story page-width" id="laboratories" tabIndex={-1} aria-labelledby="lab-title">
           <div className="story-heading"><p className="eyebrow">01 / Laboratory operations</p><p className="role-date">2019–present</p></div>
           <div className="lab-grid">
             <div>
-              <h2 id="lab-title">Two laboratories.<br/><em>Staffing, budgets &amp; facilities.</em></h2>
+              <h2 id="lab-title">Laboratory management<br/><em>for two research groups.</em></h2>
               <p className="official-role">Laboratory Manager<span>Bernhardt &amp; Abraham Laboratories · HMS Microbiology</span></p>
               <p className="lead-copy">James manages day-to-day operations for two HHMI Investigator laboratories with separate scientific programs, research spaces, and operating needs.</p>
-              <p>He works with investigators on budgets, staffing, major purchases, and facilities projects, while coordinating the equipment, vendors, access, and administrative work that research depends on.</p>
+              <p>His responsibilities include budgets and purchasing, staff recruitment, capital equipment, vendor relationships, service contracts, facilities projects, and internal compliance. He coordinates access, onboarding, and daily support for each research group.</p>
               <dl className="lab-tenure">
-                <div><dt>Bernhardt Laboratory</dt><dd>Since January 2019</dd></div>
-                <div><dt>Abraham Laboratory</dt><dd>Since August 2025</dd></div>
+                <div><dt>Bernhardt Laboratory</dt><dd>Approximately 20–22 members</dd><dd>Supported since January 2019</dd></div>
+                <div><dt>Abraham Laboratory</dt><dd>Approximately 18–20 members</dd><dd>Supported since August 2025</dd></div>
               </dl>
             </div>
             <div className="expertise">
@@ -142,7 +153,7 @@ export default function App() {
               </details>)}
             </div>
           </div>
-          <figure className="campus-figure"><img src={asset("assets/images/hero/hero-day-1536.jpg")} srcSet={`${asset("assets/images/hero/hero-day-960.jpg")} 960w, ${asset("assets/images/hero/hero-day-1536.jpg")} 1536w, ${asset("assets/images/hero/hero-day-2560.jpg")} 2560w`} sizes="(min-width: 1440px) 1344px, 92vw" alt="Architectural visualization of the two laboratory buildings in Boston's Longwood Medical Area, with Back Bay beyond." width="2560" height="1440" loading="lazy"/><figcaption><span><strong>4 Blackfan Circle</strong>Bernhardt Laboratory · 10th floor</span><span><strong>Veritas Science Center</strong>Abraham Laboratory · 9th floor</span><small>Longwood Medical Area<br/>Architectural visualization</small></figcaption></figure>
+          <figure className="campus-figure"><img src={asset("assets/images/hero/hero-day-1536.jpg")} srcSet={`${asset("assets/images/hero/hero-day-960.jpg")} 960w, ${asset("assets/images/hero/hero-day-1536.jpg")} 1536w, ${asset("assets/images/hero/hero-day-2560.jpg")} 2560w`} sizes="(min-width: 1440px) 1344px, 92vw" alt="Illustrated view of the two laboratory buildings in Boston's Longwood Medical Area, with Back Bay beyond." width="2560" height="1440" loading="lazy"/><figcaption><span><strong>4 Blackfan Circle</strong>Bernhardt Laboratory · 10th floor</span><span><strong>Veritas Science Center</strong>Abraham Laboratory · 9th floor</span><small>Longwood Medical Area</small></figcaption></figure>
         </article>
         <article className="program-story story" id="community-phages" tabIndex={-1} aria-labelledby="program-title"><div className="page-width">
           <div className="story-heading"><p className="eyebrow">02 / Scientific program operations</p><p className="role-date">2022–present</p></div>
@@ -152,7 +163,7 @@ export default function App() {
         <article className="network-story story page-width" id="lmnop" tabIndex={-1} aria-labelledby="network-title">
           <div className="story-heading"><p className="eyebrow">03 / Professional network leadership</p><p className="role-date">Board: December 2022 · Chair: July 2025</p></div>
           <div className="network-intro"><div><h2 id="network-title">Connecting the people<br/><em>who manage research.</em></h2><p className="official-role">Chair, Advisory Board<span>Lab Management Network of Professionals · HHMI</span></p></div><div><p className="lead-copy">James chairs the advisory board for HHMI's network of approximately 330 laboratory managers.</p><p>He sets board priorities, coordinates speakers and member resources, and plans regional and national conferences with laboratory managers and institute partners.</p></div></div><NetworkMap/>
-          <div className="conference-proof"><figure><img src={asset("assets/images/lmnop-conference-photo-2026-sf.jpg")} alt="James M. Spencer speaking at the 2026 LMNOP meeting in San Francisco." width="1800" height="1350" loading="lazy"/><figcaption>LMNOP regional meeting · San Francisco, 2026</figcaption></figure><div><p className="eyebrow">Conference planning &amp; delivery</p><h3>From the agenda<br/>to the room.</h3><p>Speaker coordination, partner contact, site logistics, and facilitation are part of the same responsibility: preparing a useful professional meeting and seeing it through.</p><dl className="meeting-evidence"><div><dt>Regional meetings</dt><dd>One-day programs for approximately 100 attendees.</dd></div><div><dt>2025 national conference</dt><dd>A week-long program for 60 laboratory managers and approximately 20 institute partners.</dd></div><div><dt>Between conferences</dt><dd>Guest speakers, member resources, and continuing professional development.</dd></div></dl></div></div>
+          <div className="conference-proof"><figure><img src={asset("assets/images/lmnop-conference-photo-2026-sf.jpg")} alt="James M. Spencer speaking at the 2026 LMNOP meeting in San Francisco." width="1800" height="1350" loading="lazy"/><figcaption>LMNOP regional meeting · San Francisco, 2026</figcaption></figure><div><p className="eyebrow">Conference planning &amp; delivery</p><h3>Regional &amp; national<br/>lab-manager conferences.</h3><p>James coordinates speakers, partners, agendas, and site logistics, and facilitates sessions for laboratory managers. He is also planning a 2027 conference in Washington, DC.</p><dl className="meeting-evidence"><div><dt>Regional meetings</dt><dd>One-day programs for approximately 100 attendees.</dd></div><div><dt>2025 national conference</dt><dd>A week-long program for 60 laboratory managers and approximately 20 institute partners.</dd></div><div><dt>Between conferences</dt><dd>Guest speakers, member resources, and continuing professional development.</dd></div></dl></div></div>
         </article>
       </section>
       <section id="background" data-section="background" className="background" aria-labelledby="background-title" tabIndex={-1}>
