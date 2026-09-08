@@ -107,7 +107,7 @@ details[open] .disclosure-mark { transform: rotate(45deg); }
 .campus-figure strong { font-size: 13px; font-weight: 500; color: var(--ink); display: block; margin-bottom: 6px; }
 .campus-figure small { margin-left: auto; text-align: right; font-size: 10px; line-height: 1.6; }
 
-.program-story { background: #122c24; color: #eff7ed; --muted: #c0d4c6; --rule: #486056; --green: #cfe8ca; padding-block: 96px 120px; min-height: 100svh; }
+.program-story { background: #122c24; color: #eff7ed; --muted: #c0d4c6; --rule: #486056; --green: #cfe8ca; padding-block: 72px; }
 .program-intro { display: grid; grid-template-columns: 1.2fr 1fr; gap: 80px; }
 .program-intro .lead-copy { font-size: 20px; color: #d1dfd3; max-width: 520px; }
 .program-story h2 { font-size: 51px; }
@@ -115,8 +115,8 @@ details[open] .disclosure-mark { transform: rotate(45deg); }
 .program-stats div { display: flex; align-items: center; gap: 18px; }
 .program-stats dt { font: 48px/1 Newsreader, Georgia, serif; color: #d7ebce; }
 .program-stats dd { font-size: 14px; max-width: 130px; margin: 0; line-height: 1.6; }
-.program-plan { display: grid; grid-template-columns: 1fr 1.15fr; align-items: center; gap: 80px; margin-top: 64px; }
-.program-dial { max-width: 540px; width: 100%; justify-self: center; text-align: center; color: #d5e6d4; }
+.program-plan { display: grid; grid-template-columns: 1fr 1.15fr; align-items: center; gap: 64px; margin-top: 32px; }
+.program-dial { max-width: 400px; width: 100%; justify-self: center; text-align: center; color: #d5e6d4; }
 .program-dial svg { width: 100%; height: auto; display: block; }
 .program-dial p { font-size: 15px; line-height: 1.7; color: #c0d4c6; }
 .dial-number { font: 20px Inter, Arial, sans-serif; fill: #b7d5be; }
@@ -128,8 +128,8 @@ details[open] .disclosure-mark { transform: rotate(45deg); }
 .phase-list li:first-child { border-top: 1px solid var(--rule); }
 .phase-list button { background: none; color: inherit; border: 0; text-align: left; padding: 25px 0; width: 100%; display: grid; grid-template-columns: 28px 1fr 18px; gap: 18px; }
 .phase-number { font-size: 11px; padding-top: 7px; color: #b3cbbd; }
-.phase-list strong { display: block; font: 38px Newsreader, Georgia, serif; margin-bottom: 14px; }
-.phase-list button > span:nth-child(2) > span { display: block; font-size: 18px; line-height: 1.8; color: #d2e0d5; }
+.phase-list strong { display: block; font: 32px Newsreader, Georgia, serif; margin-bottom: 12px; }
+.phase-list button > span:nth-child(2) > span { display: block; font-size: 17px; line-height: 1.75; color: #d2e0d5; }
 .phase-indicator { color: #cde9c3; opacity: 0; }
 .phase-list [data-active=true] { border-bottom-color: #cde9c3; }
 .phase-list [data-active=true] .phase-indicator { opacity: 1; }
@@ -363,10 +363,10 @@ details[open] .disclosure-mark { transform: rotate(45deg); }
   *, *:before, *:after { animation:none!important; transition:none!important; scroll-behavior:auto!important; }
 }
 @media (min-width:801px) and (min-height:700px) and (prefers-reduced-motion:no-preference) {
-  .program-plan { padding-block:48px 120px; align-items:start; }
-  .program-dial { position:sticky; top:calc(var(--header-height) + 40px); align-self:start; max-width:min(540px,calc(100svh - var(--header-height) - 140px)); }
-  /* Each phase owns substantial natural scroll distance, followed by a final hold. */
-  .phase-list button { min-height:max(380px,65svh); align-content:center; }
+  .program-plan { padding-block:24px 40px; align-items:start; }
+  .program-dial { position:sticky; top:calc(var(--header-height) + 48px); align-self:start; max-width:min(400px,calc(100svh - var(--header-height) - 160px)); }
+  /* Moderate fixed spacing avoids turning four short descriptions into a long scroll. */
+  .phase-list button { min-height:240px; align-content:center; }
 }
 @media (max-width:600px) and (max-height:740px) {
   .hero { min-height:0; }

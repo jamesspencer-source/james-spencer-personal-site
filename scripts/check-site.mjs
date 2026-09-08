@@ -30,6 +30,8 @@ assert(!/setDaypart|className="lighting"|Architectural visualization/.test(app),
 assert(app.includes("Approximately 20–22 members") && app.includes("Approximately 18–20 members"), "Keep James's confirmed lab population ranges");
 assert(app.includes("Lab members supported"), "Do not present supported lab populations as direct reports");
 assert(read("src/components/ConferenceAtlas.tsx").includes("2027 · In planning"), "Distinguish the planned DC conference from previous meetings");
+assert(!css.includes("65svh"), "Do not reintroduce viewport-sized program steps");
+assert(read("src/components/ConferenceAtlas.tsx").includes("location.facts.map"), "Conference selections must include meeting context, not only city and year");
 
 // A framing correction must never silently substitute or modify the approved portrait.
 const portraits = {

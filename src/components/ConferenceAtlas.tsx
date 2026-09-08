@@ -13,6 +13,12 @@ const conferenceCities = [
     event: "National conferences",
     years: "2023 and 2025",
     upcoming: "2027 · In planning",
+    title: "LMNOP national conferences",
+    description: "National meetings for laboratory managers and institute partners. The 2025 conference was a week-long program.",
+    facts: [
+      ["2025 participation", "60 laboratory managers and approximately 20 institute partners"],
+      ["James's work", "Conference planning, speakers, partners, agendas, and site logistics"],
+    ],
     caption: { x: 525, y: 391, side: "right" },
   },
   {
@@ -21,6 +27,11 @@ const conferenceCities = [
     coordinates: [-71.0589, 42.3601] as [number, number],
     event: "Regional conference",
     years: "2024",
+    title: "Regional LMNOP conference",
+    description: "A one-day meeting for laboratory managers, with professional development and peer exchange on lab management.",
+    facts: [
+      ["James's work", "Regional conference planning and coordination with laboratory managers and institute partners"],
+    ],
     caption: { x: 580, y: 95, side: "right" },
   },
   {
@@ -29,6 +40,12 @@ const conferenceCities = [
     coordinates: [-122.4194, 37.7749] as [number, number],
     event: "Regional conference",
     years: "2026",
+    title: "Regional LMNOP conference",
+    description: "A one-day meeting for laboratory managers. James helped organize the conference and led a session, pictured below.",
+    facts: [
+      ["Purpose", "Professional development and exchange on laboratory management"],
+      ["James's work", "Conference planning, speaker coordination, and session facilitation"],
+    ],
     caption: { x: 210, y: 206, side: "left" },
   },
   {
@@ -37,6 +54,11 @@ const conferenceCities = [
     coordinates: [-74.006, 40.7128] as [number, number],
     event: "Regional conference",
     years: "2026",
+    title: "Regional LMNOP conference",
+    description: "A one-day meeting bringing laboratory managers together for professional development and discussion of their work.",
+    facts: [
+      ["James's work", "Conference planning, speaker coordination, and partner contact"],
+    ],
     caption: { x: 560, y: 145, side: "right" },
   },
 ] as const;
@@ -144,11 +166,16 @@ function ConferenceAtlas() {
         ))}
       </div>
 
-      <div className="conference-atlas__detail" id={detailId} role="status" aria-atomic="true">
-        <p className="conference-atlas__detail-city">{selected.city}</p>
-        <p className="conference-atlas__detail-event">{selected.event}</p>
-        <p className="conference-atlas__detail-years">{selected.years}</p>
-        <p className="conference-atlas__detail-upcoming">{selected.upcoming}</p>
+      <div className="conference-atlas__detail" id={detailId} aria-live="polite" aria-atomic="true">
+        {locations.map(location => <div key={location.id} className="conference-atlas__detail-panel" data-selected={location.id === selectedId} aria-hidden={location.id !== selectedId}>
+          <div className="conference-atlas__detail-intro">
+            <p className="conference-atlas__detail-years">{location.city} · {location.years}</p>
+            <h4>{location.title}</h4>
+            <p>{location.description}</p>
+            {location.upcoming && <p className="conference-atlas__detail-upcoming">Washington, DC · {location.upcoming}</p>}
+          </div>
+          <dl>{location.facts.map(([label,value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
+        </div>)}
       </div>
     </figure>
   );
