@@ -42,18 +42,12 @@ Current public assets:
 - Resume PDF: `public/assets/resume/james-m-spencer-resume.pdf`
 - Favicon: `public/assets/favicon.svg`
 - Contact headshot: `public/assets/images/james-m-spencer-studio-headshot.jpg`
-- Adaptive campus hero: `public/assets/images/hero/`
 
-The hero selects one HMS/Longwood campus view once when the page loads, using the
-visitor's local time: day from 6:00 a.m. to 3:59 p.m., dusk from 4:00 p.m. to
-7:59 p.m., and night from 8:00 p.m. to 5:59 a.m. There are no visible lighting controls.
-For review, append `?daypart=day`, `?daypart=dusk`, or
-`?daypart=night` to the URL.
-
-Hero asset policy: all three dayparts must derive from one shared architectural
-composition, use public campus references only as factual guidance, and ship at
-960, 1536, and 2560 pixels wide. Do not substitute unrelated skyline or campus
-imagery for one daypart.
+The rejected generated campus aerial and all nine day/dusk/night derivatives
+have been removed from the published assets and active page. The opening is
+text-led until James approves a replacement. Do not restore these files, reuse
+them under other names, or add a new generated skyline as a substitute. The
+asset checks block their fingerprints as well as their previous paths.
 
 Resume source note: the linked PDF is preserved. A separately named current public resume was not located during the September 2026 review. Confirm the replacement against James's current approved public resume before updating the link target; do not relabel an older PDF as newly verified.
 

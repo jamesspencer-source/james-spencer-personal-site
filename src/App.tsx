@@ -3,11 +3,6 @@ import { expertise, programPhases, roleLinks } from "./professionalContent";
 
 const ConferenceAtlas = lazy(() => import("./components/ConferenceAtlas"));
 const asset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
-type Daypart = "day" | "dusk" | "night";
-function initialDaypart(): Daypart {
-  const value = document.documentElement.dataset.daypart;
-  return value === "day" || value === "dusk" || value === "night" ? value : "dusk";
-}
 function Arrow() { return <span aria-hidden="true">↗</span>; }
 
 function ProgramPlan() {
@@ -85,7 +80,6 @@ function NetworkMap() {
 }
 
 export default function App() {
-  const [daypart] = useState<Daypart>(initialDaypart);
   const [active,setActive] = useState("overview");
   const header = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -115,8 +109,6 @@ export default function App() {
     </header>
     <main id="main-content" tabIndex={-1}>
       <section className="hero" id="overview" data-section="overview" aria-labelledby="hero-title" tabIndex={-1}>
-        <img className="hero-image" src={asset(`assets/images/hero/hero-${daypart}-1536.jpg`)} srcSet={[960,1536,2560].map(w=>`${asset(`assets/images/hero/hero-${daypart}-${w}.jpg`)} ${w}w`).join(", ")} sizes="100vw" width="2560" height="1440" alt="" fetchPriority="high"/>
-        <div className="hero-shade"/>
         <div className="hero-content page-width">
           <p className="eyebrow">Harvard Medical School · Boston</p>
           <h1 id="hero-title">Research operations<br/><em>leadership.</em></h1>
@@ -126,7 +118,6 @@ export default function App() {
             <a className="text-link" href={asset("assets/resume/james-m-spencer-resume.pdf")}>Resume <Arrow/></a>
           </div>
         </div>
-        <div className="hero-foot page-width"><span>Longwood Medical Area, Boston</span></div>
       </section>
       <section className="scope-band page-width" aria-label="Professional scope"><p className="eyebrow">Current scope</p><a href="#laboratories"><strong>~40</strong><span>Lab members supported<small>Across two HHMI Investigator labs</small></span><Arrow/></a><a href="#community-phages"><strong>8</strong><span>Weeks of student research<small>Community Phages annual program</small></span><Arrow/></a><a href="#lmnop"><strong>~330</strong><span>Laboratory managers<small>HHMI's LMNOP network</small></span><Arrow/></a></section>
       <section id="work" data-section="work" className="work" aria-labelledby="work-title" tabIndex={-1}>
@@ -153,7 +144,6 @@ export default function App() {
               </details>)}
             </div>
           </div>
-          <figure className="campus-figure"><img src={asset("assets/images/hero/hero-day-1536.jpg")} srcSet={`${asset("assets/images/hero/hero-day-960.jpg")} 960w, ${asset("assets/images/hero/hero-day-1536.jpg")} 1536w, ${asset("assets/images/hero/hero-day-2560.jpg")} 2560w`} sizes="(min-width: 1440px) 1344px, 92vw" alt="Illustrated view of the two laboratory buildings in Boston's Longwood Medical Area, with Back Bay beyond." width="2560" height="1440" loading="lazy"/><figcaption><span><strong>4 Blackfan Circle</strong>Bernhardt Laboratory · 10th floor</span><span><strong>Veritas Science Center</strong>Abraham Laboratory · 9th floor</span><small>Longwood Medical Area</small></figcaption></figure>
         </article>
         <article className="program-story story" id="community-phages" tabIndex={-1} aria-labelledby="program-title"><div className="page-width">
           <div className="story-heading"><p className="eyebrow">02 / Scientific program operations</p><p className="role-date">2022–present</p></div>
