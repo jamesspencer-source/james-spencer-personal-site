@@ -49,11 +49,11 @@ text-led until James approves a replacement. Do not restore these files, reuse
 them under other names, or add a new generated skyline as a substitute. The
 asset checks block their fingerprints as well as their previous paths.
 
-Resume source note: the linked PDF is preserved. A separately named current public resume was not located during the September 2026 review. Confirm the replacement against James's current approved public resume before updating the link target; do not relabel an older PDF as newly verified.
+Resume source note: on October 3, 2026, James asked to keep using the existing public resume while he prepares a new version. The linked PDF matches his local Public 2026 resume byte for byte and is preserved. Replace it when he supplies the new approved public version; do not relabel the existing PDF as revised.
 
 Portrait asset policy: the contact section should use the approved studio headshot and its responsive derivatives only. Do not replace it with a narrow portrait export.
 
-`npm run check:site` verifies native fragment targets, deferred map loading, hero variants, and checksums for the original portrait and its approved full-frame derivatives. See `docs/2026-09-editorial-rebuild.md` for the review comparison and evidence boundaries.
+`npm run check:site` verifies native fragment targets, deferred map loading, rejected image fingerprints, and checksums for the original portrait and its approved full-frame derivatives. See `docs/2026-09-editorial-rebuild.md` for the review comparison and evidence boundaries.
 
 ## Deployment
 
