@@ -41,13 +41,17 @@ Current public assets:
 - Social preview: `public/assets/images/social-preview.svg`
 - Resume PDF: `public/assets/resume/james-m-spencer-resume.pdf`
 - Favicon: `public/assets/favicon.svg`
+- Hero photograph: `public/assets/images/hms-quad-brett-wharton.jpg`
 - Contact headshot: `public/assets/images/james-m-spencer-studio-headshot.jpg`
 
+The opening uses James's selected real HMS Quad photograph by Brett Wharton,
+with visible credit and the two-column layout reviewed on October 3, 2026.
+Source and license details are in `docs/2026-10-hms-quad-hero.md`.
+
 The rejected generated campus aerial and all nine day/dusk/night derivatives
-have been removed from the published assets and active page. The opening is
-text-led until James approves a replacement. Do not restore these files, reuse
-them under other names, or add a new generated skyline as a substitute. The
-asset checks block their fingerprints as well as their previous paths.
+remain excluded. Do not restore these files, reuse them under other names, or
+add a generated skyline as a substitute. The asset checks block their
+fingerprints as well as their previous paths.
 
 Resume source note: on October 3, 2026, James asked to keep using the existing public resume while he prepares a new version. The linked PDF matches his local Public 2026 resume byte for byte and is preserved. Replace it when he supplies the new approved public version; do not relabel the existing PDF as revised.
 

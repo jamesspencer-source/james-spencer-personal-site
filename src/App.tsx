@@ -110,13 +110,19 @@ export default function App() {
     <main id="main-content" tabIndex={-1}>
       <section className="hero" id="overview" data-section="overview" aria-labelledby="hero-title" tabIndex={-1}>
         <div className="hero-content page-width">
-          <p className="eyebrow">Harvard Medical School · Boston</p>
-          <h1 id="hero-title">Research operations<br/><em>leadership.</em></h1>
-          <p className="hero-summary">James M. Spencer manages operations for two HHMI Investigator laboratories at Harvard Medical School, leads Community Phages program delivery, and chairs HHMI's lab-manager advisory board.</p>
-          <div className="hero-actions">
-            <a className="action action-light" href="#work">Explore the work <Arrow/></a>
-            <a className="text-link" href={asset("assets/resume/james-m-spencer-resume.pdf")}>Resume <Arrow/></a>
+          <div className="hero-copy">
+            <p className="eyebrow">Harvard Medical School · Boston</p>
+            <h1 id="hero-title">Research operations<br/><em>leadership.</em></h1>
+            <p className="hero-summary">James M. Spencer manages operations for two HHMI Investigator laboratories at Harvard Medical School, leads Community Phages program delivery, and chairs HHMI's lab-manager advisory board.</p>
+            <div className="hero-actions">
+              <a className="action action-light" href="#work">Explore the work <Arrow/></a>
+              <a className="text-link" href={asset("assets/resume/james-m-spencer-resume.pdf")}>Resume <Arrow/></a>
+            </div>
           </div>
+          <figure className="hero-photo">
+            <img src={asset("assets/images/hms-quad-brett-wharton.jpg")} width="1600" height="1066" alt="Gordon Hall at Harvard Medical School, framed by trees and flowers." fetchPriority="high" decoding="async"/>
+            <figcaption><span>Harvard Medical School</span><a href="https://unsplash.com/photos/a-large-white-building-with-a-flag-on-top-aGuFsiB4c3U">Photo: Brett Wharton</a></figcaption>
+          </figure>
         </div>
       </section>
       <section className="scope-band page-width" aria-label="Professional scope"><p className="eyebrow">Current scope</p><a href="#laboratories"><strong>~40</strong><span>Lab members supported<small>Across two HHMI Investigator labs</small></span><Arrow/></a><a href="#community-phages"><strong>8</strong><span>Weeks of student research<small>Community Phages annual program</small></span><Arrow/></a><a href="#lmnop"><strong>~330</strong><span>Laboratory managers<small>HHMI's LMNOP network</small></span><Arrow/></a></section>
