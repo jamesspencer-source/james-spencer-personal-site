@@ -67,3 +67,17 @@ This repository deploys to GitHub Pages through GitHub Actions.
 - Workflow: `.github/workflows/deploy.yml`
 
 When `main` is pushed, the site is built and deployed through the Pages workflow.
+
+The repository's Pages source must be **GitHub Actions**. Do not enable branch-based
+publishing from `main`: the repository contains source files, while the workflow
+publishes only the built `dist/` artifact. The `github-pages` environment allows
+only the `main` branch.
+
+Pull requests run the same checks without publishing. Only the deployment job
+receives Pages and identity-token write permissions, and only `main` can upload
+or deploy a Pages artifact. Actions are pinned to immutable commits; Dependabot
+opens weekly update pull requests for npm packages and GitHub Actions. Updates
+require review and are not automatically merged.
+
+Normal direct updates to `main` remain supported. The branch rules block force
+pushes and deletion without requiring a pull request for ordinary updates.
