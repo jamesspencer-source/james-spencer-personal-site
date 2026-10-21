@@ -4,10 +4,10 @@ Premium one-page professional site for GitHub Pages, built with Vite, React, and
 
 ## Local development
 
-From the repository root:
+Use Node.js 22.12 or later. From the repository root:
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
