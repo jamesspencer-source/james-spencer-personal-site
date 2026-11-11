@@ -31,7 +31,7 @@ The check script runs source guardrails, TypeScript, and the production build. I
 
 ## Content and assets
 
-- Current public copy lives in `src/App.tsx` and `src/professionalContent.ts`; `src/content.ts` is legacy content and does not drive the homepage.
+- Current public copy lives in `src/App.tsx` and `src/professionalContent.ts`.
 - UI and section composition live in `src/App.tsx`
 - Global styling and motion-ready layout rules live in `src/styles.css`
 - Public assets live in `public/assets/`

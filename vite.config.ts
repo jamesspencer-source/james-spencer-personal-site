@@ -14,28 +14,12 @@ export default defineConfig(({ mode }) => ({
             return "vendor-react";
           }
 
-          if (id.includes("node_modules/gsap")) {
-            return "vendor-gsap";
-          }
-
           if (
             id.includes("node_modules/d3-geo") ||
             id.includes("node_modules/topojson-client") ||
-            id.includes("node_modules/us-atlas") ||
-            id.includes("node_modules/world-atlas")
+            id.includes("node_modules/us-atlas")
           ) {
             return "vendor-geo";
-          }
-
-          if (id.includes("node_modules/three")) {
-            return "vendor-three";
-          }
-
-          if (
-            id.includes("src/components/RolesVisualStage") ||
-            id.includes("src/components/LabBuildingsScene")
-          ) {
-            return "roles-visuals";
           }
         }
       }

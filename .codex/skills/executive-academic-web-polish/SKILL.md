@@ -80,7 +80,7 @@ LinkedIn may be primary through accent, border, or background treatment, not ove
 ## Implementation Checklist
 
 When implementing:
-1. Read the relevant files first, usually `src/App.tsx`, `src/content.ts`, and `src/styles.css`.
+1. Read the relevant files first, usually `src/App.tsx`, `src/professionalContent.ts`, and `src/styles.css`.
 2. Use existing content/types unless a small schema extension materially improves clarity.
 3. Keep layout stable across desktop, tablet, and mobile.
 4. Preserve keyboard focus states and accessible link text.
