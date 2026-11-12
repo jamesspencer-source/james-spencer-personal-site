@@ -138,8 +138,8 @@ export default function App() {
               <p className="lead-copy">James manages day-to-day operations for two HHMI Investigator laboratories with separate scientific programs, research spaces, and operating needs.</p>
               <p>His responsibilities include budgets and purchasing, staff recruitment, capital equipment, vendor relationships, service contracts, facilities projects, and internal compliance. He coordinates access, onboarding, and daily support for each research group.</p>
               <dl className="lab-tenure">
-                <div><dt>Bernhardt Laboratory</dt><dd>Approximately 20–22 members</dd><dd>Supported since January 2019</dd></div>
-                <div><dt>Abraham Laboratory</dt><dd>Approximately 18–20 members</dd><dd>Supported since August 2025</dd></div>
+                <div><dt><a className="inline-link" href="https://bernhardtlab.com/">Bernhardt Laboratory</a></dt><dd>Approximately 20–22 members</dd><dd>Supported since January 2019</dd></div>
+                <div><dt><a className="inline-link" href="https://abrahamlab.med.harvard.edu/">Abraham Laboratory</a></dt><dd>Approximately 18–20 members</dd><dd>Supported since August 2025</dd></div>
               </dl>
             </div>
             <div className="expertise">
@@ -153,7 +153,7 @@ export default function App() {
         </article>
         <article className="program-story story" id="community-phages" tabIndex={-1} aria-labelledby="program-title"><div className="page-width">
           <div className="story-heading"><p className="eyebrow">02 / Scientific program operations</p><p className="role-date">2022–present</p></div>
-          <div className="program-intro"><div><h2 id="program-title">Eight weeks of research.<br/><em>From funding to closeout.</em></h2><p className="official-role">Operations Lead<span>HMS Community Phages · Roxbury Community College internship</span></p></div><p className="lead-copy">James coordinates the annual operating plan: funding, hiring, dedicated laboratory space, biosafety preparation, and daily logistics. He supports students and instructors throughout the program, then handles closeout and laboratory reset.</p></div>
+          <div className="program-intro"><div><h2 id="program-title">Eight weeks of research.<br/><em>From funding to closeout.</em></h2><p className="official-role">Operations Lead<span><a className="inline-link" href="https://phages.hms.harvard.edu/">HMS Community Phages</a> · Roxbury Community College internship</span></p></div><p className="lead-copy">James coordinates the annual operating plan: funding, hiring, dedicated laboratory space, biosafety preparation, and daily logistics. He supports students and instructors throughout the program, then handles closeout and laboratory reset.</p></div>
           <dl className="program-stats"><div><dt>8</dt><dd>Program weeks</dd></div><div><dt>8</dt><dd>Student interns</dd></div><div><dt>10–15</dt><dd>Instructional team members</dd></div></dl><ProgramPlan/>
         </div></article>
         <article className="network-story story page-width" id="lmnop" tabIndex={-1} aria-labelledby="network-title">
@@ -174,6 +174,7 @@ export default function App() {
             <li><span>2015–2018</span><div><h3>Research Assistant</h3><p>Peter Chien Laboratory, Biochemistry and Molecular Biology, UMass Amherst. Research on antibiotic stress in <i>Caulobacter crescentus</i>, alongside experimental documentation and day-to-day lab practice.</p></div></li>
             <li><span>2016–2018</span><div><h3>Area Governor</h3><p>Elected annually to lead a residential community, recruit and train its executive board, secure funding, coordinate partners, and organize campus events at UMass Amherst, a university of approximately 30,000 students.</p></div></li>
             <li><span>2016–2018</span><div><h3>Resident Advisor &amp; Peer Trainer</h3><p>Resident support, incident response, and facilities coordination. Selected to train incoming residential-life staff.</p></div></li>
+            <li><span>2018</span><div><h3>B.S., Science &amp; Biochemistry</h3><p>University of Massachusetts Amherst.</p></div></li>
           </ol>
         </div>
       </section>

@@ -33,6 +33,8 @@ p + p { margin-top: 18px; }
 .lead-copy { font-size: 20px; line-height: 1.65; }
 .text-link { display: inline-flex; gap: 36px; align-items: center; font-size: 14px; font-weight: 600; padding-block: 14px; border-bottom: 1px solid currentColor; }
 .text-link span, .action span { font-size: 21px; }
+.inline-link { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+.inline-link:hover { color: var(--green); }
 .skip-link { position: fixed; top: 8px; left: 8px; padding: 14px; background: #fff; z-index: 100; transform: translateY(-150%); }
 .skip-link:focus { transform: none; }
 [id] { scroll-margin-top: calc(var(--header-height) + 24px); }
